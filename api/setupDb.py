@@ -17,10 +17,14 @@ def create_tables(c):
               'FOREIGN KEY(player_id) REFERENCES players(id), '
               'FOREIGN KEY(item_id) REFERENCES items(id))')
     c.execute('CREATE TABLE class_prio (id integer primary key, item_id integer, '
-              'class text, prio integer, FOREIGN KEY(item_id) REFERENCES items(id))')
+              'class text, prio integer, set_by_player_id integer, '
+              'FOREIGN KEY(item_id) REFERENCES items(id), '
+              'FOREIGN KEY(set_by_player_id) REFERENCES players(id))')
     c.execute('CREATE TABLE individual_prio (id integer primary key, item_id integer, '
-              'player_id integer, prio integer, FOREIGN KEY(item_id) REFERENCES items(id), '
-              'FOREIGN KEY(player_id) REFERENCES players(id))')
+              'player_id integer, prio integer, set_by_player_id integer, '
+              'FOREIGN KEY(item_id) REFERENCES items(id), '
+              'FOREIGN KEY(player_id) REFERENCES players(id), '
+              'FOREIGN KEY(set_by_player_id) REFERENCES players(id))')
     c.execute('CREATE TABLE raid_days (id integer primary key, date text, name text, '
               'raid_id integer, FOREIGN KEY(raid_id) REFERENCES raid(id))')
     c.execute('CREATE TABLE loot_history (id integer primary key, raid_day_id integer, '

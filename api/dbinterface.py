@@ -52,7 +52,7 @@ def load_raids_and_raid_days():
     for row in db_rows['bosses'].values():
         raids[row['raid_id']].bosses.append(row['name'])
 
-    raid_days = {id: RaidDay(id, _db_to_date(row['date']), row['name'], raids[row['raid_id']])
+    raid_days = {id: RaidDay(id, str_to_date(row['date']), row['name'], raids[row['raid_id']])
                  for id, row in db_rows['raid_days'].items()}
 
     return raids, raid_days
@@ -66,12 +66,12 @@ def load_loot_history():
             for id, row in db_rows.items()}
 
 
-def _db_to_date(datestr: str) -> date:
+def str_to_date(datestr: str) -> date:
     month, day, year = datestr.split('-')
     return date(int(year), int(month), int(day))
 
 
-def _date_to_db(dateobj: date) -> str:
+def date_to_str(dateobj: date) -> str:
     return f'{dateobj.month}-{dateobj.day}-{dateobj.year}'
 
 

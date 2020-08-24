@@ -1,7 +1,7 @@
 import sqlite3
-from datetime import date
 from contextlib import contextmanager
 
+from utils import str_to_date
 from models import Player, Item, Raid, RaidDay, LootHistoryLine
 
 
@@ -64,15 +64,6 @@ def load_loot_history():
 
     return {id: LootHistoryLine(id, row['raidday_id'], row['item_id'], row['player_id'])
             for id, row in db_rows.items()}
-
-
-def str_to_date(datestr: str) -> date:
-    month, day, year = datestr.split('-')
-    return date(int(year), int(month), int(day))
-
-
-def date_to_str(dateobj: date) -> str:
-    return f'{dateobj.month}-{dateobj.day}-{dateobj.year}'
 
 
 @contextmanager

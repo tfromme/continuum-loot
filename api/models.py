@@ -1,7 +1,7 @@
 from datetime import date as date_obj
 from typing import Dict, List, Tuple
 
-from dbinterface import date_to_str
+from utils import date_to_str
 
 
 class Player:

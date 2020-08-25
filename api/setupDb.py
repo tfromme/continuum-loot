@@ -76,7 +76,7 @@ if __name__ == '__main__':
     create_tables(c)
     populate_raid(c, 'data/raid.csv')
     populate_bosses(c, 'data/bosses.csv')
-    populate_items(c, 'data/items.csv')
+    # populate_items(c, 'data/items.csv')  # Not needed with data in migration_data
     populate_boss_loot(c, 'data/bossloot.csv')
 
     conn.commit()

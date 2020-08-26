@@ -17,7 +17,7 @@ def load_players():
         players[row['player_id']].wishlist.append((row['priority'], row['item_id']))
 
     for row in db_rows['attendance'].values():
-        players[row['player_id']].attendance.append(row['raidday_id'])
+        players[row['player_id']].attendance.append(row['raid_day_id'])
 
     return players
 
@@ -34,10 +34,10 @@ def load_items():
         items[row['item_id']].bosses.append(db_rows['bosses'][row['boss_id']]['name'])
 
     for row in db_rows['class_prio'].values():
-        items[row['item_id']].class_prio.append((row['prio'], row['class']))
+        items[row['item_id']].class_prio.append((row['prio'], row['class'], row['set_by_player_id']))
 
     for row in db_rows['individual_prio'].values():
-        items[row['item_id']].individual_prio.append((row['prio'], row['player_id']))
+        items[row['item_id']].individual_prio.append((row['prio'], row['player_id'], row['set_by_player_id']))
 
     return items
 
@@ -62,7 +62,7 @@ def load_loot_history():
     with get_db() as db:
         db_rows = {row['id']: dict(row) for row in db.execute(f'SELECT * FROM loot_history')}
 
-    return {id: LootHistoryLine(id, row['raidday_id'], row['item_id'], row['player_id'])
+    return {id: LootHistoryLine(id, row['raid_day_id'], row['item_id'], row['player_id'])
             for id, row in db_rows.items()}
 
 

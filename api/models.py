@@ -34,20 +34,6 @@ class Player:
 
 class Item:
 
-    class ClassPrio:
-
-        def __init__(self, prio: int, class_name: str, set_by: int):
-            self.prio = prio
-            self.class_name = class_name
-            self.set_by = set_by
-
-    class IndividualPrio:
-
-        def __init__(self, prio: int, player: int, set_by: int):
-            self.prio = prio
-            self.player = player
-            self.set_by = set_by
-
     def __init__(self, id: int, name: str, type: str, tier: str, notes: str):
         self.id = id
         self.name = name
@@ -55,24 +41,8 @@ class Item:
         self.tier = tier
         self.notes = notes
         self.bosses: List[str] = []
-        self._class_prio: List[Item.ClassPrio] = []
-        self._individual_prio: List[Item.IndividualPrio] = []
-
-    @property
-    def class_prio(self):
-        return self._class_prio
-
-    @class_prio.setter
-    def class_prio(self, data: List[Tuple[int, str, int]]):
-        self._class_prio = [self.ClassPrio(*item) for item in data]
-
-    @property
-    def individual_prio(self):
-        return self._individual_prio
-
-    @individual_prio.setter
-    def individual_prio(self, data: List[Tuple[int, int, int]]):
-        self._individual_prio = [self.IndividualPrio(*item) for item in data]
+        self.class_prio: List[Tuple[int, str, int]] = []
+        self.individual_prio: List[Tuple[int, int, int]] = []
 
     def to_dict(self):
         return {
@@ -82,10 +52,10 @@ class Item:
             'tier': self.tier,
             'notes': self.notes,
             'bosses': self.bosses,
-            'class_prio': [{'prio': cp.prio, 'class': cp.class_name, 'set_by': cp.set_by}
-                           for cp in self._class_prio],
-            'individual_prio': [{'prio': ip.prio, 'player_id': ip.player, 'set_by': ip.set_by}
-                                for ip in self._individual_prio],
+            'class_prio': [{'prio': prio, 'class': class_name, 'set_by': set_by}
+                           for prio, class_name, set_by in self.class_prio],
+            'individual_prio': [{'prio': prio, 'player_id': player, 'set_by': set_by}
+                                for prio, player, set_by in self.individual_prio],
         }
 
     def __str__(self):
@@ -150,7 +120,7 @@ class LootHistoryLine:
         return {
             'id': self.id,
             'raid_day_id': self.raid_day,
-            'item_id': self.item_id,
+            'item_id': self.item,
             'player_id': self.player,
         }
 

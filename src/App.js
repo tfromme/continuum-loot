@@ -4,7 +4,7 @@ import Tab from '@material-ui/core/Tab';
 import AppBar from '@material-ui/core/AppBar';
 import { TabPanel, TabContext, TabList } from '@material-ui/lab';
 
-import { PlayerTable } from './modules/Tables.js';
+import { PlayerTable, ItemTable } from './modules/Tables.js';
 
 import wowlogo from './wowlogo.png'
 import './App.scss';
@@ -58,7 +58,7 @@ class App extends React.Component {
               <PlayerTable players={this.state.players} />
             </TabPanel>
             <TabPanel value="2">
-              These are the items.
+              <ItemTable items={this.state.items} raids={this.state.raids}/>
             </TabPanel>
           </TabContext>
         </div>

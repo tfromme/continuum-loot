@@ -25,13 +25,14 @@ def load_players():
 def load_items():
     with get_db() as db:
         db_rows = {table_name: {row['id']: dict(row) for row in db.execute(f'SELECT * FROM {table_name}')}
-                   for table_name in ('items', 'individual_prio', 'class_prio', 'bosses', 'boss_loot')}
+                   for table_name in ('items', 'individual_prio', 'class_prio', 'bosses', 'boss_loot', 'raid')}
 
     items = {id: Item(id, row['name'], row['type'], row['tier'], row['notes'])
              for id, row in db_rows['items'].items()}
 
     for row in db_rows['boss_loot'].values():
         items[row['item_id']].bosses.append(db_rows['bosses'][row['boss_id']]['name'])
+        items[row['item_id']].raid = db_rows['bosses'][row['boss_id']]['raid_id']
 
     for row in db_rows['class_prio'].values():
         items[row['item_id']].class_prio.append((row['prio'], row['class'], row['set_by_player_id']))

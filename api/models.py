@@ -40,6 +40,7 @@ class Item:
         self.type = type
         self.tier = tier
         self.notes = notes
+        self.raid = -1
         self.bosses: List[str] = []
         self.class_prio: List[Tuple[int, str, int]] = []
         self.individual_prio: List[Tuple[int, int, int]] = []
@@ -51,6 +52,7 @@ class Item:
             'type': self.type,
             'tier': self.tier,
             'notes': self.notes,
+            'raid': self.raid,
             'bosses': self.bosses,
             'class_prio': [{'prio': prio, 'class': class_name, 'set_by': set_by}
                            for prio, class_name, set_by in self.class_prio],

@@ -5,9 +5,11 @@ import AppBar from '@material-ui/core/AppBar';
 import { TabPanel, TabContext, TabList } from '@material-ui/lab';
 
 import { PlayerTable, ItemTable } from './modules/Tables.js';
+import { LoginDialog, SignupDialog } from './modules/Dialogs.js';
 
 import wowlogo from './wowlogo.png'
 import './App.scss';
+
 
 class App extends React.Component {
 
@@ -52,6 +54,8 @@ class App extends React.Component {
               <TabList onChange={this.handleTabValueChange}>
                 <Tab label="Players" value="1" />
                 <Tab label="Items" value="2" />
+                <LoginDialog />
+                <SignupDialog players={this.state.players} />
               </TabList>
             </AppBar>
             <TabPanel value="1">

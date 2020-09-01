@@ -3,7 +3,7 @@ import sqlite3
 
 
 def create_tables(c):
-    c.execute('CREATE TABLE players (id integer primary key, name text, salt text, '
+    c.execute('CREATE TABLE players (id integer primary key, name text, '
               'password_hash text, notes text, class text, role text, rank text)')
     c.execute('CREATE TABLE items (id integer primary key, name text, type text, '
               'tier integer, notes text)')

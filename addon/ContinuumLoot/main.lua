@@ -43,7 +43,7 @@ function ContinuumLoot:CreateExportString()
     ContinuumLoot:Print('ERROR: Not in Group')
     return ''
   end
-  local exportString = '' .. name
+  local exportString = '[' .. name
 
   for groupindex = 2,40 do
     name, rank, subgroup, level, class, zone, online, isDead, role, isML, _ = GetRaidRosterInfo(groupindex);
@@ -51,5 +51,5 @@ function ContinuumLoot:CreateExportString()
       exportString = exportString .. ',' .. name
     end
   end
-  return exportString
+  return exportString .. ']'
 end

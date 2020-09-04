@@ -1,6 +1,8 @@
 import React from 'react';
 import MaterialTable from 'material-table'
 
+import { classes, ranks, roles } from './Constants.js'
+
 function arrayToObj(arr) {
   var obj = {}
   for (const item of arr) {
@@ -10,9 +12,6 @@ function arrayToObj(arr) {
 }
 
 export function PlayerTable(props) {
-  var classes = ['Druid', 'Hunter', 'Mage', 'Paladin', 'Priest', 'Rogue', 'Warlock', 'Warrior'];
-  var ranks = ['GM', 'Officer', 'Class Lead', 'Core Raider', 'Veteran', 'Member', 'Inactive']
-  var roles = ['DPS', 'Tank', 'Healer'];
 
   return (
     <MaterialTable

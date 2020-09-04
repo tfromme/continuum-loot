@@ -12,6 +12,8 @@ import InputLabel from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/Select';
 import FormControl from '@material-ui/core/FormControl';
 
+import { classes, roles } from './Constants.js'
+
 const LoginButton = styled(Button)({
   'margin-left': 'auto',
   'margin-right': '24px',
@@ -21,6 +23,15 @@ const SignupButton = styled(Button)({
   'margin-right': '24px',
 });
 
+const PaddedTextField = styled(TextField)({
+  'margin-bottom': '20px',
+  'margin-right': '20px',
+});
+
+const PaddedSelect = styled(Select)({
+  'margin-bottom': '20px',
+  'margin-right': '20px',
+});
 
 export function LoginDialog() {
   const [open, setOpen] = React.useState(false);
@@ -72,10 +83,11 @@ export function LoginDialog() {
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle id="login-dialog-title">Login</DialogTitle>
         <DialogContent>
-          <TextField error={usernameError} label="Player Name" variant="filled" value={username} onChange={handleChangeUsername} />
+          <PaddedTextField error={usernameError} label="Character Name" variant="filled"
+                           value={username} onChange={handleChangeUsername} />
           <br />
-          <br />
-          <TextField error={passwordError} label="Password" variant="filled" type="password" value={password} onChange={handleChangePassword} />
+          <PaddedTextField error={passwordError} label="Password" variant="filled" type="password"
+                           value={password} onChange={handleChangePassword} />
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="primary">Cancel</Button>
@@ -89,11 +101,16 @@ export function LoginDialog() {
 
 export function SignupDialog(props) {
   const [open, setOpen] = React.useState(false);
-  const [playerId, setPlayerId] = React.useState(null);
+  const [playerId, setPlayerId] = React.useState(0);
   const [username, setUsername] = React.useState('');
   const [password, setPassword] = React.useState('');
-  const [usernameError, setUsernameError] = React.useState(false)
-  const [passwordError, setPasswordError] = React.useState(false)
+  const [password2, setPassword2] = React.useState('');
+  const [usernameError, setUsernameError] = React.useState(false);
+  const [passwordError, setPasswordError] = React.useState(false);
+  const [password2Error, setPassword2Error] = React.useState(false);
+  const [passwordErrorText, setPasswordErrorText] = React.useState('');
+  const [playerClass, setPlayerClass] = React.useState(classes[0]);
+  const [playerRole, setPlayerRole] = React.useState('DPS');
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -104,20 +121,38 @@ export function SignupDialog(props) {
     setPassword('');
     setUsernameError(false);
     setPasswordError(false);
+    setPassword2Error(false);
+    setPasswordErrorText('');
     setOpen(false);
   };
 
   //TODO - hook up to API
   const handleSubmit = () => {
-    if (username === '') {
+    var hasError = false;
+
+    if (playerId === 0 && username === '') {
+      hasError = true;
       setUsernameError(true);
     }
     
     if (password === '') {
+      hasError = true;
       setPasswordError(true);
     }
 
-    if (username !== '' && password !== '') {
+    if (password2 === '') {
+      hasError = true;
+      setPassword2Error(true);
+    }
+
+    if (password !== password2) {
+      hasError = true;
+      setPasswordError(true);
+      setPassword2Error(true);
+      setPasswordErrorText('Passwords Must Match');
+    }
+
+    if (!hasError) {
       setOpen(false);
     }
   };
@@ -134,14 +169,48 @@ export function SignupDialog(props) {
   const handleChangePassword = (e) => {
     setPassword(e.target.value);
     setPasswordError(false);
+    setPasswordErrorText('');
+  }
+
+  const handleChangePassword2 = (e) => {
+    setPassword2(e.target.value);
+    setPassword2Error(false);
+    setPasswordErrorText('');
+  }
+
+  const handlePlayerClassChange = (e) => {
+    setPlayerClass(e.target.value);
+  }
+
+  const handlePlayerRoleChange = (e) => {
+    setPlayerRole(e.target.value);
   }
 
   const players = props.players;
   players.sort((a, b) => (a.name > b.name) ? 1 : -1);
 
-
-  const playerOptions = players.map((player) =>
-    <MenuItem value={player.id} key={player.id}>{player.name}</MenuItem>
+  const newCharacterFields = (
+    <>
+      <br />
+      <PaddedTextField error={usernameError} label="Character Name" variant="filled"
+                       value={username} onChange={handleChangeUsername} />
+      <FormControl variant="filled">
+        <InputLabel id="class-select-label">Class</InputLabel>
+        <PaddedSelect labelId="class-select-label" value={playerClass} onChange={handlePlayerClassChange}>
+          {classes.map((className, index) =>
+            <MenuItem value={className} key={index}>{className}</MenuItem>
+          )}
+        </PaddedSelect>
+      </FormControl>
+      <FormControl variant="filled">
+        <InputLabel id="role-select-label">Role</InputLabel>
+        <PaddedSelect labelId="role-select-label" value={playerRole} onChange={handlePlayerRoleChange}>
+          {roles.map((role, index) =>
+            <MenuItem value={role} key={index}>{role}</MenuItem>
+          )}
+        </PaddedSelect>
+      </FormControl>
+    </>
   );
 
   return (
@@ -152,14 +221,19 @@ export function SignupDialog(props) {
         <DialogContent>
           <FormControl variant="filled">
             <InputLabel id="player-select-label">Character</InputLabel>
-            <Select labelId="player-select-label" value={playerId} onChange={handlePlayerIdChange}>
+            <PaddedSelect labelId="player-select-label" value={playerId} onChange={handlePlayerIdChange}>
               <MenuItem value={0}>New Character</MenuItem>
-              {playerOptions}
-            </Select>
-            <br />
-            <br />
-            <TextField error={passwordError} label="Password" variant="filled" type="password" value={password} onChange={handleChangePassword} />
+              {players.map((player) =>
+                <MenuItem value={player.id} key={player.id}>{player.name}</MenuItem>
+              )}
+            </PaddedSelect>
           </FormControl>
+          { playerId === 0 ? newCharacterFields : '' }
+          <br />
+          <PaddedTextField error={passwordError} label="Password" variant="filled" type="password"
+                           value={password} onChange={handleChangePassword} />
+          <PaddedTextField error={password2Error} label="Confirm Password" variant="filled" type="password"
+                           value={password2} onChange={handleChangePassword2} helperText={passwordErrorText} />
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="primary">Cancel</Button>

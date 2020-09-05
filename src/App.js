@@ -5,7 +5,7 @@ import AppBar from '@material-ui/core/AppBar';
 import { TabPanel, TabContext, TabList } from '@material-ui/lab';
 
 import { PlayerTable, ItemTable } from './modules/Tables.js';
-import { LoginDialog, SignupDialog } from './modules/Dialogs.js';
+import { LoginDialog, SignupDialog, LogoutDialog } from './modules/Dialogs.js';
 
 import wowlogo from './wowlogo.png'
 import './App.scss';
@@ -15,8 +15,17 @@ class App extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = {tabValue: "1", items: [], players: [], loot_history: [], raids: [], raid_days: []};
+    this.state = {
+      tabValue: "1",
+      loggedInPlayer: null,
+      items: [],
+      players: [],
+      loot_history: [],
+      raids: [],
+      raid_days: [],
+    };
     this.handleTabValueChange = this.handleTabValueChange.bind(this);
+    this.setLoggedInPlayer = this.setLoggedInPlayer.bind(this);
   }
 
   componentDidMount() {
@@ -35,18 +44,41 @@ class App extends React.Component {
     fetch('/getRaids').then(res => res.json()).then(data => {
       this.setState({raids: data.raids, raid_days: data.raid_days})
     });
+
+    fetch('/getCurrentUser').then(res => res.json()).then(data => {
+      this.setState({loggedInPlayer: data.player})
+    });
   }
 
   handleTabValueChange(e, v) {
     this.setState({tabValue: v});
   }
 
+  setLoggedInPlayer(v) {
+    this.setState({loggedInPlayer: v});
+  }
+
   render() {
+    var loginButtons = (
+      <>
+        <LoginDialog setLoggedInPlayer={this.setLoggedInPlayer} />
+        <SignupDialog players={this.state.players} setLoggedInPlayer={this.setLoggedInPlayer} />
+      </>
+    );
+    
+    var headerText = 'Welcome to the Continuum Master Loot App';
+
+    if (this.state.loggedInPlayer !== null) {
+      loginButtons = <LogoutDialog setLoggedInPlayer={this.setLoggedInPlayer} />;
+      headerText = 'Welcome, ' + this.state.loggedInPlayer.name;
+    }
+
+
     return (
       <>
         <div className="header-logo">
           <img src={wowlogo} alt="WoW Logo" />
-          <span>Welcome to the Continuum Master Loot App</span>
+          <span>{headerText}</span>
         </div>
         <div>
           <TabContext value={this.state.tabValue}>
@@ -54,8 +86,7 @@ class App extends React.Component {
               <TabList onChange={this.handleTabValueChange}>
                 <Tab label="Players" value="1" />
                 <Tab label="Items" value="2" />
-                <LoginDialog />
-                <SignupDialog players={this.state.players} />
+                {loginButtons}
               </TabList>
             </AppBar>
             <TabPanel value="1">

@@ -32,6 +32,29 @@ class Player:
         return f"<Player {self.id}: {self.name}>"
 
 
+class User:
+
+    def __init__(self, id: int, name: str, password_hash: str, permission_level: int):
+        self.id = id
+        self.name = name
+        self.password_hash = password_hash
+        self.permission_level = permission_level
+
+    @property
+    def exists(self):
+        return self.password_hash != ''
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'permission_level': self.permission_level,
+        }
+
+    def __str__(self):
+        return f"<User {self.id}: {self.name}>"
+
+
 class Item:
 
     def __init__(self, id: int, name: str, type: str, tier: str, notes: str):

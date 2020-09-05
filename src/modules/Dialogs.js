@@ -6,13 +6,16 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
+import FormControl from '@material-ui/core/FormControl';
 import TextField from '@material-ui/core/TextField';
-import MenuItem from '@material-ui/core/MenuItem';
 import InputLabel from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/Select';
-import FormControl from '@material-ui/core/FormControl';
+import MenuItem from '@material-ui/core/MenuItem';
+import Alert from '@material-ui/lab/Alert';
+import Collapse from '@material-ui/core/Collapse';
 
 import { classes, roles } from './Constants.js'
+import { postApi } from './Api.js'
 
 const LoginButton = styled(Button)({
   'margin-left': 'auto',
@@ -33,12 +36,49 @@ const PaddedSelect = styled(Select)({
   'margin-right': '20px',
 });
 
-export function LoginDialog() {
+export function LogoutDialog(props) {
+  const handleClick = () => {
+    props.setLoggedInPlayer(null);
+    // Don't care if it was successful or not
+    fetch('/logout');
+  };
+
+  return (
+    <LoginButton color="inherit" onClick={handleClick}>Logout</LoginButton>
+  );
+}
+
+export function LoginDialog(props) {
   const [open, setOpen] = React.useState(false);
   const [username, setUsername] = React.useState('');
   const [password, setPassword] = React.useState('');
   const [usernameError, setUsernameError] = React.useState(false)
   const [passwordError, setPasswordError] = React.useState(false)
+  const [errorMessage, setErrorMessage] = React.useState('');
+
+  const postLogin = () => {
+    var data = {
+      'player_name': username,
+      'password': password,
+    };
+
+    postApi('/login', data).then(res => {
+      if (res.error) {
+        setErrorMessage(res.error);
+      } else {
+        return res.json;
+      }
+    }).then(json => {
+      if (json) {
+        if (json.error) {
+          setErrorMessage(json.error);
+        } else {
+          props.setLoggedInPlayer(json.player);
+          handleClose();
+        }
+      }
+    });
+  };
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -49,10 +89,10 @@ export function LoginDialog() {
     setPassword('');
     setUsernameError(false);
     setPasswordError(false);
+    setErrorMessage('');
     setOpen(false);
   };
 
-  //TODO - hook up to API
   const handleSubmit = () => {
     if (username === '') {
       setUsernameError(true);
@@ -63,18 +103,20 @@ export function LoginDialog() {
     }
 
     if (username !== '' && password !== '') {
-      setOpen(false);
+      postLogin();
     }
   };
 
   const handleChangeUsername = (e) => {
     setUsername(e.target.value);
     setUsernameError(false);
+    setErrorMessage('');
   };
 
   const handleChangePassword = (e) => {
     setPassword(e.target.value);
     setPasswordError(false);
+    setErrorMessage('');
   }
 
   return (
@@ -89,6 +131,11 @@ export function LoginDialog() {
           <PaddedTextField error={passwordError} label="Password" variant="filled" type="password"
                            value={password} onChange={handleChangePassword} />
         </DialogContent>
+        <Collapse in={errorMessage !== ''}>
+          <Alert severity="error">
+            {errorMessage}
+          </Alert>
+        </Collapse>
         <DialogActions>
           <Button onClick={handleClose} color="primary">Cancel</Button>
           <Button onClick={handleSubmit} color="primary">Login</Button>
@@ -97,7 +144,6 @@ export function LoginDialog() {
     </>
   );
 }
-
 
 export function SignupDialog(props) {
   const [open, setOpen] = React.useState(false);
@@ -110,7 +156,44 @@ export function SignupDialog(props) {
   const [password2Error, setPassword2Error] = React.useState(false);
   const [passwordErrorText, setPasswordErrorText] = React.useState('');
   const [playerClass, setPlayerClass] = React.useState(classes[0]);
-  const [playerRole, setPlayerRole] = React.useState('DPS');
+  const [playerRole, setPlayerRole] = React.useState(roles[0]);
+  const [errorMessage, setErrorMessage] = React.useState('');
+
+  const postSignup = () => {
+    var data;
+    if (playerId === 0) {
+      data = {
+        'new': true,
+        'player_name': username,
+        'password': password,
+        'class': playerClass,
+        'role': playerRole,
+      };
+    } else {
+      data = {
+        'new': false,
+        'player_id': playerId,
+        'password': password,
+      }
+    }
+
+    postApi('/signup', data).then(res => {
+      if (res.error) {
+        setErrorMessage(res.error);
+      } else {
+        return res.json;
+      }
+    }).then(json => {
+      if (json) {
+        if (json.error) {
+          setErrorMessage(json.error);
+        } else {
+          props.setLoggedInPlayer(json.player);
+          handleClose();
+        }
+      }
+    });
+  };
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -119,14 +202,15 @@ export function SignupDialog(props) {
   const handleClose = () => {
     setUsername('');
     setPassword('');
+    setPassword2('');
     setUsernameError(false);
     setPasswordError(false);
     setPassword2Error(false);
     setPasswordErrorText('');
+    setErrorMessage('');
     setOpen(false);
   };
 
-  //TODO - hook up to API
   const handleSubmit = () => {
     var hasError = false;
 
@@ -153,37 +237,43 @@ export function SignupDialog(props) {
     }
 
     if (!hasError) {
-      setOpen(false);
+      postSignup();
     }
   };
 
   const handlePlayerIdChange = (e) => {
     setPlayerId(e.target.value);
+    setErrorMessage('');
   }
 
   const handleChangeUsername = (e) => {
     setUsername(e.target.value);
     setUsernameError(false);
+    setErrorMessage('');
   };
 
   const handleChangePassword = (e) => {
     setPassword(e.target.value);
     setPasswordError(false);
     setPasswordErrorText('');
+    setErrorMessage('');
   }
 
   const handleChangePassword2 = (e) => {
     setPassword2(e.target.value);
     setPassword2Error(false);
     setPasswordErrorText('');
+    setErrorMessage('');
   }
 
   const handlePlayerClassChange = (e) => {
     setPlayerClass(e.target.value);
+    setErrorMessage('');
   }
 
   const handlePlayerRoleChange = (e) => {
     setPlayerRole(e.target.value);
+    setErrorMessage('');
   }
 
   const players = props.players;
@@ -235,6 +325,11 @@ export function SignupDialog(props) {
           <PaddedTextField error={password2Error} label="Confirm Password" variant="filled" type="password"
                            value={password2} onChange={handleChangePassword2} helperText={passwordErrorText} />
         </DialogContent>
+        <Collapse in={errorMessage !== ''}>
+          <Alert severity="error">
+            {errorMessage}
+          </Alert>
+        </Collapse>
         <DialogActions>
           <Button onClick={handleClose} color="primary">Cancel</Button>
           <Button onClick={handleSubmit} color="primary">Sign Up</Button>

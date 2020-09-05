@@ -2,7 +2,7 @@ import sqlite3
 from contextlib import contextmanager
 
 from utils import str_to_date
-from models import Player, Item, Raid, RaidDay, LootHistoryLine
+from models import Player, User, Item, Raid, RaidDay, LootHistoryLine
 
 
 def load_players():
@@ -19,7 +19,10 @@ def load_players():
     for row in db_rows['attendance'].values():
         players[row['player_id']].attendance.append(row['raid_day_id'])
 
-    return players
+    users = {id: User(id, row['name'], row['password_hash'], row['permission_level'])
+             for id, row in db_rows['players'].items()}
+
+    return players, users
 
 
 def load_items():
@@ -61,10 +64,30 @@ def load_raids_and_raid_days():
 
 def load_loot_history():
     with get_db() as db:
-        db_rows = {row['id']: dict(row) for row in db.execute(f'SELECT * FROM loot_history')}
+        db_rows = {row['id']: dict(row) for row in db.execute('SELECT * FROM loot_history')}
 
     return {id: LootHistoryLine(id, row['raid_day_id'], row['item_id'], row['player_id'])
             for id, row in db_rows.items()}
+
+
+def new_user(name, password_hash, permission_level, notes, className, role, rank):
+    with get_db() as db:
+        db.execute('INSERT INTO players (name, password_hash, permission_level, notes, class, role, rank) '
+                   'VALUES (?, ?, ?, ?, ?, ?, ?)',
+                   (name, password_hash, permission_level, notes, className, role, rank))
+        db.connection.commit()
+        last_row = [dict(row) for row in db.execute('SELECT * FROM players ORDER BY id DESC LIMIT 1')][0]
+
+    return User(last_row['id'], last_row['name'], last_row['password_hash'], last_row['permission_level'])
+
+
+def set_password_hash(player_id, password_hash):
+    with get_db() as db:
+        db.execute('UPDATE players SET password_hash = ? WHERE id = ?', (password_hash, player_id))
+        db.connection.commit()
+        last_row = [dict(row) for row in db.execute('SELECT * FROM players WHERE id = ?', (player_id,))][0]
+
+    return User(last_row['id'], last_row['name'], last_row['password_hash'], last_row['permission_level'])
 
 
 @contextmanager

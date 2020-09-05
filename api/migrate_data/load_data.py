@@ -112,8 +112,8 @@ if __name__ == '__main__':
 
     wishlist_id = 1
     for player in players:
-        c.execute('INSERT INTO players VALUES (?, ?, ?, ?, ?, ?, ?)',
-            (player['id'], player['name'], '', player['notes'],
+        c.execute('INSERT INTO players VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+            (player['id'], player['name'], '', 0, player['notes'],
              player['class'], player['role'], player['rank']))
 
         for i, item_id in enumerate(player['wishlist']):

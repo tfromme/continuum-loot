@@ -84,9 +84,12 @@ def logout():
 
 @app.route('/getCurrentUser', methods=['GET'])
 def getCurrentUser():
-    if 'user_id' in session:
-        _, users = dbinterface.load_players()
-        current_user = users[session['user_id']]
-        return jsonify({'player': current_user.to_dict()})
-    else:
-        return jsonify({'player': None})
+    try:
+        if 'user_id' in session:
+            _, users = dbinterface.load_players()
+            current_user = users[session['user_id']]
+            return jsonify({'player': current_user.to_dict()})
+    except KeyError:  # User no longer exists
+        session.clear()
+
+    return jsonify({'player': None})

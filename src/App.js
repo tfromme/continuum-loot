@@ -26,28 +26,59 @@ class App extends React.Component {
     };
     this.handleTabValueChange = this.handleTabValueChange.bind(this);
     this.setLoggedInPlayer = this.setLoggedInPlayer.bind(this);
+    this.updateRemoteData = this.updateRemoteData.bind(this);
   }
 
-  componentDidMount() {
+  updateRemoteData(...data) {
+    const data_mapping = {
+      'items': this.getItems.bind(this),
+      'players': this.getPlayers.bind(this),
+      'lootHistory': this.getLootHistory.bind(this),
+      'raids': this.getRaids.bind(this),
+      'currentUser': this.getCurrentUser.bind(this),
+    }
+
+    for (const key of data) {
+      data_mapping[key]();
+    }
+  }
+
+  getItems() {
     fetch('/getItems').then(res => res.json()).then(data => {
       this.setState({items: data})
     });
+  }
 
+  getPlayers() {
     fetch('/getPlayers').then(res => res.json()).then(data => {
       this.setState({players: data})
     });
+  }
 
+  getLootHistory() {
     fetch('/getLootHistory').then(res => res.json()).then(data => {
       this.setState({loot_history: data})
     });
+  }
 
+  getRaids() {
     fetch('/getRaids').then(res => res.json()).then(data => {
       this.setState({raids: data.raids, raid_days: data.raid_days})
     });
+  }
 
+  getCurrentUser() {
     fetch('/getCurrentUser').then(res => res.json()).then(data => {
       this.setState({loggedInPlayer: data.player})
     });
+  }
+
+  componentDidMount() {
+    this.getItems();
+    this.getPlayers();
+    this.getLootHistory();
+    this.getRaids();
+    this.getCurrentUser();
   }
 
   handleTabValueChange(e, v) {
@@ -62,7 +93,8 @@ class App extends React.Component {
     var loginButtons = (
       <>
         <LoginDialog setLoggedInPlayer={this.setLoggedInPlayer} />
-        <SignupDialog players={this.state.players} setLoggedInPlayer={this.setLoggedInPlayer} />
+        <SignupDialog players={this.state.players} setLoggedInPlayer={this.setLoggedInPlayer}
+                      updateRemoteData={this.updateRemoteData} />
       </>
     );
     

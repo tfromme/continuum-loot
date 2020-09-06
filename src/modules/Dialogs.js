@@ -189,6 +189,7 @@ export function SignupDialog(props) {
           setErrorMessage(json.error);
         } else {
           props.setLoggedInPlayer(json.player);
+          props.updateRemoteData('players');
           handleClose();
         }
       }

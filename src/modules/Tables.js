@@ -42,8 +42,9 @@ export function PlayerTable(props) {
         },
       } }
       detailPanel={ rowData =>
-        <PlayerDetailPanelTable rowData={rowData} items={props.items} editable={rowEditable(rowData)}
-                                fullEditable={fullEditable} updateRemoteData={props.updateRemoteData}/>
+        <PlayerDetailPanelTable rowData={rowData} items={props.items} raid_days={props.raid_days}
+                                editable={rowEditable(rowData)} fullEditable={fullEditable}
+                                updateRemoteData={props.updateRemoteData}/>
       }
       onRowClick={ (event, rowData, togglePanel) => togglePanel() }
     />
@@ -51,29 +52,52 @@ export function PlayerTable(props) {
 }
 
 function PlayerDetailPanelTable(props) {
-  var wishlistData = {'name': 'Wishlist'}
+  var wishlistData = {'name': 'Wishlist'};
   for (const item of props.rowData.wishlist) {
     wishlistData[item.prio] = props.items.find(x => x.id === item.item_id).name;
   }
+  
+  const yesStyle = {fontWeight: '500', color: '#4CAF50'};
+  const noStyle = {fontWeight: '500', color: '#F44336'};
+
+  var attendanceColumns = [{}, {title: '', field: 'name', cellStyle: {fontWeight: '500'}}];
+  var attendanceData = {'name': 'Attendance'};
+  
+  const last_ten_raid_days = props.raid_days.slice(props.raid_days.length - 10);
+  for (var i=0; i<10; i++) {
+    attendanceData[i.toString()] = props.rowData.attendance.includes(last_ten_raid_days[9-i].id) ? 'Yes' : 'No';
+    attendanceColumns.push({title: last_ten_raid_days[9-i].name,
+                            field: i.toString(),
+                            cellStyle: cellData => cellData === 'Yes' ? yesStyle : noStyle,
+    });
+  }
 
   return (
-    <MaterialTable
-      columns={[
-        {title: '', field: 'name', editable: 'never', cellStyle: {'font-weight': '500'}},
-        {title: 'First', field: '1'},
-        {title: 'Second', field: '2'},
-        {title: 'Third', field: '3'},
-        {title: 'Fourth', field: '4'},
-        {title: 'Fifth', field: '5'},
-        {title: 'Sixth', field: '6'},
-        {title: 'Seventh', field: '7'},
-        {title: 'Eighth', field: '8'},
-        {title: 'Ninth', field: '9'},
-        {title: 'Tenth', field: '10'},
-      ]}
-      data={[wishlistData]}
-      options={ { paging: false, showTitle: false, toolbar: false } }
-    />
+    <>
+      <MaterialTable
+        columns={[
+          {editable: 'never'},  // Dummy row for spacing, same with attendance
+          {title: '', field: 'name', editable: 'never', cellStyle: {fontWeight: '500'}},
+          {title: 'First', field: '1'},
+          {title: 'Second', field: '2'},
+          {title: 'Third', field: '3'},
+          {title: 'Fourth', field: '4'},
+          {title: 'Fifth', field: '5'},
+          {title: 'Sixth', field: '6'},
+          {title: 'Seventh', field: '7'},
+          {title: 'Eighth', field: '8'},
+          {title: 'Ninth', field: '9'},
+          {title: 'Tenth', field: '10'},
+        ]}
+        data={[wishlistData]}
+        options={ { tableLayout: 'fixed', sorting: false, paging: false, showTitle: false, toolbar: false } }
+      />
+      <MaterialTable
+        columns={attendanceColumns}
+        data={[attendanceData]}
+        options={ { tableLayout: 'fixed', sorting: false, paging: false, showTitle: false, toolbar: false } }
+      />
+    </>
   );
 }
 

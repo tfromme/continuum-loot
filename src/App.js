@@ -126,6 +126,7 @@ class App extends React.Component {
               <PlayerTable loggedInPlayer={this.state.loggedInPlayer}
                            players={this.state.players}
                            items={this.state.items}
+                           raid_days={this.state.raid_days}
                            updateRemoteData={this.updateRemoteData}
               />
             </TabPanel>

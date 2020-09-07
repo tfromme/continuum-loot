@@ -314,7 +314,7 @@ export function SignupDialog(props) {
             <InputLabel id="player-select-label">Character</InputLabel>
             <PaddedSelect labelId="player-select-label" value={playerId} onChange={handlePlayerIdChange}>
               <MenuItem value={0}>New Character</MenuItem>
-              {players.map((player) =>
+              {players.filter(player => player.rank !== 'Inactive').map(player =>
                 <MenuItem value={player.id} key={player.id}>{player.name}</MenuItem>
               )}
             </PaddedSelect>

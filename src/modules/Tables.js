@@ -60,13 +60,14 @@ function PlayerDetailPanelTable(props) {
   const yesStyle = {fontWeight: '500', color: '#4CAF50'};
   const noStyle = {fontWeight: '500', color: '#F44336'};
 
-  var attendanceColumns = [{}, {title: '', field: 'name', cellStyle: {fontWeight: '500'}}];
+  var attendanceColumns = [{width: 55}, {title: '', field: 'name', cellStyle: {fontWeight: '500'}}];
   var attendanceData = {'name': 'Attendance'};
   
-  const last_ten_raid_days = props.raid_days.slice(props.raid_days.length - 10);
-  for (var i=0; i<10; i++) {
-    attendanceData[i.toString()] = props.rowData.attendance.includes(last_ten_raid_days[9-i].id) ? 'Yes' : 'No';
-    attendanceColumns.push({title: last_ten_raid_days[9-i].name,
+  const num_raids = 12;
+  const last_x_raid_days = props.raid_days.slice(props.raid_days.length - num_raids);
+  for (var i=0; i<num_raids; i++) {
+    attendanceData[i.toString()] = props.rowData.attendance.includes(last_x_raid_days[num_raids-1-i].id) ? 'Yes' : 'No';
+    attendanceColumns.push({title: last_x_raid_days[num_raids-1-i].name,
                             field: i.toString(),
                             cellStyle: cellData => cellData === 'Yes' ? yesStyle : noStyle,
     });
@@ -76,8 +77,7 @@ function PlayerDetailPanelTable(props) {
     <>
       <MaterialTable
         columns={[
-          {editable: 'never'},  // Dummy row for spacing, same with attendance
-          {title: '', field: 'name', editable: 'never', cellStyle: {fontWeight: '500'}},
+          {title: '', field: 'name', editable: 'never', cellStyle: {fontWeight: '500'}}, 
           {title: 'First', field: '1'},
           {title: 'Second', field: '2'},
           {title: 'Third', field: '3'},
@@ -90,12 +90,23 @@ function PlayerDetailPanelTable(props) {
           {title: 'Tenth', field: '10'},
         ]}
         data={[wishlistData]}
-        options={ { tableLayout: 'fixed', sorting: false, paging: false, showTitle: false, toolbar: false } }
+        options={ { sorting: false, paging: false, showTitle: false, toolbar: false } }
+        localization={{header: {actions: ''}}}
+        editable={ {
+          isEditable: x => props.editable,
+          isEditHidden: x => !props.editable,
+          onRowUpdate: (newData, oldData) => {
+            return new Promise((resolve, reject) => {
+              updatePlayer(newData, props.updateRemoteData);  // API Call
+              resolve();
+            });
+          },
+        } }
       />
       <MaterialTable
         columns={attendanceColumns}
         data={[attendanceData]}
-        options={ { tableLayout: 'fixed', sorting: false, paging: false, showTitle: false, toolbar: false } }
+        options={ { sorting: false, paging: false, showTitle: false, toolbar: false } }
       />
     </>
   );

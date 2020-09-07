@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import Tab from '@material-ui/core/Tab';
 import AppBar from '@material-ui/core/AppBar';
 import { TabPanel, TabContext, TabList } from '@material-ui/lab';
@@ -10,6 +11,16 @@ import { LoginDialog, SignupDialog, LogoutDialog } from './modules/Dialogs.js';
 import wowlogo from './wowlogo.png'
 import './App.scss';
 
+const theme = createMuiTheme({
+  palette: {
+    primary: {
+      main: '#1565c0',
+    },
+    secondary: {
+      main: '#f8b700',
+    },
+  },
+});
 
 class App extends React.Component {
 
@@ -110,7 +121,7 @@ class App extends React.Component {
     }
 
     return (
-      <>
+      <ThemeProvider theme={theme}>
         <div className="header-logo">
           <img src={wowlogo} alt="WoW Logo" />
           <span>{headerText}</span>
@@ -135,7 +146,7 @@ class App extends React.Component {
             </TabPanel>
           </TabContext>
         </div>
-      </>
+      </ThemeProvider>
     );
   }
 }

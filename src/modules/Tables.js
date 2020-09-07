@@ -13,13 +13,17 @@ function arrayToObj(arr) {
 }
 
 export function PlayerTable(props) {
+  const columnsEditable = props.loggedInPlayer && props.loggedInPlayer.permission_level >= 2 ? 'always' : 'never'
+  const rowsEditable = rowData => (props.loggedInPlayer
+                                   ? (rowData.id === props.loggedInPlayer.id || props.loggedInPlayer.permission_level >= 2)
+                                   : false)
 
   return (
     <MaterialTable
       columns={[
-        { title: 'Name', field: 'name', defaultSort: 'asc', editable: 'never' },
-        { title: 'Class', field: 'class', lookup: arrayToObj(classes), editable: 'never' },
-        { title: 'Rank', field: 'rank', lookup: arrayToObj(ranks), editable: 'never' },
+        { title: 'Name', field: 'name', defaultSort: 'asc', editable: columnsEditable },
+        { title: 'Class', field: 'class', lookup: arrayToObj(classes), editable: columnsEditable },
+        { title: 'Rank', field: 'rank', lookup: arrayToObj(ranks), editable: columnsEditable },
         { title: 'Role', field: 'role', lookup: arrayToObj(roles) },
         { title: 'Notes', field: 'notes', filtering: false },
       ]}
@@ -27,12 +31,11 @@ export function PlayerTable(props) {
       title="Players"
       options={ { paging: false, filtering: true } }
       editable={ {
-        isEditable: rowData => props.loggedInPlayer ? rowData.id === props.loggedInPlayer.id : false,
-        isEditHidden: rowData => props.loggedInPlayer ? rowData.id !== props.loggedInPlayer.id : true,
+        isEditable: rowsEditable,
+        isEditHidden: rowData => !rowsEditable(rowData),
         onRowUpdate: (newData, oldData) => {
           return new Promise((resolve, reject) => {
-            updatePlayer(newData);
-            props.updateRemoteData('players');
+            updatePlayer(newData, props.updateRemoteData);
             resolve();
           });
         },

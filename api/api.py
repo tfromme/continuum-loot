@@ -104,10 +104,24 @@ def updatePlayer():
     except KeyError:
         return 'Invalid Request Body', 400
 
-    if session.get('user_id', None) != player_id:
+    if 'user_id' not in session:
+        return 'Not Allowed', 400
+    else:
+        current_user = dbinterface.load_user_by_id(session['user_id'])
+
+    # TODO: Remove hardcoded permission levels
+    if current_user.permission_level < 2 and current_user.id != player_id:
         return 'Not Allowed', 400
 
-    current_player = dbinterface.load_player_by_id(data['player']['id'])
+    current_player = dbinterface.load_player_by_id(player_id)
     updated_player = Player.from_dict(data['player'])
+
+    # Only admins can update name/class/rank/attendance
+    if current_user.permission_level < 2:  # Admin
+        updated_player.name = current_player.name
+        updated_player.player_class = current_player.player_class
+        updated_player.rank = current_player.rank
+        updated_player.attendance = current_player.attendance
+
     dbinterface.update_player_information(current_player, updated_player)
     return '', 204

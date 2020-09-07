@@ -78,7 +78,7 @@ def new_user(name, password_hash, permission_level, notes, className, role, rank
         db.connection.commit()
         last_row = [dict(row) for row in db.execute('SELECT * FROM players ORDER BY id DESC LIMIT 1')][0]
 
-    return User(last_row['id'], last_row['name'], last_row['password_hash'], last_row['permission_level'])
+    return User.from_db_rows(last_row)
 
 
 def set_password_hash(player_id, password_hash):
@@ -87,7 +87,7 @@ def set_password_hash(player_id, password_hash):
         db.connection.commit()
         last_row = [dict(row) for row in db.execute('SELECT * FROM players WHERE id = ?', (player_id,))][0]
 
-    return User(last_row['id'], last_row['name'], last_row['password_hash'], last_row['permission_level'])
+    return User.from_db_rows(last_row)
 
 
 def load_player_by_id(player_id):
@@ -97,6 +97,13 @@ def load_player_by_id(player_id):
         attendance_rows = [dict(row) for row in db.execute('SELECT * FROM attendance WHERE player_id = ?', (player_id,))]
 
     return Player.from_db_rows(player_row, wishlist_rows, attendance_rows)
+
+
+def load_user_by_id(player_id):
+    with get_db() as db:
+        player_row = [dict(row) for row in db.execute('SELECT * FROM players WHERE id = ?', (player_id,))][0]
+
+    return User.from_db_rows(player_row)
 
 
 # TODO: Make this less slash'n'burn

@@ -60,6 +60,10 @@ class User:
         self.password_hash = password_hash
         self.permission_level = permission_level
 
+    @classmethod
+    def from_db_rows(cls, row):
+        return cls(row['id'], row['name'], row['password_hash'], row['permission_level'])
+
     @property
     def exists(self):
         return self.password_hash != ''

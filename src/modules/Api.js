@@ -14,3 +14,7 @@ export function postApi(path, data) {
     }
   })
 }
+
+export function updatePlayer(player) {
+  postApi('/updatePlayer', {'player': player});
+}

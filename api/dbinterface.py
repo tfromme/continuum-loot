@@ -90,6 +90,37 @@ def set_password_hash(player_id, password_hash):
     return User(last_row['id'], last_row['name'], last_row['password_hash'], last_row['permission_level'])
 
 
+def load_player_by_id(player_id):
+    with get_db() as db:
+        player_row = [dict(row) for row in db.execute('SELECT * FROM players WHERE id = ?', (player_id,))][0]
+        wishlist_rows = [dict(row) for row in db.execute('SELECT * FROM wishlist WHERE player_id = ?', (player_id,))]
+        attendance_rows = [dict(row) for row in db.execute('SELECT * FROM attendance WHERE player_id = ?', (player_id,))]
+
+    return Player.from_db_rows(player_row, wishlist_rows, attendance_rows)
+
+
+# TODO: Make this less slash'n'burn
+def update_player_information(current, updated):
+    if (current.id != updated.id):
+        return
+
+    with get_db() as db:
+        db.execute('UPDATE players SET name = ?, class = ?, rank = ?, role = ?, notes = ? WHERE id = ?',
+                   (updated.name, updated.player_class, updated.rank, updated.role, updated.notes, current.id))
+
+        if set(current.wishlist) != set(updated.wishlist):
+            db.execute('DELETE FROM wishlist WHERE player_id = ?', (current.id,))
+            for prio, item_id in updated.wishlist:
+                db.execute('INSERT INTO wishlist (player_id, priority, item_id) VALUES (?, ?, ?)',
+                           (current.id, prio, item_id))
+
+        if set(current.attendance) != set(updated.attendance):
+            db.execute('DELETE FROM attendance WHERE player_id = ?', (current.id,))
+            for raid_day_id in updated.attendance:
+                db.execute('INSERT INTO attendance (raid_day_id, player_id) VALUES (?, ?)',
+                           (raid_day_id, current.id))
+
+
 @contextmanager
 def get_db():
     conn = sqlite3.connect('contloot.db')

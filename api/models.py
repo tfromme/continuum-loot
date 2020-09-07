@@ -16,6 +16,26 @@ class Player:
         self.wishlist: List[Tuple[int, int]] = []  # List of (prio, item id) tuples
         self.attendance: List[int] = []  # List of raid ids attended
 
+    @classmethod
+    def from_dict(cls, data):
+        new = cls(data['id'], data['name'], data['notes'], data['class'], data['role'], data['rank'])
+        new.wishlist = [(line['prio'], line['item_id']) for line in data['wishlist']]
+        new.attendance = data['attendance']
+        return new
+
+    @classmethod
+    def from_db_rows(cls, player_row, wishlist_rows, attendance_rows):
+        new = cls(player_row['id'], player_row['name'], player_row['notes'],
+                        player_row['class'], player_row['role'], player_row['rank'])
+
+        for row in wishlist_rows:
+            new.wishlist.append((row['priority'], row['item_id']))
+
+        for row in attendance_rows:
+            new.attendance.append(row['raid_day_id'])
+
+        return new
+
     def to_dict(self):
         return {
             'id': self.id,

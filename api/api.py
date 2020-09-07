@@ -2,6 +2,7 @@ from flask import Flask, jsonify, request, session
 from werkzeug.security import check_password_hash, generate_password_hash
 
 import dbinterface
+from models import Player
 
 app = Flask(__name__)
 app.secret_key = 'secret'
@@ -93,3 +94,20 @@ def getCurrentUser():
         session.clear()
 
     return jsonify({'player': None})
+
+
+@app.route('/updatePlayer', methods=['POST'])
+def updatePlayer():
+    data = request.json
+    try:
+        player_id = data['player']['id']
+    except KeyError:
+        return 'Invalid Request Body', 400
+
+    if session.get('user_id', None) != player_id:
+        return 'Not Allowed', 400
+
+    current_player = dbinterface.load_player_by_id(data['player']['id'])
+    updated_player = Player.from_dict(data['player'])
+    dbinterface.update_player_information(current_player, updated_player)
+    return '', 204

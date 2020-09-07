@@ -90,21 +90,24 @@ class App extends React.Component {
   }
 
   render() {
-    var loginButtons = (
-      <>
-        <LoginDialog setLoggedInPlayer={this.setLoggedInPlayer} />
-        <SignupDialog players={this.state.players} setLoggedInPlayer={this.setLoggedInPlayer}
-                      updateRemoteData={this.updateRemoteData} />
-      </>
-    );
+    // This array nonsense is used instead of React Fragments because material-ui likes it that way
+    const tabs = [
+      <Tab key="0" label="Players" value="1" />,
+      <Tab key="1" label="Items" value="2" />
+    ];
+
+    var loginButtons = [
+      <LoginDialog key="10" setLoggedInPlayer={this.setLoggedInPlayer} />,
+      <SignupDialog key="11" players={this.state.players} setLoggedInPlayer={this.setLoggedInPlayer}
+                    updateRemoteData={this.updateRemoteData} />
+    ];
     
     var headerText = 'Welcome to the Continuum Master Loot App';
 
     if (this.state.loggedInPlayer !== null) {
-      loginButtons = <LogoutDialog setLoggedInPlayer={this.setLoggedInPlayer} />;
+      loginButtons = [ <LogoutDialog key="20" setLoggedInPlayer={this.setLoggedInPlayer} /> ];
       headerText = 'Welcome, ' + this.state.loggedInPlayer.name;
     }
-
 
     return (
       <>
@@ -116,13 +119,14 @@ class App extends React.Component {
           <TabContext value={this.state.tabValue}>
             <AppBar position="static">
               <TabList onChange={this.handleTabValueChange}>
-                <Tab label="Players" value="1" />
-                <Tab label="Items" value="2" />
-                {loginButtons}
+                {tabs.concat(loginButtons)}
               </TabList>
             </AppBar>
             <TabPanel value="1">
-              <PlayerTable players={this.state.players} />
+              <PlayerTable loggedInPlayer={this.state.loggedInPlayer}
+                           players={this.state.players}
+                           updateRemoteData={this.updateRemoteData}
+              />
             </TabPanel>
             <TabPanel value="2">
               <ItemTable items={this.state.items} raids={this.state.raids}/>

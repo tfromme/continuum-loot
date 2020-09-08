@@ -34,6 +34,7 @@ export function PlayerTable(props) {
       data={ props.players }
       title="Players"
       options={ { paging: false, filtering: true, draggable: false} }
+      localization={{header: {actions: ''}}}
       editable={ {
         isEditable: rowEditable,
         isEditHidden: rowData => !rowEditable(rowData),
@@ -145,6 +146,37 @@ function WishlistRow(props) {
             resolve();
           });
         },
+      } }
+      onColumnDragged={ (sourceIndex, destIndex) => {
+        if (sourceIndex === destIndex) {
+          return;
+        }
+
+        var updated = false;
+        var updatedPlayer = props.rowData;
+
+        const movedItemIndex = updatedPlayer.wishlist.findIndex(i => i.prio === sourceIndex);
+        const diff = sourceIndex > destIndex ? 1 : -1;  // Which way do intermediate items get moved
+        const lowerBound = sourceIndex > destIndex ? destIndex - 1 : sourceIndex;
+        const upperBound = sourceIndex > destIndex ? sourceIndex - 1 : destIndex;
+
+        for (var itemIndex = 0; itemIndex < updatedPlayer.wishlist.length; itemIndex++) {
+          const prio = updatedPlayer.wishlist[itemIndex].prio;
+          if (prio > lowerBound && prio <= upperBound) {
+            updatedPlayer.wishlist[itemIndex].prio += diff;
+            updated = true;
+          }
+        }
+
+        // undefined check if moving empty col
+        if (updatedPlayer.wishlist[movedItemIndex]) {
+          updatedPlayer.wishlist[movedItemIndex].prio = destIndex;
+          updated = true;
+        }
+
+        if (updated) {
+          updatePlayer(updatedPlayer, props.updateRemoteData);  // API Call
+        }
       } }
     />
   );

@@ -71,7 +71,7 @@ function WishlistEditItem(props) {
       options={props.items}
       getOptionLabel={option => option.name}
       value={value}
-      onChange={(e, newVal) => { setValue(newVal); props.onChange(newVal.id); }}
+      onChange={(e, newVal) => { setValue(newVal); props.onChange(newVal ? newVal.id : null); }}
       inputValue={inputValue}
       onInputChange={(e, newInputVal) => { setInputValue(newInputVal); }}
       renderInput={params => <TextField {...params} />}
@@ -123,7 +123,7 @@ function WishlistRow(props) {
           var updatedPlayer = props.rowData;
           updatedPlayer.wishlist = [];
           for (const prio in newData) {
-            if (prio !== 'name') {
+            if (prio !== 'name' && newData[prio] !== null) {
               updatedPlayer.wishlist.push({'prio': prio, 'item_id': newData[prio]});
             }
           }

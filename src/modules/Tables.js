@@ -2,6 +2,7 @@ import React from 'react';
 import MaterialTable from 'material-table';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import TextField from '@material-ui/core/TextField';
+import HowToRegOutlined from '@material-ui/icons/HowToRegOutlined';
 
 import { classes, ranks, roles } from './Constants.js'
 import { updatePlayer } from './Api.js'
@@ -43,21 +44,33 @@ export function PlayerTable(props) {
           });
         },
       } }
-      detailPanel={ rowData =>
-        <>
+      detailPanel={[
+        {
+          icon: 'favorite_border',
+          openIcon: 'favorite',
+          tooltip: 'Wishlist',
+          render: rowData => (
           <WishlistRow
             rowData={rowData}
             items={props.items}
             updateRemoteData={props.updateRemoteData}
             editable={rowEditable(rowData)}
           />
+          ),
+        },
+       {
+         icon: HowToRegOutlined,
+         openIcon: 'how_to_reg',
+         tooltip: 'Attendance',
+         render: rowData => (
           <AttendanceRow
             rowData={rowData}
             raidDays={props.raidDays}
             editable={rowEditable(rowData)}
           />
-        </>
-      }
+         ),
+       },
+      ]}
       onRowClick={ (event, rowData, togglePanel) => togglePanel() }
     />
   );

@@ -9,6 +9,8 @@ export function postApi(path, data) {
   }).then(res => {
     if (!res.ok) {
       return {'error': '' + res.status + ': ' + res.statusText};
+    } else if (res.status === 204) {
+      return {'json': ''};
     } else {
       return {'json': res.json()};
     }

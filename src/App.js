@@ -31,9 +31,9 @@ class App extends React.Component {
       loggedInPlayer: null,
       items: [],
       players: [],
-      loot_history: [],
+      lootHistory: [],
       raids: [],
-      raid_days: [],
+      raidDays: [],
     };
     this.handleTabValueChange = this.handleTabValueChange.bind(this);
     this.setLoggedInPlayer = this.setLoggedInPlayer.bind(this);
@@ -68,13 +68,13 @@ class App extends React.Component {
 
   getLootHistory() {
     fetch('/getLootHistory').then(res => res.json()).then(data => {
-      this.setState({loot_history: data})
+      this.setState({lootHistory: data})
     });
   }
 
   getRaids() {
     fetch('/getRaids').then(res => res.json()).then(data => {
-      this.setState({raids: data.raids, raid_days: data.raid_days})
+      this.setState({raids: data.raids, raidDays: data.raid_days})
     });
   }
 
@@ -137,7 +137,7 @@ class App extends React.Component {
               <PlayerTable loggedInPlayer={this.state.loggedInPlayer}
                            players={this.state.players}
                            items={this.state.items}
-                           raid_days={this.state.raid_days}
+                           raidDays={this.state.raidDays}
                            updateRemoteData={this.updateRemoteData}
               />
             </TabPanel>

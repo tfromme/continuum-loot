@@ -1,0 +1,6 @@
+#!/bin/bash
+rm contloot.db
+./.env/bin/python setupDb.py
+pushd migrate_data > /dev/null
+../.env/bin/python load_data.py
+popd > /dev/null

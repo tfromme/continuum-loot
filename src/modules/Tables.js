@@ -223,9 +223,9 @@ export function ItemTable(props) {
         { title: 'Type', field: 'type' },
         { title: 'Raid', field: 'raid', lookup: raidShortNameLookup },
         { title: 'Bosses', field: 'bosses', render: ((rowData) => {
-          return rowData.bosses.reduce((all, cur) => [
+          return rowData.bosses.reduce((all, cur, index) => [
             ...all,
-            <br />,
+            <br key={index}/>,
             cur,
           ]);
         }) },

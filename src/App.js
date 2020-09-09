@@ -55,31 +55,31 @@ class App extends React.Component {
   }
 
   getItems() {
-    fetch('/getItems').then(res => res.json()).then(data => {
+    fetch('/api/getItems').then(res => res.json()).then(data => {
       this.setState({items: data})
     });
   }
 
   getPlayers() {
-    fetch('/getPlayers').then(res => res.json()).then(data => {
+    fetch('/api/getPlayers').then(res => res.json()).then(data => {
       this.setState({players: data})
     });
   }
 
   getLootHistory() {
-    fetch('/getLootHistory').then(res => res.json()).then(data => {
+    fetch('/api/getLootHistory').then(res => res.json()).then(data => {
       this.setState({lootHistory: data})
     });
   }
 
   getRaids() {
-    fetch('/getRaids').then(res => res.json()).then(data => {
+    fetch('/api/getRaids').then(res => res.json()).then(data => {
       this.setState({raids: data.raids, raidDays: data.raid_days})
     });
   }
 
   getCurrentUser() {
-    fetch('/getCurrentUser').then(res => res.json()).then(data => {
+    fetch('/api/getCurrentUser').then(res => res.json()).then(data => {
       this.setState({loggedInPlayer: data.player})
     });
   }

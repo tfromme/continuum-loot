@@ -40,7 +40,7 @@ export function LogoutDialog(props) {
   const handleClick = () => {
     props.setLoggedInPlayer(null);
     // Don't care if it was successful or not
-    fetch('/logout');
+    fetch('/api/logout');
   };
 
   return (
@@ -62,7 +62,7 @@ export function LoginDialog(props) {
       'password': password,
     };
 
-    postApi('/login', data).then(res => {
+    postApi('/api/login', data).then(res => {
       if (res.error) {
         setErrorMessage(res.error);
       } else {
@@ -177,7 +177,7 @@ export function SignupDialog(props) {
       }
     }
 
-    postApi('/signup', data).then(res => {
+    postApi('/api/signup', data).then(res => {
       if (res.error) {
         setErrorMessage(res.error);
       } else {

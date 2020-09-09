@@ -18,7 +18,7 @@ export function postApi(path, data) {
 }
 
 export function updatePlayer(player, updateRemoteData) {
-  postApi('/updatePlayer', {'player': player}).then(res => {
+  postApi('/api/updatePlayer', {'player': player}).then(res => {
     updateRemoteData('players');
   });
 }

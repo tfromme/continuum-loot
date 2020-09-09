@@ -8,19 +8,19 @@ app = Flask(__name__)
 app.secret_key = 'secret'
 
 
-@app.route('/getPlayers', methods=['GET'])
+@app.route('/api/getPlayers', methods=['GET'])
 def getPlayers():
     players, _ = dbinterface.load_players()
     return jsonify([player.to_dict() for player in players.values()])
 
 
-@app.route('/getItems', methods=['GET'])
+@app.route('/api/getItems', methods=['GET'])
 def getItems():
     items = dbinterface.load_items()
     return jsonify([item.to_dict() for item in items.values()])
 
 
-@app.route('/getRaids', methods=['GET'])
+@app.route('/api/getRaids', methods=['GET'])
 def getRaids():
     raids, raid_days = dbinterface.load_raids_and_raid_days()
     return jsonify({
@@ -29,13 +29,13 @@ def getRaids():
     })
 
 
-@app.route('/getLootHistory', methods=['GET'])
+@app.route('/api/getLootHistory', methods=['GET'])
 def getLootHistory():
     loot_history = dbinterface.load_loot_history()
     return jsonify([line.to_dict() for line in loot_history.values()])
 
 
-@app.route('/signup', methods=['POST'])
+@app.route('/api/signup', methods=['POST'])
 def signup():
     data = request.json
     _, users = dbinterface.load_players()
@@ -55,7 +55,7 @@ def signup():
     return login(current_user, data['password'])
 
 
-@app.route('/login', methods=['POST'])
+@app.route('/api/login', methods=['POST'])
 def login(current_user=None, password=None):
     if current_user is None:
         data = request.json
@@ -77,13 +77,13 @@ def login(current_user=None, password=None):
         return jsonify({'error': 'Incorrect Password'})
 
 
-@app.route('/logout', methods=['GET'])
+@app.route('/api/logout', methods=['GET'])
 def logout():
     session.clear()
     return '', 204
 
 
-@app.route('/getCurrentUser', methods=['GET'])
+@app.route('/api/getCurrentUser', methods=['GET'])
 def getCurrentUser():
     try:
         if 'user_id' in session:
@@ -96,7 +96,7 @@ def getCurrentUser():
     return jsonify({'player': None})
 
 
-@app.route('/updatePlayer', methods=['POST'])
+@app.route('/api/updatePlayer', methods=['POST'])
 def updatePlayer():
     data = request.json
     try:

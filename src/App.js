@@ -138,6 +138,7 @@ class App extends React.Component {
                            players={this.state.players}
                            items={this.state.items}
                            raidDays={this.state.raidDays}
+                           lootHistory={this.state.lootHistory}
                            updateRemoteData={this.updateRemoteData}
               />
             </TabPanel>

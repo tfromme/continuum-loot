@@ -51,28 +51,39 @@ export function PlayerTable(props) {
           openIcon: 'favorite',
           tooltip: 'Wishlist',
           render: rowData => (
-          <WishlistRow
-            rowData={rowData}
-            items={props.items}
-            updateRemoteData={props.updateRemoteData}
-            editable={rowEditable(rowData)}
-          />
+            <WishlistRow
+              rowData={rowData}
+              items={props.items}
+              updateRemoteData={props.updateRemoteData}
+              editable={rowEditable(rowData)}
+            />
           ),
         },
-       {
-         icon: HowToRegOutlined,
-         openIcon: 'how_to_reg',
-         tooltip: 'Attendance',
-         render: rowData => (
-          <AttendanceRow
-            rowData={rowData}
-            raidDays={props.raidDays}
-            editable={rowEditable(rowData)}
-          />
-         ),
-       },
+        {
+          icon: HowToRegOutlined,
+          openIcon: 'how_to_reg',
+          tooltip: 'Attendance',
+          render: rowData => (
+            <AttendanceRow
+              rowData={rowData}
+              raidDays={props.raidDays}
+            />
+          ),
+        },
+        {
+          icon: 'history',
+          openIcon: 'watch_later',
+          tooltip: 'Recent Loot History',
+          render: rowData => (
+            <LootHistoryRow
+              rowData={rowData}
+              lootHistory={props.lootHistory}
+              items={props.items}
+              raidDays={props.raidDays}
+            />
+          ),
+        },
       ]}
-      onRowClick={ (event, rowData, togglePanel) => togglePanel() }
     />
   );
 }
@@ -187,8 +198,8 @@ function AttendanceRow(props) {
   const yesStyle = {fontWeight: '500', color: '#4CAF50'};
   const noStyle = {fontWeight: '500', color: '#F44336'};
 
-  // 55 and 45 are "good enough" attempts to get the first columns lined up
-  var attendanceColumns = [{width: props.editable ? 55 : 45}, {title: '', field: 'name', cellStyle: {fontWeight: '500'}}];
+  // 45 is a "good enough" attempt to get the first columns lined up
+  var attendanceColumns = [{width: 45}, {title: '', field: 'name', cellStyle: {fontWeight: '500'}}];
   var attendanceData = {'name': 'Attendance'};
   
   const numRaids = 12;
@@ -205,6 +216,38 @@ function AttendanceRow(props) {
     <MaterialTable
       columns={attendanceColumns}
       data={[attendanceData]}
+      options={ { sorting: false, paging: false, showTitle: false, toolbar: false, draggable: false } }
+    />
+  );
+}
+
+function LootHistoryRow(props) {
+  var itemLookup = {};
+  for (const item of props.items) {
+    itemLookup[item.id] = item.name;
+  }
+
+  // 45 is a "good enough" attempt to get the first columns lined up
+  var historyColumns = [{width: 45}, {title: '', field: 'name', cellStyle: {fontWeight: '500'}}];
+  var historyData = {'name': 'Recent Items Won'};
+
+  const numItems = 6;
+  const lastXItems = props.lootHistory.filter(x => x.player_id === props.rowData.id).slice(-numItems);
+
+  const filterFunc = i => (x => x.id === lastXItems[i].raid_day_id);
+
+  for (var i=lastXItems.length-1; i>=0; i--) {
+    historyData[i.toString()] = lastXItems[i].item_id;
+    historyColumns.push({title: props.raidDays.find(filterFunc(i)).name,
+                         field: i.toString(),
+                         lookup: itemLookup,
+    });
+  }
+
+  return (
+    <MaterialTable
+      columns={historyColumns}
+      data={[historyData]}
       options={ { sorting: false, paging: false, showTitle: false, toolbar: false, draggable: false } }
     />
   );

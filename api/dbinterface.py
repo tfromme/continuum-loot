@@ -106,6 +106,17 @@ def load_user_by_id(player_id):
     return User.from_db_rows(player_row)
 
 
+def load_item_by_id(item_id):
+    with get_db() as db:
+        item_row = [dict(row) for row in db.execute('SELECT * FROM items WHERE id = ?', (item_id,))][0]
+        boss_rows = [dict(row) for row in db.execute('SELECT * FROM bosses')]
+        boss_loot_rows = [dict(row) for row in db.execute('SELECT * FROM boss_loot WHERE item_id = ?', (item_id,))]
+        class_prio_rows = [dict(row) for row in db.execute('SELECT * FROM class_prio WHERE item_id = ?', (item_id,))]
+        individual_prio_rows = [dict(row) for row in db.execute('SELECT * FROM individual_prio WHERE item_id = ?', (item_id,))]
+
+    return Item.from_db_rows(item_row, boss_rows, boss_loot_rows, class_prio_rows, individual_prio_rows)
+
+
 # TODO: Make this less slash'n'burn
 def update_player_information(current, updated):
     if (current.id != updated.id):
@@ -126,6 +137,37 @@ def update_player_information(current, updated):
             for raid_day_id in updated.attendance:
                 db.execute('INSERT INTO attendance (raid_day_id, player_id) VALUES (?, ?)',
                            (raid_day_id, current.id))
+
+
+# TODO: Make this less slash'n'burn
+def update_item_information(current, updated):
+    if (current.id != updated.id):
+        return
+
+    with get_db() as db:
+        boss_name_to_id = {row['name']: row['id'] for row in db.execute('SELECT * FROM bosses')}
+
+    with get_db() as db:
+        db.execute('UPDATE items SET name = ?, type = ?, tier = ?, notes = ? WHERE id = ?',
+                   (updated.name, updated.type, updated.tier, updated.notes, current.id))
+
+        if set(current.bosses) != set(updated.bosses):
+            db.execute('DELETE FROM boss_loot WHERE item_id = ?', (current.id,))
+            for boss in updated.bosses:
+                db.execute('INSERT INTO boss_loot (item_id, boss_id) VALUES (?, ?)',
+                           (current.id, boss_name_to_id[boss]))
+
+        if set(current.class_prio) != set(updated.class_prio):
+            db.execute('DELETE FROM class_prio WHERE item_id = ?', (current.id,))
+            for prio, class_name, set_by in updated.class_prio:
+                db.execute('INSERT INTO class_prio (item_id, prio, class, set_by_player_id) VALUES (?, ?, ?, ?)',
+                           (current.id, prio, class_name, set_by))
+
+        if set(current.individual_prio) != set(updated.individual_prio):
+            db.execute('DELETE FROM individual_prio WHERE item_id = ?', (current.id,))
+            for prio, player, set_by in updated.individual_prio:
+                db.execute('INSERT INTO individual_prio (item_id, prio, player_id, set_by_player_id) VALUES (?, ?, ?, ?)',
+                           (current.id, prio, player, set_by))
 
 
 @contextmanager

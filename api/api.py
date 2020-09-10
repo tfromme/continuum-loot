@@ -2,7 +2,7 @@ from flask import Flask, jsonify, request, session
 from werkzeug.security import check_password_hash, generate_password_hash
 
 import dbinterface
-from models import Player
+from models import Player, Item
 
 app = Flask(__name__)
 app.secret_key = 'secret'
@@ -124,4 +124,34 @@ def updatePlayer():
         updated_player.attendance = current_player.attendance
 
     dbinterface.update_player_information(current_player, updated_player)
+    return '', 204
+
+
+@app.route('/api/updateItem', methods=['POST'])
+def updateItem():
+    data = request.json
+    try:
+        item_id = data['item']['id']
+    except KeyError:
+        return 'Invalid Request Body', 400
+
+    if 'user_id' not in session:
+        return 'Not Allowed', 400
+    else:
+        current_user = dbinterface.load_user_by_id(session['user_id'])
+
+    # TODO: Remove hardcoded permission levels
+    if current_user.permission_level < 1:
+        return 'Not Allowed', 400
+
+    current_item = dbinterface.load_item_by_id(item_id)
+    updated_item = Item.from_dict(data['item'])
+
+    # Name/Type/Raid/Bosses un-editable
+    updated_item.name = current_item.name
+    updated_item.type = current_item.type
+    updated_item.raid = current_item.raid
+    updated_item.bosses = current_item.bosses
+
+    dbinterface.update_item_information(current_item, updated_item)
     return '', 204

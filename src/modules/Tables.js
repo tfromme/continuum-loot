@@ -5,7 +5,7 @@ import TextField from '@material-ui/core/TextField';
 import HowToRegOutlined from '@material-ui/icons/HowToRegOutlined';
 
 import { classes, ranks, roles } from './Constants.js'
-import { updatePlayer } from './Api.js'
+import { updatePlayer, updateItem } from './Api.js'
 
 function arrayToObj(arr) {
   var obj = {}
@@ -254,6 +254,8 @@ function LootHistoryRow(props) {
 }
 
 export function ItemTable(props) {
+  const rowEditable = props.loggedInPlayer && props.loggedInPlayer.permission_level >= 1;
+
   var raidShortNameLookup = {};
   for (const raid of props.raids) {
     raidShortNameLookup[raid.id] = raid.short_name;
@@ -262,10 +264,10 @@ export function ItemTable(props) {
   return (
     <MaterialTable
       columns={[
-        { title: 'Name', field: 'name', defaultSort: 'asc' },
-        { title: 'Type', field: 'type' },
-        { title: 'Raid', field: 'raid', lookup: raidShortNameLookup },
-        { title: 'Bosses', field: 'bosses', render: ((rowData) => {
+        { title: 'Name', field: 'name', defaultSort: 'asc', editable: 'never' },
+        { title: 'Type', field: 'type', editable: 'never' },
+        { title: 'Raid', field: 'raid', defaultFilter: ['2'], lookup: raidShortNameLookup, editable: 'never' },
+        { title: 'Bosses', field: 'bosses', editable: 'never', render: ((rowData) => {
           return rowData.bosses.reduce((all, cur, index) => [
             ...all,
             <br key={index}/>,
@@ -278,6 +280,17 @@ export function ItemTable(props) {
       data={ props.items }
       title="Items"
       options={ { paging: false, filtering: true } }
+      localization={{header: {actions: ''}}}
+      editable={ {
+        isEditable: rowData => rowEditable,
+        isEditHidden: rowData => !rowEditable,
+        onRowUpdate: (newData, oldData) => {
+          return new Promise((resolve, reject) => {
+            updateItem(newData, props.updateRemoteData);  // API Call
+            resolve();
+          });
+        },
+      } }
     />
   );
 }

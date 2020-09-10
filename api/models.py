@@ -92,6 +92,33 @@ class Item:
         self.class_prio: List[Tuple[int, str, int]] = []
         self.individual_prio: List[Tuple[int, int, int]] = []
 
+    @classmethod
+    def from_dict(cls, data):
+        new = cls(data['id'], data['name'], data['type'], data['tier'], data['notes'])
+        new.raid = data['raid']
+        new.bosses = data['bosses']
+        new.class_prio = [(prio['prio'], prio['class'], prio['set_by']) for prio in data['class_prio']]
+        new.individual_prio = [(prio['prio'], prio['player_id'], prio['set_by']) for prio in data['individual_prio']]
+        return new
+
+    @classmethod
+    def from_db_rows(cls, item_row, boss_rows, boss_loot_rows, class_prio_rows, individual_prio_rows):
+        boss_row_dict = {row['id']: row for row in boss_rows}
+
+        new = cls(item_row['id'], item_row['name'], item_row['type'], item_row['tier'], item_row['notes'])
+
+        new.raid = boss_rows[0]['raid_id']
+        for row in boss_loot_rows:
+            new.bosses.append(boss_row_dict[row['boss_id']]['name'])
+
+        for row in class_prio_rows:
+            new.class_prio.append((row['prio'], row['class'], row['set_by_player_id']))
+
+        for row in individual_prio_rows:
+            new.individual_prio.append((row['prio'], row['player_id'], row['set_by_player_id']))
+
+        return new
+
     def to_dict(self):
         return {
             'id': self.id,

@@ -27,7 +27,7 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      tabValue: "1",
+      tabValue: "2",
       loggedInPlayer: null,
       items: [],
       players: [],
@@ -143,7 +143,13 @@ class App extends React.Component {
               />
             </TabPanel>
             <TabPanel value="2">
-              <ItemTable items={this.state.items} raids={this.state.raids}/>
+              <ItemTable loggedInPlayer={this.state.loggedInPlayer}
+                         players={this.state.players}
+                         items={this.state.items}
+                         raids={this.state.raids}
+                         lootHistory={this.state.lootHistory}
+                         updateRemoteData={this.updateRemoteData}
+              />
             </TabPanel>
           </TabContext>
         </div>

@@ -22,3 +22,9 @@ export function updatePlayer(player, updateRemoteData) {
     updateRemoteData('players');
   });
 }
+
+export function updateItem(item, updateRemoteData) {
+  postApi('/api/updateItem', {'item': item}).then(res => {
+    updateRemoteData('items');
+  });
+}

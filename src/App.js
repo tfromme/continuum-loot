@@ -56,12 +56,24 @@ class App extends React.Component {
 
   getItems() {
     fetch('/api/getItems').then(res => res.json()).then(data => {
+      for (const item of data) {
+        const oldItem = this.state.items.find(i => i.id === item.id);
+        if (oldItem) {
+          item.tableData = oldItem.tableData;
+        }
+      }
       this.setState({items: data})
     });
   }
 
   getPlayers() {
     fetch('/api/getPlayers').then(res => res.json()).then(data => {
+      for (const player of data) {
+        const oldPlayer = this.state.players.find(p => p.id === player.id);
+        if (oldPlayer) {
+          player.tableData = oldPlayer.tableData;
+        }
+      }
       this.setState({players: data})
     });
   }

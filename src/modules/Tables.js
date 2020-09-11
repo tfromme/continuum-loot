@@ -22,15 +22,17 @@ export function PlayerTable(props) {
                                   : false);
   const defaultFilter = ranks.filter(name => name !== 'Inactive');
 
+  const [ columns ] = React.useState([
+    { title: 'Name', field: 'name', filtering: false, defaultSort: 'asc', editable: fullEditable },
+    { title: 'Class', field: 'class', lookup: arrayToObj(classes), editable: fullEditable },
+    { title: 'Rank', field: 'rank', defaultFilter: defaultFilter, lookup: arrayToObj(ranks), editable: fullEditable },
+    { title: 'Role', field: 'role', lookup: arrayToObj(roles) },
+    { title: 'Notes', field: 'notes', filtering: false },
+  ]);
+
   return (
     <MaterialTable
-      columns={[
-        { title: 'Name', field: 'name', filtering: false, defaultSort: 'asc', editable: fullEditable },
-        { title: 'Class', field: 'class', lookup: arrayToObj(classes), editable: fullEditable },
-        { title: 'Rank', field: 'rank', defaultFilter: defaultFilter, lookup: arrayToObj(ranks), editable: fullEditable },
-        { title: 'Role', field: 'role', lookup: arrayToObj(roles) },
-        { title: 'Notes', field: 'notes', filtering: false },
-      ]}
+      columns={columns}
       data={ props.players }
       title="Players"
       options={ { paging: false, filtering: true, draggable: false} }
@@ -261,22 +263,24 @@ export function ItemTable(props) {
     raidShortNameLookup[raid.id] = raid.short_name;
   }
 
+  const [ columns ] = React.useState([
+    { title: 'Name', field: 'name', defaultSort: 'asc', editable: 'never' },
+    { title: 'Type', field: 'type', editable: 'never' },
+    { title: 'Raid', field: 'raid', defaultFilter: ['2'], lookup: raidShortNameLookup, editable: 'never' },
+    { title: 'Bosses', field: 'bosses', editable: 'never', render: ((rowData) => {
+      return rowData.bosses.reduce((all, cur, index) => [
+        ...all,
+        <br key={index}/>,
+        cur,
+      ]);
+    }) },
+    { title: 'Tier', field: 'tier', type: 'numeric' },
+    { title: 'Notes', field: 'notes', filtering: false },
+  ]);
+
   return (
     <MaterialTable
-      columns={[
-        { title: 'Name', field: 'name', defaultSort: 'asc', editable: 'never' },
-        { title: 'Type', field: 'type', editable: 'never' },
-        { title: 'Raid', field: 'raid', defaultFilter: ['2'], lookup: raidShortNameLookup, editable: 'never' },
-        { title: 'Bosses', field: 'bosses', editable: 'never', render: ((rowData) => {
-          return rowData.bosses.reduce((all, cur, index) => [
-            ...all,
-            <br key={index}/>,
-            cur,
-          ]);
-        }) },
-        { title: 'Tier', field: 'tier', type: 'numeric' },
-        { title: 'Notes', field: 'notes', filtering: false },
-      ]}
+      columns={columns}
       data={ props.items }
       title="Items"
       options={ { paging: false, filtering: true } }

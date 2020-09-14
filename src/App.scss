@@ -15,7 +15,7 @@ a {
 // detail panel icons column from getting really big
 thead {
   tr:first-child {
-    th:first-child {
+    th:first-child:not(.no-width-fix) {
       width: 1px;
     }
   }

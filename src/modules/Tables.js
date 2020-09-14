@@ -3,9 +3,26 @@ import MaterialTable from 'material-table';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import TextField from '@material-ui/core/TextField';
 import HowToRegOutlined from '@material-ui/icons/HowToRegOutlined';
+import AssignmentOutlined from '@material-ui/icons/AssignmentOutlined';
+import Edit from '@material-ui/icons/Edit';
+import Check from '@material-ui/icons/Check';
+import Clear from '@material-ui/icons/Clear';
+import Paper from '@material-ui/core/Paper';
+import TableContainer from '@material-ui/core/TableContainer';
+import Table from '@material-ui/core/Table';
+import TableHead from '@material-ui/core/TableHead';
+import TableBody from '@material-ui/core/TableBody';
+import TableRow from '@material-ui/core/TableRow';
+import TableCell from '@material-ui/core/TableCell';
+import IconButton from '@material-ui/core/IconButton';
+import  { styled } from '@material-ui/core/styles';
 
 import { classes, ranks, roles } from './Constants.js'
 import { updatePlayer, updateItem } from './Api.js'
+
+const DarkPaper = styled(Paper)({
+  background: '#EEE',
+});
 
 function arrayToObj(arr) {
   var obj = {}
@@ -127,6 +144,7 @@ function WishlistRow(props) {
 
   return (
     <MaterialTable
+      //components={{Container: DarkPaper}}
       columns={[
         {title: '', field: 'name', editable: 'never', cellStyle: {fontWeight: '500'}}, 
         {title: 'First', field: '1', lookup: wishlistLookup, editComponent: customEditComponent(1)},
@@ -216,6 +234,7 @@ function AttendanceRow(props) {
 
   return (
     <MaterialTable
+      //components={{Container: DarkPaper}}
       columns={attendanceColumns}
       data={[attendanceData]}
       options={ { sorting: false, paging: false, showTitle: false, toolbar: false, draggable: false } }
@@ -248,6 +267,7 @@ function LootHistoryRow(props) {
 
   return (
     <MaterialTable
+      //components={{Container: DarkPaper}}
       columns={historyColumns}
       data={[historyData]}
       options={ { sorting: false, paging: false, showTitle: false, toolbar: false, draggable: false } }
@@ -295,6 +315,264 @@ export function ItemTable(props) {
           });
         },
       } }
+      detailPanel={[
+        {
+          icon: AssignmentOutlined,
+          openIcon: 'assignment',
+          tooltip: 'Item Priorities',
+          render: rowData => (
+            <PriorityRow
+              rowData={rowData}
+              players={props.players}
+              loggedInPlayer={props.loggedInPlayer}
+              updateRemoteData={props.updateRemoteData}
+              editable={rowEditable}
+            />
+          ),
+        },
+      ]}
     />
+  );
+}
+
+function PriorityEditIndividual(props) {
+  const [inputValue, setInputValue] = React.useState('');
+  const [value, setValue] = React.useState(props.initialValue);
+  return (
+    <Autocomplete
+      options={props.players}
+      getOptionLabel={option => option.name}
+      value={value}
+      onChange={(e, newVal) => { setValue(newVal); props.onChange(newVal); }}
+      inputValue={inputValue}
+      onInputChange={(e, newInputVal) => { setInputValue(newInputVal); }}
+      renderInput={params => <TextField {...params} />}
+    />
+  );
+}
+
+function PriorityRow(props) {
+  const initialValue = {
+    individual: {
+      1: {},
+      2: {},
+      3: {},
+    },
+    class: {
+      1: {},
+      2: {},
+      3: {},
+    },
+  };
+
+  for (let i = 1; i <= 3; i++) {
+    const currentIndividual = props.rowData.individual_prio.find(x => x.prio === i);
+    if (currentIndividual) {
+      const player = props.players.find(x => x.id === currentIndividual.player_id);
+      const setBy = props.players.find(x => x.id === currentIndividual.set_by);
+      initialValue.individual[i] = {player: player, setBy: setBy};
+    }
+
+    const currentClass = props.rowData.class_prio.find(x => x.prio === i);
+    if (currentClass) {
+      const setBy = props.players.find(x => x.id === currentClass.set_by);
+      initialValue.class[i] = {class: currentClass.class, setBy: setBy};
+    }
+  }
+
+  const [editingIndividual, setEditingIndividual] = React.useState(false);
+  const [editingClass, setEditingClass] = React.useState(false);
+  const [individualOne, setIndividualOne] = React.useState(initialValue.individual[1].player);
+  const [individualTwo, setIndividualTwo] = React.useState(initialValue.individual[2].player);
+  const [individualThree, setIndividualThree] = React.useState(initialValue.individual[3].player);
+  const [classOne, setClassOne] = React.useState(initialValue.class[1].class);
+  const [classTwo, setClassTwo] = React.useState(initialValue.class[2].class);
+  const [classThree, setClassThree] = React.useState(initialValue.class[3].class);
+
+
+  const saveIndividual = () => {
+    setEditingIndividual(false);
+
+    var newIndividualPrio = [];
+
+    if (individualOne) {
+      const setBy = individualOne === initialValue.individual[1].player
+                     ? initialValue.individual[1].setBy.id
+                     : props.loggedInPlayer.id;
+      newIndividualPrio.push({player_id: individualOne.id, prio: 1, set_by: setBy});
+    }
+
+    if (individualTwo) {
+      const setBy = individualTwo === initialValue.individual[2].player
+                     ? initialValue.individual[2].setBy.id
+                     : props.loggedInPlayer.id;
+      newIndividualPrio.push({player_id: individualTwo.id, prio: 2, set_by: setBy});
+    }
+
+    if (individualThree) {
+      const setBy = individualThree === initialValue.individual[3].player
+                     ? initialValue.individual[3].setBy.id
+                     : props.loggedInPlayer.id;
+      newIndividualPrio.push({player_id: individualThree.id, prio: 3, set_by: setBy});
+    }
+
+    props.rowData.individual_prio = newIndividualPrio;
+    updateItem(props.rowData, props.updateRemoteData);  // API Call
+  }
+
+  const saveClass = () => {
+    setEditingClass(false);
+
+    var newClassPrio = [];
+
+    if (classOne) {
+      const setBy = classOne === initialValue.class[1].class
+                     ? initialValue.class[1].setBy.id
+                     : props.loggedInPlayer.id;
+      newClassPrio.push({class: classOne, prio: 1, set_by: setBy});
+    }
+
+    if (classTwo) {
+      const setBy = classTwo === initialValue.class[2].class
+                     ? initialValue.class[2].setBy.id
+                     : props.loggedInPlayer.id;
+      newClassPrio.push({class: classTwo, prio: 2, set_by: setBy});
+    }
+
+    if (classThree) {
+      const setBy = classThree === initialValue.class[3].class
+                     ? initialValue.class[3].setBy.id
+                     : props.loggedInPlayer.id;
+      newClassPrio.push({class: classThree, prio: 3, set_by: setBy});
+    }
+
+    props.rowData.class_prio = newClassPrio;
+    updateItem(props.rowData, props.updateRemoteData);  // API Call
+  }
+
+  const clear = () => {
+    setEditingIndividual(false);
+    setEditingClass(false);
+    setIndividualOne(initialValue.individual[1].player);
+    setIndividualTwo(initialValue.individual[2].player);
+    setIndividualThree(initialValue.individual[3].player);
+    setClassOne(initialValue.class[1].class);
+    setClassTwo(initialValue.class[2].class);
+    setClassThree(initialValue.class[3].class);
+  }
+
+  var individualButtons;
+  var classButtons;
+  if (!props.editable) {
+    individualButtons = null;
+    classButtons = null;
+  } else if (editingIndividual) {
+    individualButtons = (
+      <>
+        <IconButton size="small" onClick={saveIndividual}>
+          <Check />
+        </IconButton>
+        <IconButton size="small" onClick={clear}>
+          <Clear />
+        </IconButton>
+      </>
+    );
+    classButtons = null;
+  } else if (editingClass) {
+    classButtons = (
+      <>
+        <IconButton size="small" onClick={saveClass}>
+          <Check />
+        </IconButton>
+        <IconButton size="small" onClick={clear}>
+          <Clear />
+        </IconButton>
+      </>
+    );
+    individualButtons = null;
+  } else {
+    individualButtons = (
+      <IconButton size="small" onClick={() => setEditingIndividual(true)}>
+        <Edit />
+      </IconButton>
+    );
+    classButtons = (
+      <IconButton size="small" onClick={() => setEditingClass(true)}>
+        <Edit />
+      </IconButton>
+    );
+  }
+
+  var individualCells  = (
+    <>
+      <TableCell>{individualOne ? individualOne.name : null}</TableCell>
+      <TableCell>{individualTwo ? individualTwo.name : null}</TableCell>
+      <TableCell>{individualThree ? individualThree.name : null}</TableCell>
+    </>
+  );
+
+  if (editingIndividual) {
+    individualCells = (
+      <>
+        <TableCell>
+          <PriorityEditIndividual players={props.players} initialValue={individualOne} onChange={setIndividualOne} />
+        </TableCell>
+        <TableCell>
+          <PriorityEditIndividual players={props.players} initialValue={individualTwo} onChange={setIndividualTwo} />
+        </TableCell>
+        <TableCell>
+          <PriorityEditIndividual players={props.players} initialValue={individualThree} onChange={setIndividualThree} />
+        </TableCell>
+      </>
+    );
+  }
+
+  var classCells = (
+    <>
+      <TableCell>{classOne}</TableCell>
+      <TableCell>{classTwo}</TableCell>
+      <TableCell>{classThree}</TableCell>
+    </>
+  );
+
+  if (editingClass) {
+    classCells = (
+      <>
+        <TableCell><TextField value={classOne} onChange={e => setClassOne(e.target.value)} /></TableCell>
+        <TableCell><TextField value={classTwo} onChange={e => setClassTwo(e.target.value)} /></TableCell>
+        <TableCell><TextField value={classThree} onChange={e => setClassThree(e.target.value)} /></TableCell>
+      </>
+    );
+  }
+
+  return (
+    <TableContainer component={DarkPaper}>
+      <Table size="small" style={{tableLayout: 'fixed'}}>
+        <TableHead>
+          <TableRow>
+            <TableCell className="no-width-fix" />
+            <TableCell />
+            <TableCell>First</TableCell>
+            <TableCell>Second</TableCell>
+            <TableCell>Third</TableCell>
+            <TableCell />
+            <TableCell />
+            <TableCell>First</TableCell>
+            <TableCell>Second</TableCell>
+            <TableCell>Third</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          <TableRow>
+            <TableCell style={{textAlign: 'right'}}>{individualButtons}</TableCell>
+            <TableCell variant='head'>Individual Prio</TableCell>
+            {individualCells}
+            <TableCell style={{textAlign: 'right'}}>{classButtons}</TableCell>
+            <TableCell variant='head'>Class Prio</TableCell>
+            {classCells}
+          </TableRow>
+        </TableBody>
+      </Table>
+    </TableContainer>
   );
 }

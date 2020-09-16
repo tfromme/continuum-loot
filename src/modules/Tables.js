@@ -107,6 +107,7 @@ export function PlayerTable(props) {
   );
 }
 
+// TODO: Refactor this and PriorityEditIndividual together
 function WishlistEditItem(props) {
   const [inputValue, setInputValue] = React.useState('');
   const [value, setValue] = React.useState(props.initialValue);
@@ -123,6 +124,7 @@ function WishlistEditItem(props) {
   );
 }
 
+// TODO: Refactor away from material-table (overkill for this task)
 function WishlistRow(props) {
   var wishlistData = {'name': 'Wishlist'};
   for (const item of props.rowData.wishlist) {
@@ -213,6 +215,7 @@ function WishlistRow(props) {
   );
 }
 
+// TODO: Refactor away from material-table (overkill for this task)
 function AttendanceRow(props) {
   
   const yesStyle = {fontWeight: '500', color: '#4CAF50'};
@@ -242,36 +245,60 @@ function AttendanceRow(props) {
   );
 }
 
+// TODO: Refactor - combine with LootHistoryItemsRow
 function LootHistoryRow(props) {
   var itemLookup = {};
   for (const item of props.items) {
     itemLookup[item.id] = item.name;
   }
 
-  // 45 is a "good enough" attempt to get the first columns lined up
-  var historyColumns = [{width: 45}, {title: '', field: 'name', cellStyle: {fontWeight: '500'}}];
-  var historyData = {'name': 'Recent Items Won'};
-
   const numItems = 6;
   const lastXItems = props.lootHistory.filter(x => x.player_id === props.rowData.id).slice(-numItems);
 
   const filterFunc = i => (x => x.id === lastXItems[i].raid_day_id);
 
-  for (var i=lastXItems.length-1; i>=0; i--) {
-    historyData[i.toString()] = lastXItems[i].item_id;
-    historyColumns.push({title: props.raidDays.find(filterFunc(i)).name,
-                         field: i.toString(),
-                         lookup: itemLookup,
-    });
+  var headerData = [];
+  var itemData = [];
+
+  for (let i=lastXItems.length-1; i>=0; i--) {
+    headerData.push(props.raidDays.find(filterFunc(i)).name);
+    itemData.push(itemLookup[lastXItems[i].item_id]);
+  }
+
+  for (let i=lastXItems.length; i<numItems; i++) {
+    headerData.push('');
+    itemData.push('');
+  }
+
+  const headerRow = lastXItems.length > 0 ? (
+    <TableHead>
+      <TableRow>
+        <TableCell className="no-width-fix" />
+        {headerData.map((data, index) =>
+          <TableCell key={index}>{data}</TableCell>
+        )}
+      </TableRow>
+    </TableHead>
+  ) : null;
+
+  if (lastXItems.length === 0) {
+    itemData[0] = 'None';
   }
 
   return (
-    <MaterialTable
-      //components={{Container: DarkPaper}}
-      columns={historyColumns}
-      data={[historyData]}
-      options={ { sorting: false, paging: false, showTitle: false, toolbar: false, draggable: false } }
-    />
+    <TableContainer component={DarkPaper}>
+      <Table size="small" style={{tableLayout: 'fixed'}}>
+        {headerRow}
+        <TableBody>
+          <TableRow>
+            <TableCell variant='head' style={{textAlign: 'center'}}>Recent Items Won</TableCell>
+            {itemData.map((data, index) =>
+              <TableCell key={index}>{data}</TableCell>
+            )}
+          </TableRow>
+        </TableBody>
+      </Table>
+    </TableContainer>
   );
 }
 
@@ -330,11 +357,25 @@ export function ItemTable(props) {
             />
           ),
         },
+        {
+          icon: 'history',
+          openIcon: 'watch_later',
+          tooltip: 'Recent Loot History',
+          render: rowData => (
+            <LootHistoryItemsRow
+              rowData={rowData}
+              lootHistory={props.lootHistory}
+              players={props.players}
+              raidDays={props.raidDays}
+            />
+          ),
+        },
       ]}
     />
   );
 }
 
+// TODO: Refactor this and WishlistEditItem together
 function PriorityEditIndividual(props) {
   const [inputValue, setInputValue] = React.useState('');
   const [value, setValue] = React.useState(props.initialValue);
@@ -351,6 +392,8 @@ function PriorityEditIndividual(props) {
   );
 }
 
+// TODO: Add drag'n'drop with react-sortable-hoc
+// TODO: Refactor for more/less than 3 prios
 function PriorityRow(props) {
   const initialValue = {
     individual: {
@@ -570,6 +613,63 @@ function PriorityRow(props) {
             <TableCell style={{textAlign: 'right'}}>{classButtons}</TableCell>
             <TableCell variant='head'>Class Prio</TableCell>
             {classCells}
+          </TableRow>
+        </TableBody>
+      </Table>
+    </TableContainer>
+  );
+}
+
+// TODO: Refactor - combine with LootHistoryRow
+function LootHistoryItemsRow(props) {
+  var playerLookup = {};
+  for (const player of props.players) {
+    playerLookup[player.id] = player.name;
+  }
+
+  const numPlayers = 6;
+  const lastXPlayers = props.lootHistory.filter(x => x.item_id === props.rowData.id).slice(-numPlayers);
+
+  const filterFunc = i => (x => x.id === lastXPlayers[i].raid_day_id);
+
+  var headerData = [];
+  var playerData = [];
+
+  for (let i=lastXPlayers.length-1; i>=0; i--) {
+    headerData.push(props.raidDays.find(filterFunc(i)).name);
+    playerData.push(playerLookup[lastXPlayers[i].player_id]);
+  }
+
+  for (let i=lastXPlayers.length; i<numPlayers; i++) {
+    headerData.push('');
+    playerData.push('');
+  }
+
+  const headerRow = lastXPlayers.length > 0 ? (
+    <TableHead>
+      <TableRow>
+        <TableCell className="no-width-fix" />
+        {headerData.map((data, index) =>
+          <TableCell key={index}>{data}</TableCell>
+        )}
+      </TableRow>
+    </TableHead>
+  ) : null;
+
+  if (lastXPlayers.length === 0) {
+    playerData[0] = 'None';
+  }
+
+  return (
+    <TableContainer component={DarkPaper}>
+      <Table size="small" style={{tableLayout: 'fixed'}}>
+        {headerRow}
+        <TableBody>
+          <TableRow>
+            <TableCell variant='head' style={{textAlign: 'center'}}>Recent Recipients</TableCell>
+            {playerData.map((data, index) =>
+              <TableCell key={index}>{data}</TableCell>
+            )}
           </TableRow>
         </TableBody>
       </Table>

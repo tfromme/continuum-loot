@@ -159,6 +159,7 @@ class App extends React.Component {
                          players={this.state.players}
                          items={this.state.items}
                          raids={this.state.raids}
+                         raidDays={this.state.raidDays}
                          lootHistory={this.state.lootHistory}
                          updateRemoteData={this.updateRemoteData}
               />

@@ -1,8 +1,11 @@
 import React from 'react';
+import PropTypes from 'prop-types';
+
 import MaterialTable from 'material-table';
 import HowToRegOutlined from '@material-ui/icons/HowToRegOutlined';
 import AssignmentOutlined from '@material-ui/icons/AssignmentOutlined';
 
+import CustomPropTypes from './CustomPropTypes.js';
 import { classes, ranks, roles } from './Constants.js';
 import { updatePlayer, updateItem } from './Api.js';
 import { WishlistRow, AttendanceRow, LootHistoryRow, PriorityRow, LootHistoryItemsRow } from './DetailRows.js';
@@ -41,8 +44,8 @@ export function PlayerTable(props) {
       editable={ {
         isEditable: rowEditable,
         isEditHidden: rowData => !rowEditable(rowData),
-        onRowUpdate: (newData, oldData) => {
-          return new Promise((resolve, reject) => {
+        onRowUpdate: (newData, _oldData) => {
+          return new Promise((resolve, _reject) => {
             updatePlayer(newData, props.updateRemoteData);  // API Call
             resolve();
           });
@@ -91,6 +94,19 @@ export function PlayerTable(props) {
   );
 }
 
+PlayerTable.propTypes = {
+  loggedInPlayer: CustomPropTypes.user,
+  players: PropTypes.arrayOf(CustomPropTypes.player).isRequired,
+  items: PropTypes.arrayOf(CustomPropTypes.item).isRequired,
+  raidDays: PropTypes.arrayOf(CustomPropTypes.raidDay).isRequired,
+  lootHistory: PropTypes.arrayOf(CustomPropTypes.lootHistory).isRequired,
+  updateRemoteData: PropTypes.func.isRequired,
+}
+
+PlayerTable.defaultProps = {
+  loggedInPlayer: null,
+}
+
 export function ItemTable(props) {
   const rowEditable = props.loggedInPlayer && props.loggedInPlayer.permission_level >= 1;
 
@@ -122,10 +138,10 @@ export function ItemTable(props) {
       options={ { paging: false, filtering: true } }
       localization={{header: {actions: ''}}}
       editable={ {
-        isEditable: rowData => rowEditable,
-        isEditHidden: rowData => !rowEditable,
-        onRowUpdate: (newData, oldData) => {
-          return new Promise((resolve, reject) => {
+        isEditable: _ => rowEditable,
+        isEditHidden: _ => !rowEditable,
+        onRowUpdate: (newData, _oldData) => {
+          return new Promise((resolve, _reject) => {
             updateItem(newData, props.updateRemoteData);  // API Call
             resolve();
           });
@@ -162,4 +178,18 @@ export function ItemTable(props) {
       ]}
     />
   );
+}
+
+ItemTable.propTypes = {
+  loggedInPlayer: CustomPropTypes.user,
+  players: PropTypes.arrayOf(CustomPropTypes.player).isRequired,
+  items: PropTypes.arrayOf(CustomPropTypes.item).isRequired,
+  raids: PropTypes.arrayOf(CustomPropTypes.raid).isRequired,
+  raidDays: PropTypes.arrayOf(CustomPropTypes.raidDay).isRequired,
+  lootHistory: PropTypes.arrayOf(CustomPropTypes.lootHistory).isRequired,
+  updateRemoteData: PropTypes.func.isRequired,
+}
+
+ItemTable.defaultProps = {
+  loggedInPlayer: null,
 }

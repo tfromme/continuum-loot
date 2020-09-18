@@ -1,4 +1,6 @@
 import React from 'react';
+import PropTypes from 'prop-types';
+
 import MaterialTable from 'material-table';
 import Paper from '@material-ui/core/Paper';
 import Autocomplete from '@material-ui/lab/Autocomplete';
@@ -15,6 +17,7 @@ import Check from '@material-ui/icons/Check';
 import Clear from '@material-ui/icons/Clear';
 import  { styled } from '@material-ui/core/styles';
 
+import CustomPropTypes from './CustomPropTypes.js';
 import { updatePlayer, updateItem } from './Api.js';
 
 const DarkPaper = styled(Paper)({
@@ -61,9 +64,9 @@ export function WishlistRow(props) {
       options={ { sorting: false, paging: false, showTitle: false, toolbar: false, draggable: props.editable } }
       localization={{header: {actions: ''}}}
       editable={ {
-        isEditable: x => props.editable,
-        isEditHidden: x => !props.editable,
-        onRowUpdate: (newData, oldData) => {
+        isEditable: _ => props.editable,
+        isEditHidden: _ => !props.editable,
+        onRowUpdate: (newData, _oldData) => {
           var updatedPlayer = props.rowData;
           updatedPlayer.wishlist = [];
           for (const prio in newData) {
@@ -71,7 +74,7 @@ export function WishlistRow(props) {
               updatedPlayer.wishlist.push({'prio': prio, 'item_id': newData[prio]});
             }
           }
-          return new Promise((resolve, reject) => {
+          return new Promise((resolve, _reject) => {
             updatePlayer(updatedPlayer, props.updateRemoteData);  // API Call
             resolve();
           });
@@ -112,6 +115,17 @@ export function WishlistRow(props) {
   );
 }
 
+WishlistRow.propTypes = {
+  rowData: CustomPropTypes.player.isRequired,
+  items: PropTypes.arrayOf(CustomPropTypes.item).isRequired,
+  updateRemoteData: PropTypes.func.isRequired,
+  editable: PropTypes.bool,
+}
+
+WishlistRow.defaultProps = {
+  editable: false,
+}
+
 // TODO: Refactor this and PriorityEditIndividual together
 function WishlistEditItem(props) {
   const [inputValue, setInputValue] = React.useState('');
@@ -127,6 +141,12 @@ function WishlistEditItem(props) {
       renderInput={params => <TextField {...params} />}
     />
   );
+}
+
+WishlistEditItem.propTypes = {
+  items: PropTypes.arrayOf(CustomPropTypes.item).isRequired,
+  initialValue: CustomPropTypes.item.isRequired,
+  onChange: PropTypes.func.isRequired,
 }
 
 // TODO: Refactor away from material-table (overkill for this task)
@@ -157,6 +177,11 @@ export function AttendanceRow(props) {
       options={ { sorting: false, paging: false, showTitle: false, toolbar: false, draggable: false } }
     />
   );
+}
+
+AttendanceRow.propTypes = {
+  rowData: CustomPropTypes.player.isRequired,
+  raidDays: PropTypes.arrayOf(CustomPropTypes.raidDay).isRequired,
 }
 
 // TODO: Refactor - combine with LootHistoryItemsRow
@@ -214,6 +239,13 @@ export function LootHistoryRow(props) {
       </Table>
     </TableContainer>
   );
+}
+
+LootHistoryRow.propTypes = {
+  rowData: CustomPropTypes.player.isRequired,
+  lootHistory: PropTypes.arrayOf(CustomPropTypes.lootHistory).isRequired,
+  items: PropTypes.arrayOf(CustomPropTypes.item).isRequired,
+  raidDays: PropTypes.arrayOf(CustomPropTypes.raidDay).isRequired,
 }
 
 // TODO: Add drag'n'drop with react-sortable-hoc
@@ -444,6 +476,19 @@ export function PriorityRow(props) {
   );
 }
 
+PriorityRow.propTypes = {
+  rowData: CustomPropTypes.item.isRequired,
+  players: PropTypes.arrayOf(CustomPropTypes.player).isRequired,
+  loggedInPlayer: CustomPropTypes.user,
+  updateRemoteData: PropTypes.func.isRequired,
+  editable: PropTypes.bool,
+}
+
+PriorityRow.defaultProps = {
+  loggedInPlayer: null,
+  editable: false,
+}
+
 // TODO: Refactor this and WishlistEditItem together
 function PriorityEditIndividual(props) {
   const [inputValue, setInputValue] = React.useState('');
@@ -459,6 +504,12 @@ function PriorityEditIndividual(props) {
       renderInput={params => <TextField {...params} />}
     />
   );
+}
+
+PriorityEditIndividual.propTypes = {
+  initialValue: CustomPropTypes.player.isRequired,
+  players: PropTypes.arrayOf(CustomPropTypes.player).isRequired,
+  onChange: PropTypes.func.isRequired,
 }
 
 // TODO: Refactor - combine with LootHistoryRow
@@ -516,4 +567,11 @@ export function LootHistoryItemsRow(props) {
       </Table>
     </TableContainer>
   );
+}
+
+LootHistoryItemsRow.propTypes = {
+  rowData: CustomPropTypes.item.isRequired,
+  lootHistory: PropTypes.arrayOf(CustomPropTypes.lootHistory).isRequired,
+  players: PropTypes.arrayOf(CustomPropTypes.player).isRequired,
+  raidDays: PropTypes.arrayOf(CustomPropTypes.raidDay).isRequired,
 }

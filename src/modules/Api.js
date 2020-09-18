@@ -18,13 +18,13 @@ export function postApi(path, data) {
 }
 
 export function updatePlayer(player, updateRemoteData) {
-  postApi('/api/updatePlayer', {'player': player}).then(res => {
+  postApi('/api/updatePlayer', {'player': player}).then(_res => {
     updateRemoteData('players');
   });
 }
 
 export function updateItem(item, updateRemoteData) {
-  postApi('/api/updateItem', {'item': item}).then(res => {
+  postApi('/api/updateItem', {'item': item}).then(_res => {
     updateRemoteData('items');
   });
 }

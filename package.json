@@ -11,20 +11,52 @@
     "@testing-library/user-event": "^7.1.2",
     "material-table": "^1.69.0",
     "node-sass": "^4.14.1",
+    "prop-types": "^15.7.2",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-scripts": "3.4.3",
     "react-sortable-hoc": "^1.11.0"
+  },
+  "devDependencies": {
+    "eslint": "^7.9.0",
+    "eslint-plugin-react": "^7.20.6"
   },
   "scripts": {
     "start": "react-scripts start",
     "start-api": "cd api && ./.env/bin/flask run --no-debugger",
     "build": "react-scripts build",
     "test": "react-scripts test",
+    "lint": "./node_modules/.bin/eslint src/",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
-    "extends": "react-app"
+    "plugins": [
+      "react"
+    ],
+    "env": {
+      "es6": true,
+      "browser": true
+    },
+    "parserOptions": {
+      "ecmaVersion": 6,
+      "sourceType": "module",
+      "ecmaFeatures": {
+        "jsx": true
+      }
+    },
+    "settings": {
+      "react": {
+        "version": "detect"
+      }
+    },
+    "extends": [
+      "eslint:recommended",
+      "plugin:react/recommended"
+    ],
+    "rules": {
+      "no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
+      "react/display-name": "off"
+    }
   },
   "browserslist": {
     "production": [

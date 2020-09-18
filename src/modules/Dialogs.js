@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import { styled } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
@@ -14,8 +15,9 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Alert from '@material-ui/lab/Alert';
 import Collapse from '@material-ui/core/Collapse';
 
-import { classes, roles } from './Constants.js'
-import { postApi } from './Api.js'
+import CustomPropTypes from './CustomPropTypes.js';
+import { classes, roles } from './Constants.js';
+import { postApi } from './Api.js';
 
 const LoginButton = styled(Button)({
   'margin-left': 'auto',
@@ -46,6 +48,10 @@ export function LogoutDialog(props) {
   return (
     <LoginButton color="inherit" onClick={handleClick}>Logout</LoginButton>
   );
+}
+
+LogoutDialog.propTypes = {
+  setLoggedInPlayer: PropTypes.func.isRequired,
 }
 
 export function LoginDialog(props) {
@@ -143,6 +149,10 @@ export function LoginDialog(props) {
       </Dialog>
     </>
   );
+}
+
+LoginDialog.propTypes = {
+  setLoggedInPlayer: PropTypes.func.isRequired,
 }
 
 export function SignupDialog(props) {
@@ -338,4 +348,10 @@ export function SignupDialog(props) {
       </Dialog>
     </>
   );
+}
+
+SignupDialog.propTypes = {
+  setLoggedInPlayer: PropTypes.func.isRequired,
+  updateRemoteData: PropTypes.func.isRequired,
+  players: PropTypes.arrayOf(CustomPropTypes.player).isRequired,
 }

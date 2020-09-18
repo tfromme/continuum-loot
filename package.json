@@ -17,10 +17,6 @@
     "react-scripts": "3.4.3",
     "react-sortable-hoc": "^1.11.0"
   },
-  "devDependencies": {
-    "eslint": "^7.9.0",
-    "eslint-plugin-react": "^7.20.6"
-  },
   "scripts": {
     "start": "react-scripts start",
     "start-api": "cd api && ./.env/bin/flask run --no-debugger",

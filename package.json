@@ -22,8 +22,9 @@
     "start-api": "cd api && ./.env/bin/flask run --no-debugger",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "lint": "./node_modules/.bin/eslint src/",
-    "eject": "react-scripts eject"
+    "lint": "./scripts/lint.sh",
+    "eject": "react-scripts eject",
+    "deploy": "./scripts/deploy.sh"
   },
   "eslintConfig": {
     "plugins": [

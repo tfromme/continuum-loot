@@ -93,8 +93,10 @@ def set_password_hash(player_id, password_hash):
 def load_player_by_id(player_id):
     with get_db() as db:
         player_row = [dict(row) for row in db.execute('SELECT * FROM players WHERE id = ?', (player_id,))][0]
-        wishlist_rows = [dict(row) for row in db.execute('SELECT * FROM wishlist WHERE player_id = ?', (player_id,))]
-        attendance_rows = [dict(row) for row in db.execute('SELECT * FROM attendance WHERE player_id = ?', (player_id,))]
+        wishlist_rows = [dict(row) for row in db.execute(
+                         'SELECT * FROM wishlist WHERE player_id = ?', (player_id,))]
+        attendance_rows = [dict(row) for row in db.execute(
+                           'SELECT * FROM attendance WHERE player_id = ?', (player_id,))]
 
     return Player.from_db_rows(player_row, wishlist_rows, attendance_rows)
 
@@ -110,9 +112,12 @@ def load_item_by_id(item_id):
     with get_db() as db:
         item_row = [dict(row) for row in db.execute('SELECT * FROM items WHERE id = ?', (item_id,))][0]
         boss_rows = [dict(row) for row in db.execute('SELECT * FROM bosses')]
-        boss_loot_rows = [dict(row) for row in db.execute('SELECT * FROM boss_loot WHERE item_id = ?', (item_id,))]
-        class_prio_rows = [dict(row) for row in db.execute('SELECT * FROM class_prio WHERE item_id = ?', (item_id,))]
-        individual_prio_rows = [dict(row) for row in db.execute('SELECT * FROM individual_prio WHERE item_id = ?', (item_id,))]
+        boss_loot_rows = [dict(row) for row in db.execute(
+                          'SELECT * FROM boss_loot WHERE item_id = ?', (item_id,))]
+        class_prio_rows = [dict(row) for row in db.execute(
+                           'SELECT * FROM class_prio WHERE item_id = ?', (item_id,))]
+        individual_prio_rows = [dict(row) for row in db.execute(
+                                'SELECT * FROM individual_prio WHERE item_id = ?', (item_id,))]
 
     return Item.from_db_rows(item_row, boss_rows, boss_loot_rows, class_prio_rows, individual_prio_rows)
 
@@ -173,8 +178,8 @@ def update_item_information(current, updated):
         if set(current.individual_prio) != set(updated.individual_prio):
             db.execute('DELETE FROM individual_prio WHERE item_id = ?', (current.id,))
             for prio, player, set_by in updated.individual_prio:
-                db.execute('INSERT INTO individual_prio (item_id, prio, player_id, set_by_player_id) VALUES (?, ?, ?, ?)',
-                           (current.id, prio, player, set_by))
+                db.execute('INSERT INTO individual_prio (item_id, prio, player_id, set_by_player_id) '
+                           'VALUES (?, ?, ?, ?)', (current.id, prio, player, set_by))
 
 
 def update_loot_history_information(current, updated):

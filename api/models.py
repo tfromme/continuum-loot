@@ -1,5 +1,5 @@
 from datetime import date as date_obj
-from typing import Dict, List, Tuple
+from typing import List, Tuple
 
 from utils import date_to_str_ui
 
@@ -198,10 +198,11 @@ class LootHistoryLine:
 
     @classmethod
     def from_db_rows(cls, loot_history_row):
-        return cls(loot_history_row['id'],
-                   loot_history_row['raid_day_id'],
-                   loot_history_row['item_id'],
-                   loot_history_row['player_id'],
+        return cls(
+            loot_history_row['id'],
+            loot_history_row['raid_day_id'],
+            loot_history_row['item_id'],
+            loot_history_row['player_id'],
         )
 
     def to_dict(self):

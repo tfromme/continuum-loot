@@ -115,7 +115,7 @@ export function ItemTable(props) {
     raidShortNameLookup[raid.id] = raid.short_name;
   }
 
-  const [ columns ] = React.useState([
+  const [ columns, setColumns ] = React.useState([
     { title: 'Name', field: 'name', defaultSort: 'asc', editable: 'never' },
     { title: 'Type', field: 'type', editable: 'never' },
     { title: 'Raid', field: 'raid', defaultFilter: ['2'], lookup: raidShortNameLookup, editable: 'never' },
@@ -129,6 +129,16 @@ export function ItemTable(props) {
     { title: 'Tier', field: 'tier', type: 'numeric' },
     { title: 'Notes', field: 'notes', filtering: false },
   ]);
+
+  React.useEffect(() => {
+    if (Object.keys(columns[2].lookup).length === 0) {
+      for (const raid of props.raids) {
+        raidShortNameLookup[raid.id] = raid.short_name;
+      }
+      columns[2].lookup = raidShortNameLookup;
+      setColumns(columns);
+    }
+  }, [raidShortNameLookup, columns, props.raids]);
 
   return (
     <MaterialTable

@@ -26,7 +26,7 @@ class Player:
     @classmethod
     def from_db_rows(cls, player_row, wishlist_rows, attendance_rows):
         new = cls(player_row['id'], player_row['name'], player_row['notes'],
-                        player_row['class'], player_row['role'], player_row['rank'])
+                  player_row['class'], player_row['role'], player_row['rank'])
 
         for row in wishlist_rows:
             new.wishlist.append((row['priority'], row['item_id']))
@@ -191,6 +191,18 @@ class LootHistoryLine:
         self.raid_day = raid_day
         self.item = item
         self.player = player
+
+    @classmethod
+    def from_dict(cls, data):
+        return cls(data['id'], data['raid_day_id'], data['item_id'], data['player_id'])
+
+    @classmethod
+    def from_db_rows(cls, loot_history_row):
+        return cls(loot_history_row['id'],
+                   loot_history_row['raid_day_id'],
+                   loot_history_row['item_id'],
+                   loot_history_row['player_id'],
+        )
 
     def to_dict(self):
         return {

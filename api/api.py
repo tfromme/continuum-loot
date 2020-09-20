@@ -2,7 +2,7 @@ from flask import Flask, jsonify, request, session
 from werkzeug.security import check_password_hash, generate_password_hash
 
 import dbinterface
-from models import Player, Item
+from models import Player, Item, LootHistoryLine
 
 app = Flask(__name__)
 app.secret_key = 'secret'
@@ -154,4 +154,28 @@ def updateItem():
     updated_item.bosses = current_item.bosses
 
     dbinterface.update_item_information(current_item, updated_item)
+    return '', 204
+
+
+@app.route('/api/updateLootHistory', methods=['POST'])
+def updateLootHistory():
+    data = request.json
+    try:
+        row_id = data['row']['id']
+    except KeyError:
+        return 'Invalid Request Body', 400
+
+    if 'user_id' not in session:
+        return 'Not Allowed', 400
+    else:
+        current_user = dbinterface.load_user_by_id(session['user_id'])
+
+    # TODO: Remove hardcoded permission levels
+    if current_user.permission_level < 2:
+        return 'Not Allowed', 400
+
+    current_lh_line = dbinterface.load_loot_history_line_by_id(row_id)
+    updated_lh_line = LootHistoryLine.from_dict(data['row'])
+
+    dbinterface.update_loot_history_information(current_lh_line, updated_lh_line)
     return '', 204

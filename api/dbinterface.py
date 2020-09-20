@@ -66,7 +66,7 @@ def load_loot_history():
     with get_db() as db:
         db_rows = {row['id']: dict(row) for row in db.execute('SELECT * FROM loot_history')}
 
-    return {id: LootHistoryLine(id, row['raid_day_id'], row['item_id'], row['player_id'])
+    return {id: LootHistoryLine.from_db_rows(row)
             for id, row in db_rows.items()}
 
 
@@ -115,6 +115,13 @@ def load_item_by_id(item_id):
         individual_prio_rows = [dict(row) for row in db.execute('SELECT * FROM individual_prio WHERE item_id = ?', (item_id,))]
 
     return Item.from_db_rows(item_row, boss_rows, boss_loot_rows, class_prio_rows, individual_prio_rows)
+
+
+def load_loot_history_line_by_id(row_id):
+    with get_db() as db:
+        lh_row = [dict(row) for row in db.execute('SELECT * FROM loot_history WHERE id = ?', (row_id,))][0]
+
+    return LootHistoryLine.from_db_rows(lh_row)
 
 
 # TODO: Make this less slash'n'burn
@@ -168,6 +175,15 @@ def update_item_information(current, updated):
             for prio, player, set_by in updated.individual_prio:
                 db.execute('INSERT INTO individual_prio (item_id, prio, player_id, set_by_player_id) VALUES (?, ?, ?, ?)',
                            (current.id, prio, player, set_by))
+
+
+def update_loot_history_information(current, updated):
+    if (current.id != updated.id):
+        return
+
+    with get_db() as db:
+        db.execute('UPDATE loot_history SET raid_day_id = ?, item_id = ?, player_id = ? WHERE id = ?',
+                   (updated.raid_day, updated.item, updated.player, current.id))
 
 
 @contextmanager

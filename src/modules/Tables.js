@@ -4,10 +4,15 @@ import PropTypes from 'prop-types';
 import MaterialTable from 'material-table';
 import HowToRegOutlined from '@material-ui/icons/HowToRegOutlined';
 import AssignmentOutlined from '@material-ui/icons/AssignmentOutlined';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
+import MenuItem from'@material-ui/core/MenuItem';
+import Checkbox from'@material-ui/core/Checkbox';
+import ListItemText from'@material-ui/core/ListItemText';
 
 import CustomPropTypes from './CustomPropTypes.js';
 import { classes, ranks, roles } from './Constants.js';
-import { updatePlayer, updateItem } from './Api.js';
+import { updatePlayer, updateItem, updateLootHistory } from './Api.js';
 import { WishlistRow, AttendanceRow, LootHistoryRow, PriorityRow, LootHistoryItemsRow } from './DetailRows.js';
 
 
@@ -201,5 +206,111 @@ ItemTable.propTypes = {
 }
 
 ItemTable.defaultProps = {
+  loggedInPlayer: null,
+}
+
+function CustomLHFilter(props) {
+  const [selectedVal, setSelectedVal] = React.useState([]);
+
+  const handleChange = e => {
+    setSelectedVal(e.target.value);
+    props.onFilterChanged(props.columnDef.tableData.id, e.target.value);
+  }
+
+  const raidIdMap = {2: 'AQ', 1: 'BWL'};
+  const renderRaids = selected => selected.map(s => raidIdMap[s]).join(', ');
+
+  return (
+    <FormControl style={{ width: "100%" }}>
+      <Select multiple value={selectedVal} onChange={handleChange} renderValue={renderRaids}>
+        <MenuItem value={2}>
+          <Checkbox checked={selectedVal.includes(2)} />
+          <ListItemText primary='AQ' />
+        </MenuItem>
+        <MenuItem value={1}>
+          <Checkbox checked={selectedVal.includes(1)} />
+          <ListItemText primary='BWL' />
+        </MenuItem>
+      </Select>
+    </FormControl>
+  );
+};
+
+
+export function LootHistoryTable(props) {
+  const rowEditable = props.loggedInPlayer && props.loggedInPlayer.permission_level >= 2;
+
+  var raidDayLookup = {};
+  for (const raidDay of props.raidDays) {
+    raidDayLookup[raidDay.id] = raidDay.name;
+  }
+
+  var nameLookup = {};
+  var classLookup = {};
+  var roleLookup = {};
+  for (const player of props.players) {
+    nameLookup[player.id] = player.name;
+    classLookup[player.id] = player.class;
+    roleLookup[player.id] = player.role;
+  }
+
+  var itemLookup = {};
+  var tierLookup = {};
+  for (const item of props.items) {
+    itemLookup[item.id] = item.name;
+    tierLookup[item.id] = item.tier;
+  }
+
+  const raidDaySort = (a, b) => {
+    const raidDayA = props.raidDays.find(x => x.id === a.raid_day_id);
+    const raidDayB = props.raidDays.find(x => x.id === b.raid_day_id);
+    return Date.parse(raidDayA.date) - Date.parse(raidDayB.date);
+  }
+
+  const raidDaySearch = (term, rowData) => {
+    const raidDay = props.raidDays.find(x => x.id === rowData.raid_day_id);
+    return term.length === 0 || term.includes(raidDay.raid_id);
+  }
+
+  const [ columns ] = React.useState([
+    { title: 'Raid', field: 'raid_day_id', lookup: raidDayLookup, defaultSort: 'desc', customSort: raidDaySort, filterComponent: CustomLHFilter, customFilterAndSearch: raidDaySearch },
+    { title: 'Name', field: 'player_id', lookup: nameLookup },
+    { title: 'Class', field: 'player_id', lookup: classLookup, editable: 'never' },
+    { title: 'Role', field: 'player_id', lookup: roleLookup, editable: 'never' },
+    { title: 'Item', field: 'item_id', lookup: itemLookup },
+    { title: 'Item Tier', field: 'item_id', lookup: tierLookup, editable: 'never' },
+  ]);
+
+  return (
+    <MaterialTable
+      columns={columns}
+      data={ props.lootHistory }
+      title="Loot History"
+      options={ { paging: false, filtering: true, draggable: false} }
+      localization={{header: {actions: ''}}}
+      editable={ {
+        isEditable: _ => rowEditable,
+        isEditHidden: _ => !rowEditable,
+        onRowUpdate: (newData, _oldData) => {
+          return new Promise((resolve, _reject) => {
+            updateLootHistory(newData, props.updateRemoteData);  // API Call
+            resolve();
+          });
+        },
+      } }
+    />
+  );
+}
+
+LootHistoryTable.propTypes = {
+  loggedInPlayer: CustomPropTypes.user,
+  players: PropTypes.arrayOf(CustomPropTypes.player).isRequired,
+  items: PropTypes.arrayOf(CustomPropTypes.item).isRequired,
+  raidDays: PropTypes.arrayOf(CustomPropTypes.raidDay).isRequired,
+  lootHistory: PropTypes.arrayOf(CustomPropTypes.lootHistory).isRequired,
+  updateRemoteData: PropTypes.func.isRequired,
+}
+
+LootHistoryTable.defaultProps = {
   loggedInPlayer: null,
 }

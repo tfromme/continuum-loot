@@ -5,7 +5,7 @@ import Tab from '@material-ui/core/Tab';
 import AppBar from '@material-ui/core/AppBar';
 import { TabPanel, TabContext, TabList } from '@material-ui/lab';
 
-import { PlayerTable, ItemTable } from './modules/Tables.js';
+import { PlayerTable, ItemTable, LootHistoryTable } from './modules/Tables.js';
 import { LoginDialog, SignupDialog, LogoutDialog } from './modules/Dialogs.js';
 
 import wowlogo from './wowlogo.png'
@@ -116,7 +116,8 @@ class App extends React.Component {
     // This array nonsense is used instead of React Fragments because material-ui likes it that way
     const tabs = [
       <Tab key="0" label="Players" value="1" />,
-      <Tab key="1" label="Items" value="2" />
+      <Tab key="1" label="Items" value="2" />,
+      <Tab key="2" label="Loot History" value="3" />,
     ];
 
     var loginButtons = [
@@ -162,6 +163,15 @@ class App extends React.Component {
                          raidDays={this.state.raidDays}
                          lootHistory={this.state.lootHistory}
                          updateRemoteData={this.updateRemoteData}
+              />
+            </TabPanel>
+            <TabPanel value="3">
+              <LootHistoryTable loggedInPlayer={this.state.loggedInPlayer}
+                                players={this.state.players}
+                                items={this.state.items}
+                                raidDays={this.state.raidDays}
+                                lootHistory={this.state.lootHistory}
+                                updateRemoteData={this.updateRemoteData}
               />
             </TabPanel>
           </TabContext>

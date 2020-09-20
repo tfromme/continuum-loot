@@ -28,3 +28,9 @@ export function updateItem(item, updateRemoteData) {
     updateRemoteData('items');
   });
 }
+
+export function updateLootHistory(lh, updateRemoteData) {
+  postApi('/api/updateLootHistory', {'row': lh}).then(_res => {
+    updateRemoteData('lootHistory');
+  });
+}

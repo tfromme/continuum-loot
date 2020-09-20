@@ -1,7 +1,7 @@
 import sqlite3
 from contextlib import contextmanager
 
-from utils import str_to_date
+from utils import str_to_date_db
 from models import Player, User, Item, Raid, RaidDay, LootHistoryLine
 
 
@@ -56,7 +56,7 @@ def load_raids_and_raid_days():
     for row in db_rows['bosses'].values():
         raids[row['raid_id']].bosses.append(row['name'])
 
-    raid_days = {id: RaidDay(id, str_to_date(row['date']), row['name'], raids[row['raid_id']])
+    raid_days = {id: RaidDay(id, str_to_date_db(row['date']), row['name'], raids[row['raid_id']])
                  for id, row in db_rows['raid_days'].items()}
 
     return raids, raid_days

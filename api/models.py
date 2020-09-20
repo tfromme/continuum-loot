@@ -1,7 +1,7 @@
 from datetime import date as date_obj
 from typing import Dict, List, Tuple
 
-from utils import date_to_str
+from utils import date_to_str_ui
 
 
 class Player:
@@ -169,7 +169,7 @@ class RaidDay:
     def to_dict(self):
         return {
             'id': self.id,
-            'date': date_to_str(self.date),
+            'date': date_to_str_ui(self.date),
             'name': self.name,
             'raid_id': self.raid.id,
         }

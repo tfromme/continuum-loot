@@ -234,7 +234,12 @@ function CustomLHFilter(props) {
       </Select>
     </FormControl>
   );
-};
+}
+
+CustomLHFilter.propTypes = {
+  onFilterChanged: PropTypes.func.isRequired,
+  columnDef: PropTypes.shape({tableData: PropTypes.object}).isRequired,
+}
 
 
 export function LootHistoryTable(props) {

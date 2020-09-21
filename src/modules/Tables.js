@@ -4,16 +4,12 @@ import PropTypes from 'prop-types';
 import MaterialTable from 'material-table';
 import HowToRegOutlined from '@material-ui/icons/HowToRegOutlined';
 import AssignmentOutlined from '@material-ui/icons/AssignmentOutlined';
-import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
-import MenuItem from'@material-ui/core/MenuItem';
-import Checkbox from'@material-ui/core/Checkbox';
-import ListItemText from'@material-ui/core/ListItemText';
 
 import CustomPropTypes from './CustomPropTypes.js';
-import { classes, ranks, roles } from './Constants.js';
+import { classes, ranks, roles, itemTiers } from './Constants.js';
 import { updatePlayer, updateItem, updateLootHistory } from './Api.js';
 import { WishlistRow, AttendanceRow, LootHistoryRow, PriorityRow, LootHistoryItemsRow } from './DetailRows.js';
+import { RaidFilter, MultiselectFilter } from './Filters.js';
 
 
 function arrayToObj(arr) {
@@ -209,37 +205,6 @@ ItemTable.defaultProps = {
   loggedInPlayer: null,
 }
 
-function CustomLHFilter(props) {
-  const [selectedVal, setSelectedVal] = React.useState([]);
-
-  const handleChange = e => {
-    setSelectedVal(e.target.value);
-    props.onFilterChanged(props.columnDef.tableData.id, e.target.value);
-  }
-
-  const raidIdMap = {2: 'AQ', 1: 'BWL'};
-  const renderRaids = selected => selected.map(s => raidIdMap[s]).join(', ');
-
-  return (
-    <FormControl style={{ width: "100%" }}>
-      <Select multiple value={selectedVal} onChange={handleChange} renderValue={renderRaids}>
-        <MenuItem value={2}>
-          <Checkbox checked={selectedVal.includes(2)} />
-          <ListItemText primary='AQ' />
-        </MenuItem>
-        <MenuItem value={1}>
-          <Checkbox checked={selectedVal.includes(1)} />
-          <ListItemText primary='BWL' />
-        </MenuItem>
-      </Select>
-    </FormControl>
-  );
-}
-
-CustomLHFilter.propTypes = {
-  onFilterChanged: PropTypes.func.isRequired,
-  columnDef: PropTypes.shape({tableData: PropTypes.object}).isRequired,
-}
 
 
 export function LootHistoryTable(props) {
@@ -277,13 +242,36 @@ export function LootHistoryTable(props) {
     return term.length === 0 || term.includes(raidDay.raid_id);
   }
 
+  const classFilter = props => <MultiselectFilter choices={classes} {...props} />;
+  const roleFilter = props => <MultiselectFilter choices={roles} {...props} />;
+  const tierFilter = props => <MultiselectFilter choices={itemTiers} {...props} />;
+
+  const classSearch = (term, rowData) => {
+    const player = props.players.find(x => x.id === rowData.player_id);
+    return term.length === 0 || term.includes(player.class);
+  }
+
+  const roleSearch = (term, rowData) => {
+    const player = props.players.find(x => x.id === rowData.player_id);
+    return term.length === 0 || term.includes(player.role);
+  }
+
+  const tierSearch = (term, rowData) => {
+    const item = props.items.find(x => x.id === rowData.item_id);
+    return term.length === 0 || term.includes(item.tier);
+  }
+
   const [ columns ] = React.useState([
-    { title: 'Raid', field: 'raid_day_id', lookup: raidDayLookup, defaultSort: 'desc', customSort: raidDaySort, filterComponent: CustomLHFilter, customFilterAndSearch: raidDaySearch },
+    { title: 'Raid', field: 'raid_day_id', lookup: raidDayLookup, defaultSort: 'desc',
+      customSort: raidDaySort, filterComponent: RaidFilter, customFilterAndSearch: raidDaySearch },
     { title: 'Name', field: 'player_id', lookup: nameLookup },
-    { title: 'Class', field: 'player_id', lookup: classLookup, editable: 'never' },
-    { title: 'Role', field: 'player_id', lookup: roleLookup, editable: 'never' },
+    { title: 'Class', field: 'player_id', lookup: classLookup, editable: 'never',
+      filterComponent: classFilter, customFilterAndSearch: classSearch },
+    { title: 'Role', field: 'player_id', lookup: roleLookup, editable: 'never',
+      filterComponent: roleFilter, customFilterAndSearch: roleSearch },
     { title: 'Item', field: 'item_id', lookup: itemLookup },
-    { title: 'Item Tier', field: 'item_id', lookup: tierLookup, editable: 'never' },
+    { title: 'Item Tier', field: 'item_id', lookup: tierLookup, editable: 'never',
+      filterComponent: tierFilter, customFilterAndSearch: tierSearch },
   ]);
 
   return (

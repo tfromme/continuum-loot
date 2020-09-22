@@ -191,6 +191,17 @@ def update_loot_history_information(current, updated):
                    (updated.raid_day, updated.item, updated.player, current.id))
 
 
+def add_loot_history(new_lh):
+    with get_db() as db:
+        db.execute('INSERT INTO loot_history (raid_day_id, item_id, player_id) VALUES (?, ?, ?)',
+                   (new_lh.raid_day, new_lh.item, new_lh.player))
+
+
+def delete_loot_history(lh_id):
+    with get_db() as db:
+        db.execute('DELETE FROM loot_history WHERE id = ?', (lh_id, ))
+
+
 @contextmanager
 def get_db():
     conn = sqlite3.connect('contloot.db')

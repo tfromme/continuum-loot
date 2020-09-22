@@ -34,3 +34,15 @@ export function updateLootHistory(lh, updateRemoteData) {
     updateRemoteData('lootHistory');
   });
 }
+
+export function addLootHistory(lh, updateRemoteData) {
+  postApi('/api/addLootHistory', {'row': lh}).then(_res => {
+    updateRemoteData('lootHistory');
+  });
+}
+
+export function deleteLootHistory(lh, updateRemoteData) {
+  postApi('/api/deleteLootHistory', {'id': lh.id}).then(_res => {
+    updateRemoteData('lootHistory');
+  });
+}

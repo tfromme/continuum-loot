@@ -7,7 +7,7 @@ import AssignmentOutlined from '@material-ui/icons/AssignmentOutlined';
 
 import CustomPropTypes from './CustomPropTypes.js';
 import { classes, ranks, roles, itemTiers } from './Constants.js';
-import { updatePlayer, updateItem, updateLootHistory } from './Api.js';
+import { updatePlayer, updateItem, updateLootHistory, addLootHistory, deleteLootHistory } from './Api.js';
 import { WishlistRow, AttendanceRow, LootHistoryRow, PriorityRow, LootHistoryItemsRow } from './DetailRows.js';
 import { RaidFilter, MultiselectFilter } from './Filters.js';
 
@@ -279,14 +279,30 @@ export function LootHistoryTable(props) {
       columns={columns}
       data={ props.lootHistory }
       title="Loot History"
-      options={ { paging: false, filtering: true, draggable: false} }
+      options={ { paging: false, filtering: true, draggable: false, addRowPosition: 'first' } }
       localization={{header: {actions: ''}}}
       editable={ {
         isEditable: _ => rowEditable,
         isEditHidden: _ => !rowEditable,
+        isDeletable: _ => rowEditable,
+        isDeleteHidden: _ => !rowEditable,
         onRowUpdate: (newData, _oldData) => {
           return new Promise((resolve, _reject) => {
             updateLootHistory(newData, props.updateRemoteData);  // API Call
+            resolve();
+          });
+        },
+        // This ternary is because there is no `isAddable` prop
+        // it hides add button when user doesnt have permission
+        onRowAdd: rowEditable ? (newData => {
+          return new Promise((resolve, _reject) => {
+            addLootHistory(newData, props.updateRemoteData);  // API Call
+            resolve();
+          });
+        }) : false,
+        onRowDelete: oldData => {
+          return new Promise((resolve, _reject) => {
+            deleteLootHistory(oldData, props.updateRemoteData);  // API Call
             resolve();
           });
         },

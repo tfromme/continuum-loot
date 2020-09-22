@@ -179,3 +179,45 @@ def updateLootHistory():
 
     dbinterface.update_loot_history_information(current_lh_line, updated_lh_line)
     return '', 204
+
+
+@app.route('/api/addLootHistory', methods=['POST'])
+def addLootHistory():
+    data = request.json
+
+    if 'row' not in data:
+        return 'Invalid Request Body', 400
+
+    if 'user_id' not in session:
+        return 'Not Allowed', 400
+    else:
+        current_user = dbinterface.load_user_by_id(session['user_id'])
+
+    # TODO: Remove hardcoded permission levels
+    if current_user.permission_level < 2:
+        return 'Not Allowed', 400
+
+    new_lh_line = LootHistoryLine.from_dict(data['row'])
+
+    dbinterface.add_loot_history(new_lh_line)
+    return '', 204
+
+
+@app.route('/api/deleteLootHistory', methods=['POST'])
+def deleteLootHistory():
+    data = request.json
+
+    if 'id' not in data:
+        return 'Invalid Request Body', 400
+
+    if 'user_id' not in session:
+        return 'Not Allowed', 400
+    else:
+        current_user = dbinterface.load_user_by_id(session['user_id'])
+
+    # TODO: Remove hardcoded permission levels
+    if current_user.permission_level < 2:
+        return 'Not Allowed', 400
+
+    dbinterface.delete_loot_history(data['id'])
+    return '', 204

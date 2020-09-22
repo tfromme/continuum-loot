@@ -80,6 +80,7 @@ class App extends React.Component {
 
   getLootHistory() {
     fetch('/api/getLootHistory').then(res => res.json()).then(data => {
+      data.sort((a, b) => (a.id < b.id) ? 1 : -1)
       this.setState({lootHistory: data})
     });
   }

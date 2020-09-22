@@ -6,8 +6,8 @@ import HowToRegOutlined from '@material-ui/icons/HowToRegOutlined';
 import AssignmentOutlined from '@material-ui/icons/AssignmentOutlined';
 
 import CustomPropTypes from './CustomPropTypes.js';
+import Api from './Api.js';
 import { classes, ranks, roles, itemTiers } from './Constants.js';
-import { updatePlayer, updateItem, updateLootHistory, addLootHistory, deleteLootHistory } from './Api.js';
 import { WishlistRow, AttendanceRow, LootHistoryRow, PriorityRow, LootHistoryItemsRow } from './DetailRows.js';
 import { RaidFilter, MultiselectFilter } from './Filters.js';
 
@@ -47,7 +47,7 @@ export function PlayerTable(props) {
         isEditHidden: rowData => !rowEditable(rowData),
         onRowUpdate: (newData, _oldData) => {
           return new Promise((resolve, _reject) => {
-            updatePlayer(newData, props.updateRemoteData);  // API Call
+            Api.player.update(newData, props.updateRemoteData);
             resolve();
           });
         },
@@ -153,7 +153,7 @@ export function ItemTable(props) {
         isEditHidden: _ => !rowEditable,
         onRowUpdate: (newData, _oldData) => {
           return new Promise((resolve, _reject) => {
-            updateItem(newData, props.updateRemoteData);  // API Call
+            Api.item.update(newData, props.updateRemoteData);
             resolve();
           });
         },
@@ -288,7 +288,7 @@ export function LootHistoryTable(props) {
         isDeleteHidden: _ => !rowEditable,
         onRowUpdate: (newData, _oldData) => {
           return new Promise((resolve, _reject) => {
-            updateLootHistory(newData, props.updateRemoteData);  // API Call
+            Api.lootHistory.update(newData, props.updateRemoteData);
             resolve();
           });
         },
@@ -296,13 +296,13 @@ export function LootHistoryTable(props) {
         // it hides add button when user doesnt have permission
         onRowAdd: rowEditable ? (newData => {
           return new Promise((resolve, _reject) => {
-            addLootHistory(newData, props.updateRemoteData);  // API Call
+            Api.lootHistory.add(newData, props.updateRemoteData);
             resolve();
           });
         }) : false,
         onRowDelete: oldData => {
           return new Promise((resolve, _reject) => {
-            deleteLootHistory(oldData, props.updateRemoteData);  // API Call
+            Api.lootHistory.delete(oldData, props.updateRemoteData);
             resolve();
           });
         },

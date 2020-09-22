@@ -18,7 +18,7 @@ import Clear from '@material-ui/icons/Clear';
 import  { styled } from '@material-ui/core/styles';
 
 import CustomPropTypes from './CustomPropTypes.js';
-import { updatePlayer, updateItem } from './Api.js';
+import Api from './Api.js';
 
 const DarkPaper = styled(Paper)({
   background: '#EEE',
@@ -75,7 +75,7 @@ export function WishlistRow(props) {
             }
           }
           return new Promise((resolve, _reject) => {
-            updatePlayer(updatedPlayer, props.updateRemoteData);  // API Call
+            Api.player.update(updatedPlayer, props.updateRemoteData);
             resolve();
           });
         },
@@ -108,7 +108,7 @@ export function WishlistRow(props) {
         }
 
         if (updated) {
-          updatePlayer(updatedPlayer, props.updateRemoteData);  // API Call
+          Api.player.update(updatedPlayer, props.updateRemoteData);
         }
       } }
     />
@@ -316,7 +316,7 @@ export function PriorityRow(props) {
     }
 
     props.rowData.individual_prio = newIndividualPrio;
-    updateItem(props.rowData, props.updateRemoteData);  // API Call
+    Api.item.update(props.rowData, props.updateRemoteData);
   }
 
   const saveClass = () => {
@@ -346,7 +346,7 @@ export function PriorityRow(props) {
     }
 
     props.rowData.class_prio = newClassPrio;
-    updateItem(props.rowData, props.updateRemoteData);  // API Call
+    Api.item.update(props.rowData, props.updateRemoteData);
   }
 
   const clear = () => {

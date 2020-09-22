@@ -17,32 +17,48 @@ export function postApi(path, data) {
   })
 }
 
-export function updatePlayer(player, updateRemoteData) {
+function updatePlayer(player, updateRemoteData) {
   postApi('/api/updatePlayer', {'player': player}).then(_res => {
     updateRemoteData('players');
   });
 }
 
-export function updateItem(item, updateRemoteData) {
+function updateItem(item, updateRemoteData) {
   postApi('/api/updateItem', {'item': item}).then(_res => {
     updateRemoteData('items');
   });
 }
 
-export function updateLootHistory(lh, updateRemoteData) {
+function updateLootHistory(lh, updateRemoteData) {
   postApi('/api/updateLootHistory', {'row': lh}).then(_res => {
     updateRemoteData('lootHistory');
   });
 }
 
-export function addLootHistory(lh, updateRemoteData) {
+function addLootHistory(lh, updateRemoteData) {
   postApi('/api/addLootHistory', {'row': lh}).then(_res => {
     updateRemoteData('lootHistory');
   });
 }
 
-export function deleteLootHistory(lh, updateRemoteData) {
+function deleteLootHistory(lh, updateRemoteData) {
   postApi('/api/deleteLootHistory', {'id': lh.id}).then(_res => {
     updateRemoteData('lootHistory');
   });
 }
+
+const Api = {
+  player: {
+    update: updatePlayer,
+  },
+  item: {
+    update: updateItem,
+  },
+  lootHistory: {
+    add: addLootHistory,
+    update: updateLootHistory,
+    delete: deleteLootHistory,
+  },
+};
+
+export default Api;

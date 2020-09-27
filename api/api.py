@@ -228,6 +228,15 @@ def deleteLootHistory():
 
 @app.route('/api/uploadAttendance', methods=['POST'])
 def uploadAttendance():
+    if 'user_id' not in session:
+        return 'Not Allowed', 400
+    else:
+        current_user = dbinterface.load_user_by_id(session['user_id'])
+
+    # TODO: Remove hardcoded permission levels
+    if current_user.permission_level < 2:
+        return 'Not Allowed', 400
+
     data = request.json
 
     if data['raid_day_id'] == 'New':
@@ -261,6 +270,15 @@ def uploadAttendance():
 
 @app.route('/api/uploadLootHistory', methods=['POST'])
 def uploadLootHistory():
+    if 'user_id' not in session:
+        return 'Not Allowed', 400
+    else:
+        current_user = dbinterface.load_user_by_id(session['user_id'])
+
+    # TODO: Remove hardcoded permission levels
+    if current_user.permission_level < 2:
+        return 'Not Allowed', 400
+
     data = request.json
 
     if data['raid_day_id'] == 'New':

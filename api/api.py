@@ -1,3 +1,4 @@
+import json
 from flask import Flask, jsonify, request, session
 from werkzeug.security import check_password_hash, generate_password_hash
 from unidecode import unidecode  # type: ignore
@@ -254,5 +255,40 @@ def uploadAttendance():
             player_name = player_name.lower().capitalize()
             # Dummy values for new player
             dbinterface.new_player(player_name, '', 0, '', 'Warrior', 'DPS', 'Member', attendance=[raid_day_id])
+
+    return '', 204
+
+
+@app.route('/api/uploadLootHistory', methods=['POST'])
+def uploadLootHistory():
+    data = request.json
+
+    if data['raid_day_id'] == 'New':
+        raid_day_id = dbinterface.new_raid_day(str_to_date_ui(data['date']),
+                                               data['raid_day_name'],
+                                               data['raid_id'],
+                                               ).id
+    else:
+        raid_day_id = data['raid_day_id']
+
+    players, _ = dbinterface.load_players()
+
+    json_data = json.loads(data['data'])
+    for loot_history_data in json_data:
+        # Strip server name
+        player_name = loot_history_data['player'].split('-')[0]
+        item_id = loot_history_data['itemID']
+        is_disenchant = loot_history_data['response'] == 'Disenchant'
+
+        # Skip Player if doesn't already exist
+        # Easy solution - attendance before loot
+        # TODO: Don't skip player if doesn't already exist
+        if not is_disenchant:
+            for player in players.values():
+                if player.name.lower() == player_name.lower():
+                    player_id = player.id
+                    new_lh_line = LootHistoryLine(0, raid_day_id, item_id, player_id)
+                    dbinterface.add_loot_history(new_lh_line)
+                    break
 
     return '', 204

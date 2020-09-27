@@ -1,7 +1,9 @@
 from flask import Flask, jsonify, request, session
 from werkzeug.security import check_password_hash, generate_password_hash
+from unidecode import unidecode  # type: ignore
 
 import dbinterface
+from utils import str_to_date_ui
 from models import Player, Item, LootHistoryLine
 
 app = Flask(__name__)
@@ -220,4 +222,37 @@ def deleteLootHistory():
         return 'Not Allowed', 400
 
     dbinterface.delete_loot_history(data['id'])
+    return '', 204
+
+
+@app.route('/api/uploadAttendance', methods=['POST'])
+def uploadAttendance():
+    data = request.json
+
+    if data['raid_day_id'] == 'New':
+        raid_day_id = dbinterface.new_raid_day(str_to_date_ui(data['date']),
+                                               data['raid_day_name'],
+                                               data['raid_id'],
+                                               ).id
+    else:
+        raid_day_id = data['raid_day_id']
+
+    players, _ = dbinterface.load_players()
+
+    player_names = unidecode(data['data']).split(',')
+
+    for player_name in player_names:
+        for player in players.values():
+            if player.name.lower() == player_name.lower():
+                if raid_day_id not in player.attendance:
+                    # Update player
+                    updated_player = Player.copy(player)
+                    updated_player.attendance.append(raid_day_id)
+                    dbinterface.update_player_information(player, updated_player)
+                break
+        else:  # Player not found - create new player
+            player_name = player_name.lower().capitalize()
+            # Dummy values for new player
+            dbinterface.new_player(player_name, '', 0, '', 'Warrior', 'DPS', 'Member', attendance=[raid_day_id])
+
     return '', 204

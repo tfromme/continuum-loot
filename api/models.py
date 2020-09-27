@@ -1,7 +1,7 @@
 from datetime import date as date_obj
 from typing import List, Tuple
 
-from utils import date_to_str_ui
+from utils import date_to_str_ui, str_to_date_db
 
 
 class Player:
@@ -34,6 +34,13 @@ class Player:
         for row in attendance_rows:
             new.attendance.append(row['raid_day_id'])
 
+        return new
+
+    @classmethod
+    def copy(cls, instance):
+        new = cls(instance.id, instance.name, instance.notes, instance.player_class, instance.role, instance.rank)
+        new.wishlist = list(instance.wishlist)
+        new.attendance = list(instance.attendance)
         return new
 
     def to_dict(self):
@@ -160,18 +167,22 @@ class Raid:
 
 class RaidDay:
 
-    def __init__(self, id: int, date: date_obj, name: str, raid: Raid):
+    def __init__(self, id: int, date: date_obj, name: str, raid: int):
         self.id = id
         self.date = date
         self.name = name
         self.raid = raid
+
+    @classmethod
+    def from_db_rows(cls, row):
+        return cls(row['id'], str_to_date_db(row['date']), row['name'], row['raid_id'])
 
     def to_dict(self):
         return {
             'id': self.id,
             'date': date_to_str_ui(self.date),
             'name': self.name,
-            'raid_id': self.raid.id,
+            'raid_id': self.raid,
         }
 
     def __str__(self):

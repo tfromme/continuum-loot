@@ -1,7 +1,7 @@
 import sqlite3
 from contextlib import contextmanager
 
-from utils import str_to_date_db
+from utils import date_to_str_db
 from models import Player, User, Item, Raid, RaidDay, LootHistoryLine
 
 
@@ -56,7 +56,7 @@ def load_raids_and_raid_days():
     for row in db_rows['bosses'].values():
         raids[row['raid_id']].bosses.append(row['name'])
 
-    raid_days = {id: RaidDay(id, str_to_date_db(row['date']), row['name'], raids[row['raid_id']])
+    raid_days = {id: RaidDay.from_db_rows(row)
                  for id, row in db_rows['raid_days'].items()}
 
     return raids, raid_days
@@ -79,6 +79,22 @@ def new_user(name, password_hash, permission_level, notes, className, role, rank
         last_row = [dict(row) for row in db.execute('SELECT * FROM players ORDER BY id DESC LIMIT 1')][0]
 
     return User.from_db_rows(last_row)
+
+
+def new_player(name, password_hash, permission_level, notes, className, role, rank, attendance=None):
+    with get_db() as db:
+        db.execute('INSERT INTO players (name, password_hash, permission_level, notes, class, role, rank) '
+                   'VALUES (?, ?, ?, ?, ?, ?, ?)',
+                   (name, password_hash, permission_level, notes, className, role, rank))
+
+        if attendance is not None:
+            db.connection.commit()
+            last_row = [dict(row) for row in db.execute('SELECT * FROM players ORDER BY id DESC LIMIT 1')][0]
+            player_id = last_row['id']
+
+            for raid_day_id in attendance:
+                db.execute('INSERT INTO attendance (raid_day_id, player_id) VALUES (?, ?)',
+                           (raid_day_id, player_id))
 
 
 def set_password_hash(player_id, password_hash):
@@ -200,6 +216,17 @@ def add_loot_history(new_lh):
 def delete_loot_history(lh_id):
     with get_db() as db:
         db.execute('DELETE FROM loot_history WHERE id = ?', (lh_id, ))
+
+
+def new_raid_day(date, name, raid_id):
+    with get_db() as db:
+        db.execute('INSERT INTO raid_days (date, name, raid_id) VALUES (?, ?, ?)',
+                   (date_to_str_db(date), name, raid_id))
+
+        db.connection.commit()
+        last_row = [dict(row) for row in db.execute('SELECT * FROM raid_days ORDER BY id DESC LIMIT 1')][0]
+
+    return RaidDay.from_db_rows(last_row)
 
 
 @contextmanager

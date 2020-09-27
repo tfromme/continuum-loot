@@ -160,7 +160,7 @@ export function AttendanceRow(props) {
   var attendanceData = {'name': 'Attendance'};
   
   const numRaids = 12;
-  const lastXRaidDays = props.raidDays.slice(props.raidDays.length - numRaids);
+  const lastXRaidDays = props.raidDays.slice(0, numRaids).reverse();
   for (var i=0; i<numRaids; i++) {
     attendanceData[i.toString()] = props.rowData.attendance.includes(lastXRaidDays[numRaids-1-i].id) ? 'Yes' : 'No';
     attendanceColumns.push({title: lastXRaidDays[numRaids-1-i].name,
@@ -192,7 +192,7 @@ export function LootHistoryRow(props) {
   }
 
   const numItems = 6;
-  const lastXItems = props.lootHistory.filter(x => x.player_id === props.rowData.id).slice(-numItems);
+  const lastXItems = props.lootHistory.filter(x => x.player_id === props.rowData.id).slice(0, numItems).reverse();
 
   const filterFunc = i => (x => x.id === lastXItems[i].raid_day_id);
 
@@ -520,7 +520,7 @@ export function LootHistoryItemsRow(props) {
   }
 
   const numPlayers = 6;
-  const lastXPlayers = props.lootHistory.filter(x => x.item_id === props.rowData.id).slice(-numPlayers);
+  const lastXPlayers = props.lootHistory.filter(x => x.item_id === props.rowData.id).slice(0, numPlayers).reverse();
 
   const filterFunc = i => (x => x.id === lastXPlayers[i].raid_day_id);
 

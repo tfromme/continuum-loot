@@ -6,7 +6,8 @@ import AppBar from '@material-ui/core/AppBar';
 import { TabPanel, TabContext, TabList } from '@material-ui/lab';
 
 import { PlayerTable, ItemTable, LootHistoryTable } from './modules/Tables.js';
-import { LoginDialog, SignupDialog, LogoutDialog } from './modules/Dialogs.js';
+import { LoginDialog, SignupDialog, LogoutDialog } from './modules/LoginDialogs.js';
+import { AttendanceDialog, LootHistoryDialog } from './modules/ActionDialogs.js';
 
 import wowlogo from './wowlogo.png'
 import './App.scss';
@@ -87,6 +88,7 @@ class App extends React.Component {
 
   getRaids() {
     fetch('/api/getRaids').then(res => res.json()).then(data => {
+      data.raid_days.sort((a, b) => (a.id < b.id) ? 1 : -1)
       this.setState({raids: data.raids, raidDays: data.raid_days})
     });
   }
@@ -121,8 +123,10 @@ class App extends React.Component {
       <Tab key="2" label="Loot History" value="3" />,
     ];
 
+    var actionButtons = [];
+
     var loginButtons = [
-      <LoginDialog key="10" setLoggedInPlayer={this.setLoggedInPlayer} />,
+      <LoginDialog key="10" leftPadded setLoggedInPlayer={this.setLoggedInPlayer} />,
       <SignupDialog key="11" players={this.state.players} setLoggedInPlayer={this.setLoggedInPlayer}
                     updateRemoteData={this.updateRemoteData} />
     ];
@@ -130,8 +134,20 @@ class App extends React.Component {
     var headerText = 'Welcome to the Continuum Master Loot App';
 
     if (this.state.loggedInPlayer !== null) {
-      loginButtons = [ <LogoutDialog key="20" setLoggedInPlayer={this.setLoggedInPlayer} /> ];
       headerText = 'Welcome, ' + this.state.loggedInPlayer.name;
+
+      // TODO: Remove hard-coded permissions
+      if (this.state.loggedInPlayer.permission_level >= 2) {
+        actionButtons = [
+          <AttendanceDialog key="30" leftPadded raidDays={this.state.raidDays} raids={this.state.raids}
+                            updateRemoteData={this.updateRemoteData} />,
+          <LootHistoryDialog key="31" raidDays={this.state.raidDays} raids={this.state.raids}
+                             updateRemoteData={this.updateRemoteData} />
+        ];
+        loginButtons = [ <LogoutDialog key="20" setLoggedInPlayer={this.setLoggedInPlayer} /> ];
+      } else {
+        loginButtons = [ <LogoutDialog key="20" leftPadded setLoggedInPlayer={this.setLoggedInPlayer} /> ];
+      }
     }
 
     return (
@@ -144,7 +160,7 @@ class App extends React.Component {
           <TabContext value={this.state.tabValue}>
             <AppBar position="static">
               <TabList onChange={this.handleTabValueChange}>
-                {tabs.concat(loginButtons)}
+                {tabs.concat(actionButtons, loginButtons)}
               </TabList>
             </AppBar>
             <TabPanel value="1">

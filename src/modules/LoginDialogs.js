@@ -1,42 +1,22 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { styled } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import FormControl from '@material-ui/core/FormControl';
-import TextField from '@material-ui/core/TextField';
 import InputLabel from '@material-ui/core/InputLabel';
-import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import Alert from '@material-ui/lab/Alert';
 import Collapse from '@material-ui/core/Collapse';
 
 import CustomPropTypes from './CustomPropTypes.js';
+import { LeftPaddedButton, StyledButton, PaddedTextField, PaddedSelect } from './Generics.js';
 import { classes, roles } from './Constants.js';
 import { postApi } from './Api.js';
 
-const LoginButton = styled(Button)({
-  'margin-left': 'auto',
-  'margin-right': '24px',
-});
-
-const SignupButton = styled(Button)({
-  'margin-right': '24px',
-});
-
-const PaddedTextField = styled(TextField)({
-  'margin-bottom': '20px',
-  'margin-right': '20px',
-});
-
-const PaddedSelect = styled(Select)({
-  'margin-bottom': '20px',
-  'margin-right': '20px',
-});
 
 export function LogoutDialog(props) {
   const handleClick = () => {
@@ -45,15 +25,23 @@ export function LogoutDialog(props) {
     fetch('/api/logout');
   };
 
+  const MyButton = props.leftPadded ? LeftPaddedButton : StyledButton;
+
   return (
-    <LoginButton color="inherit" onClick={handleClick}>Logout</LoginButton>
+    <MyButton color="inherit" onClick={handleClick}>Logout</MyButton>
   );
 }
 
 LogoutDialog.propTypes = {
   setLoggedInPlayer: PropTypes.func.isRequired,
+  leftPadded: PropTypes.bool,
 }
 
+LogoutDialog.defaultProps = {
+  leftPadded: false,
+}
+
+// TODO: Refactor with SubmissionDialog
 export function LoginDialog(props) {
   const [open, setOpen] = React.useState(false);
   const [username, setUsername] = React.useState('');
@@ -125,9 +113,11 @@ export function LoginDialog(props) {
     setErrorMessage('');
   }
 
+  const MyButton = props.leftPadded ? LeftPaddedButton : StyledButton;
+
   return (
     <>
-      <LoginButton color="inherit" onClick={handleClickOpen}>Login</LoginButton>
+      <MyButton color="inherit" onClick={handleClickOpen}>Login</MyButton>
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle id="login-dialog-title">Login</DialogTitle>
         <DialogContent>
@@ -153,6 +143,11 @@ export function LoginDialog(props) {
 
 LoginDialog.propTypes = {
   setLoggedInPlayer: PropTypes.func.isRequired,
+  leftPadded: PropTypes.bool,
+}
+
+LoginDialog.defaultProps = {
+  leftPadded: false,
 }
 
 export function SignupDialog(props) {
@@ -314,9 +309,11 @@ export function SignupDialog(props) {
     </>
   );
 
+  const MyButton = props.leftPadded ? LeftPaddedButton : StyledButton;
+
   return (
     <>
-      <SignupButton color="inherit" onClick={handleClickOpen}>Signup</SignupButton>
+      <MyButton color="inherit" onClick={handleClickOpen}>Signup</MyButton>
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle id="signup-dialog-title">Sign Up</DialogTitle>
         <DialogContent>
@@ -354,4 +351,9 @@ SignupDialog.propTypes = {
   setLoggedInPlayer: PropTypes.func.isRequired,
   updateRemoteData: PropTypes.func.isRequired,
   players: PropTypes.arrayOf(CustomPropTypes.player).isRequired,
+  leftPadded: PropTypes.bool,
+}
+
+SignupDialog.defaultProps = {
+  leftPadded: false,
 }

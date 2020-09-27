@@ -5,4 +5,5 @@ scp -r build root@tfrom.me:/etc/continuum-loot
 pushd api
 scp *.py requirements.txt root@tfrom.me:/etc/continuum-loot/api
 popd
+ssh root@tfrom.me 'cd /etc/continuum-loot/api && .env/bin/pip install -r requirements.txt'
 ssh root@tfrom.me 'systemctl restart continuum-loot-api'

@@ -55,13 +55,13 @@ LootHistoryDialog.defaultProps = {
 }
 
 function NewRaidDialog(props) {
+  const NEW_RAID_DAY = 'New';
   const [input, setInput] = React.useState('');
-  const [raidDay, setRaidDay] = React.useState(props.raidDays[0].id);
-  const [newRaid, setNewRaid] = React.useState(props.raids[0].id);
+  const [raidDay, setRaidDay] = React.useState(NEW_RAID_DAY);
+  const [newRaid, setNewRaid] = React.useState(NEW_RAID_DAY);
   const [newName, setNewName] = React.useState('');
   const [newDate, setNewDate] = React.useState(new Date(Date.now()));
 
-  const NEW_RAID_DAY = 'New';
   const dateFns = new DateFnsUtils();
 
   const postData = () => {

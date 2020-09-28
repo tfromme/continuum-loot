@@ -20,6 +20,8 @@
     "react-sortable-hoc": "^1.11.0"
   },
   "scripts": {
+    "init-api": "./scripts/init_api.sh",
+    "build-db": "./scripts/build_db.sh",
     "start": "react-scripts start",
     "start-api": "cd api && ./.env/bin/flask run --no-debugger",
     "build": "react-scripts build",

@@ -1,21 +1,46 @@
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+## Developer Setup
+
+### Pre-requisites
+
+node			- I use v14.0.0
+yarn			- I use 1.22.4
+python3-dev		- I use 3.6.9 locally and it runs on 3.8.2
+python3-venv	- Assumed by setup scripts, general best practice
+
+### Initialization
+
+To setup a new development environment:
+```bash
+yarn
+yarn init-api
+yarn build-db
+```
+
+This will install all dependencies, setup a python venv for the backend, and build the DB with seed data
+
+## Running Locally
+
+`yarn start` and `yarn start-api` will both need to be running for the app to work
+<br />
+The app is hosted on `localhost:3000` and the API is proxied through `localhost:5000`
+
+
 ## Available Scripts
-
-In the project directory, you can run:
-
-### `yarn start`
-
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
-
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
 
 ### `yarn test`
 
 Launches the test runner in the interactive watch mode.<br />
 See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+
+The current test suite is practically non-existant (I know, I know)
+
+### `yarn lint`
+
+Runs the frontend code through `ESLint` and the backend code through `flake8` and `mypy`
+<br />
+No CI pipelines are setup with this yet, so running it locally is necessary
 
 ### `yarn build`
 
@@ -24,45 +49,11 @@ It correctly bundles React in production mode and optimizes the build for the be
 
 The build is minified and the filenames include the hashes.<br />
 Your app is ready to be deployed!
+<br />
+This isn't very useful unless you have the rights to deploy (you don't)
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### `yarn deploy`
 
-### `yarn eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
-
-### Analyzing the Bundle Size
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
-
-### Making a Progressive Web App
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
-
-### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `yarn build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+Deploys the app to production (https://continuum-loot.tfrom.me)
+<br />
+This won't work for you since it requires my SSH keys (which you don't have)

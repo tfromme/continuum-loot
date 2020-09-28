@@ -4,10 +4,13 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 ### Pre-requisites
 
-node			- I use v14.0.0
-yarn			- I use 1.22.4
-python3-dev		- I use 3.6.9 locally and it runs on 3.8.2
-python3-venv	- Assumed by setup scripts, general best practice
+node - I use v14.0.0
+<br />
+yarn - I use 1.22.4
+<br />
+python3-dev - I use 3.6.9 locally and it runs on 3.8.2
+<br />
+python3-venv - Assumed by setup scripts, general best practice
 
 ### Initialization
 

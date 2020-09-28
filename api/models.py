@@ -37,11 +37,15 @@ class Player:
         return new
 
     @classmethod
-    def copy(cls, instance):
-        new = cls(instance.id, instance.name, instance.notes, instance.player_class, instance.role, instance.rank)
-        new.wishlist = list(instance.wishlist)
-        new.attendance = list(instance.attendance)
+    def copy(cls, old):
+        new = cls(old.id, old.name, old.notes, old.player_class, old.role, old.rank)
+        new.wishlist = list(old.wishlist)
+        new.attendance = list(old.attendance)
         return new
+
+    def remove_from_wishlist(self, item_id_to_remove):
+        self.wishlist = [(prio, item_id) for prio, item_id in self.wishlist
+                         if item_id != item_id_to_remove]
 
     def to_dict(self):
         return {
@@ -125,6 +129,20 @@ class Item:
             new.individual_prio.append((row['prio'], row['player_id'], row['set_by_player_id']))
 
         return new
+
+    @classmethod
+    def copy(cls, old):
+        new = cls(old.id, old.name, old.type, old.tier, old.notes)
+        new.raid = old.raid
+        new.bosses = list(old.bosses)
+        new.class_prio = list(old.class_prio)
+        new.individual_prio = list(old.individual_prio)
+        return new
+
+    def remove_from_individual_prio(self, player_id_to_remove):
+        self.individual_prio = [(prio, player_id, set_by_id) for prio, player_id, set_by_id
+                                in self.individual_prio
+                                if player_id != player_id_to_remove]
 
     def to_dict(self):
         return {

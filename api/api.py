@@ -290,6 +290,7 @@ def uploadLootHistory():
         raid_day_id = data['raid_day_id']
 
     players, _ = dbinterface.load_players()
+    items = dbinterface.load_items()
 
     json_data = json.loads(data['data'])
     for loot_history_data in json_data:
@@ -307,6 +308,15 @@ def uploadLootHistory():
                     player_id = player.id
                     new_lh_line = LootHistoryLine(0, raid_day_id, item_id, player_id)
                     dbinterface.add_loot_history(new_lh_line)
+
+                    updated_player = Player.copy(player)
+                    updated_player.remove_from_wishlist(item_id)
+                    dbinterface.update_player_information(player, updated_player)
+
+                    item = items[item_id]
+                    updated_item = Item.copy(item)
+                    updated_item.remove_from_individual_prio(player_id)
+                    dbinterface.update_item_information(item, updated_item)
                     break
 
     return '', 204

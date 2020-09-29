@@ -1,4 +1,6 @@
 import json
+import functools
+
 from flask import Flask, jsonify, request, session
 from werkzeug.security import check_password_hash, generate_password_hash
 from unidecode import unidecode  # type: ignore
@@ -11,17 +13,29 @@ app = Flask(__name__)
 app.secret_key = 'secret'
 
 
+def requires_login(min_permission_level=None):
+    def wrap(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            if 'user_id' not in session:
+                return 'Not Allowed', 400
+            else:
+                current_user = dbinterface.load_user_by_id(session['user_id'])
+
+            if (min_permission_level is not None
+                    and current_user.permission_level < min_permission_level):
+                return 'Not Allowed', 400
+
+            return func(*args, current_user=current_user, **kwargs)
+
+        return wrapper
+
+    return wrap
+
+
 @app.route('/api/getUsers', methods=['GET'])
-def getUsers():
-    if 'user_id' not in session:
-        return 'Not Allowed', 400
-    else:
-        current_user = dbinterface.load_user_by_id(session['user_id'])
-
-    # TODO: Remove hardcoded permission levels
-    if current_user.permission_level < 2:
-        return 'Not Allowed', 400
-
+@requires_login(min_permission_level=2)
+def getUsers(current_user):
     _, users = dbinterface.load_players()
     return jsonify([user.to_dict() for user in users.values()])
 
@@ -102,21 +116,13 @@ def logout():
 
 
 @app.route('/api/resetUserPassword', methods=['POST'])
-def resetUserPassword():
+@requires_login(min_permission_level=2)
+def resetUserPassword(current_user):
     data = request.json
     try:
         user_id = data['user']['id']
     except KeyError:
         return 'Invalid Request Body', 400
-
-    if 'user_id' not in session:
-        return 'Not Allowed', 400
-    else:
-        current_user = dbinterface.load_user_by_id(session['user_id'])
-
-    # TODO: Remove hardcoded permission levels
-    if current_user.permission_level < 2:
-        return 'Not Allowed', 400
 
     dbinterface.reset_user_password(user_id)
     return '', 204
@@ -136,21 +142,13 @@ def getCurrentUser():
 
 
 @app.route('/api/updateUser', methods=['POST'])
-def updateUser():
+@requires_login(min_permission_level=2)
+def updateUser(current_user):
     data = request.json
     try:
         user_id = data['user']['id']
     except KeyError:
         return 'Invalid Request Body', 400
-
-    if 'user_id' not in session:
-        return 'Not Allowed', 400
-    else:
-        current_user = dbinterface.load_user_by_id(session['user_id'])
-
-    # TODO: Remove hardcoded permission levels
-    if current_user.permission_level < 2:
-        return 'Not Allowed', 400
 
     old_user = dbinterface.load_user_by_id(user_id)
     updated_user = User.from_dict(data['user'])
@@ -160,17 +158,13 @@ def updateUser():
 
 
 @app.route('/api/updatePlayer', methods=['POST'])
-def updatePlayer():
+@requires_login()
+def updatePlayer(current_user):
     data = request.json
     try:
         player_id = data['player']['id']
     except KeyError:
         return 'Invalid Request Body', 400
-
-    if 'user_id' not in session:
-        return 'Not Allowed', 400
-    else:
-        current_user = dbinterface.load_user_by_id(session['user_id'])
 
     # TODO: Remove hardcoded permission levels
     if current_user.permission_level < 2 and current_user.id != player_id:
@@ -191,21 +185,13 @@ def updatePlayer():
 
 
 @app.route('/api/updateItem', methods=['POST'])
-def updateItem():
+@requires_login(min_permission_level=1)
+def updateItem(current_user):
     data = request.json
     try:
         item_id = data['item']['id']
     except KeyError:
         return 'Invalid Request Body', 400
-
-    if 'user_id' not in session:
-        return 'Not Allowed', 400
-    else:
-        current_user = dbinterface.load_user_by_id(session['user_id'])
-
-    # TODO: Remove hardcoded permission levels
-    if current_user.permission_level < 1:
-        return 'Not Allowed', 400
 
     current_item = dbinterface.load_item_by_id(item_id)
     updated_item = Item.from_dict(data['item'])
@@ -221,17 +207,13 @@ def updateItem():
 
 
 @app.route('/api/updateLootHistory', methods=['POST'])
-def updateLootHistory():
+@requires_login(min_permission_level=2)
+def updateLootHistory(current_user):
     data = request.json
     try:
         row_id = data['row']['id']
     except KeyError:
         return 'Invalid Request Body', 400
-
-    if 'user_id' not in session:
-        return 'Not Allowed', 400
-    else:
-        current_user = dbinterface.load_user_by_id(session['user_id'])
 
     # TODO: Remove hardcoded permission levels
     if current_user.permission_level < 2:
@@ -245,20 +227,12 @@ def updateLootHistory():
 
 
 @app.route('/api/addLootHistory', methods=['POST'])
-def addLootHistory():
+@requires_login(min_permission_level=2)
+def addLootHistory(current_user):
     data = request.json
 
     if 'row' not in data:
         return 'Invalid Request Body', 400
-
-    if 'user_id' not in session:
-        return 'Not Allowed', 400
-    else:
-        current_user = dbinterface.load_user_by_id(session['user_id'])
-
-    # TODO: Remove hardcoded permission levels
-    if current_user.permission_level < 2:
-        return 'Not Allowed', 400
 
     new_lh_line = LootHistoryLine.from_dict(data['row'])
 
@@ -267,36 +241,20 @@ def addLootHistory():
 
 
 @app.route('/api/deleteLootHistory', methods=['POST'])
-def deleteLootHistory():
+@requires_login(min_permission_level=2)
+def deleteLootHistory(current_user):
     data = request.json
 
     if 'id' not in data:
         return 'Invalid Request Body', 400
-
-    if 'user_id' not in session:
-        return 'Not Allowed', 400
-    else:
-        current_user = dbinterface.load_user_by_id(session['user_id'])
-
-    # TODO: Remove hardcoded permission levels
-    if current_user.permission_level < 2:
-        return 'Not Allowed', 400
 
     dbinterface.delete_loot_history(data['id'])
     return '', 204
 
 
 @app.route('/api/uploadAttendance', methods=['POST'])
-def uploadAttendance():
-    if 'user_id' not in session:
-        return 'Not Allowed', 400
-    else:
-        current_user = dbinterface.load_user_by_id(session['user_id'])
-
-    # TODO: Remove hardcoded permission levels
-    if current_user.permission_level < 2:
-        return 'Not Allowed', 400
-
+@requires_login(min_permission_level=2)
+def uploadAttendance(current_user):
     data = request.json
 
     if data['raid_day_id'] == 'New':
@@ -329,16 +287,8 @@ def uploadAttendance():
 
 
 @app.route('/api/uploadLootHistory', methods=['POST'])
-def uploadLootHistory():
-    if 'user_id' not in session:
-        return 'Not Allowed', 400
-    else:
-        current_user = dbinterface.load_user_by_id(session['user_id'])
-
-    # TODO: Remove hardcoded permission levels
-    if current_user.permission_level < 2:
-        return 'Not Allowed', 400
-
+@requires_login(min_permission_level=2)
+def uploadLootHistory(current_user):
     data = request.json
 
     if data['raid_day_id'] == 'New':

@@ -5,7 +5,7 @@ import Tab from '@material-ui/core/Tab';
 import AppBar from '@material-ui/core/AppBar';
 import { TabPanel, TabContext, TabList } from '@material-ui/lab';
 
-import { PlayerTable, ItemTable, LootHistoryTable } from './modules/Tables.js';
+import { PlayerTable, ItemTable, LootHistoryTable, UserTable } from './modules/Tables.js';
 import { LoginDialog, SignupDialog, LogoutDialog } from './modules/LoginDialogs.js';
 import { AttendanceDialog, LootHistoryDialog } from './modules/ActionDialogs.js';
 
@@ -35,6 +35,7 @@ class App extends React.Component {
       lootHistory: [],
       raids: [],
       raidDays: [],
+      users: [],
     };
     this.handleTabValueChange = this.handleTabValueChange.bind(this);
     this.setLoggedInPlayer = this.setLoggedInPlayer.bind(this);
@@ -48,6 +49,7 @@ class App extends React.Component {
       'lootHistory': this.getLootHistory.bind(this),
       'raids': this.getRaids.bind(this),
       'currentUser': this.getCurrentUser.bind(this),
+      'users': this.getUsers.bind(this),
     }
 
     for (const key of data) {
@@ -93,8 +95,16 @@ class App extends React.Component {
     });
   }
 
+  getUsers() {
+    if (this.state.loggedInPlayer !== null && this.state.loggedInPlayer.permission_level >= 2) {
+      fetch('/api/getUsers').then(res => res.json()).then(data => {
+        this.setState({users: data});
+      });
+    }
+  }
+
   getCurrentUser() {
-    fetch('/api/getCurrentUser').then(res => res.json()).then(data => {
+    return fetch('/api/getCurrentUser').then(res => res.json()).then(data => {
       this.setState({loggedInPlayer: data.player})
     });
   }
@@ -104,7 +114,9 @@ class App extends React.Component {
     this.getPlayers();
     this.getLootHistory();
     this.getRaids();
-    this.getCurrentUser();
+    this.getCurrentUser().then(_ => {
+      this.getUsers();
+    });
   }
 
   handleTabValueChange(e, v) {
@@ -113,6 +125,7 @@ class App extends React.Component {
 
   setLoggedInPlayer(v) {
     this.setState({loggedInPlayer: v});
+    this.getUsers();
   }
 
   render() {
@@ -144,7 +157,11 @@ class App extends React.Component {
           <LootHistoryDialog key="31" raidDays={this.state.raidDays} raids={this.state.raids}
                              updateRemoteData={this.updateRemoteData} />
         ];
+
         loginButtons = [ <LogoutDialog key="20" setLoggedInPlayer={this.setLoggedInPlayer} /> ];
+
+        tabs.push(<Tab key="3" label="Users" value="4" />)
+
       } else {
         loginButtons = [ <LogoutDialog key="20" leftPadded setLoggedInPlayer={this.setLoggedInPlayer} /> ];
       }
@@ -189,6 +206,12 @@ class App extends React.Component {
                                 raidDays={this.state.raidDays}
                                 lootHistory={this.state.lootHistory}
                                 updateRemoteData={this.updateRemoteData}
+              />
+            </TabPanel>
+            <TabPanel value="4">
+              <UserTable loggedInPlayer={this.state.loggedInPlayer}
+                         users={this.state.users}
+                         updateRemoteData={this.updateRemoteData}
               />
             </TabPanel>
           </TabContext>

@@ -5,10 +5,25 @@ from unidecode import unidecode  # type: ignore
 
 import dbinterface
 from utils import str_to_date_ui
-from models import Player, Item, LootHistoryLine
+from models import Player, User, Item, LootHistoryLine
 
 app = Flask(__name__)
 app.secret_key = 'secret'
+
+
+@app.route('/api/getUsers', methods=['GET'])
+def getUsers():
+    if 'user_id' not in session:
+        return 'Not Allowed', 400
+    else:
+        current_user = dbinterface.load_user_by_id(session['user_id'])
+
+    # TODO: Remove hardcoded permission levels
+    if current_user.permission_level < 2:
+        return 'Not Allowed', 400
+
+    _, users = dbinterface.load_players()
+    return jsonify([user.to_dict() for user in users.values()])
 
 
 @app.route('/api/getPlayers', methods=['GET'])
@@ -97,6 +112,30 @@ def getCurrentUser():
         session.clear()
 
     return jsonify({'player': None})
+
+
+@app.route('/api/updateUser', methods=['POST'])
+def updateUser():
+    data = request.json
+    try:
+        user_id = data['user']['id']
+    except KeyError:
+        return 'Invalid Request Body', 400
+
+    if 'user_id' not in session:
+        return 'Not Allowed', 400
+    else:
+        current_user = dbinterface.load_user_by_id(session['user_id'])
+
+    # TODO: Remove hardcoded permission levels
+    if current_user.permission_level < 2:
+        return 'Not Allowed', 400
+
+    old_user = dbinterface.load_user_by_id(user_id)
+    updated_user = User.from_dict(data['user'])
+
+    dbinterface.update_user_information(old_user, updated_user)
+    return '', 204
 
 
 @app.route('/api/updatePlayer', methods=['POST'])

@@ -72,6 +72,10 @@ class User:
         self.permission_level = permission_level
 
     @classmethod
+    def from_dict(cls, data):
+        return cls(data['id'], data['name'], '', data['permission_level'])
+
+    @classmethod
     def from_db_rows(cls, row):
         return cls(row['id'], row['name'], row['password_hash'], row['permission_level'])
 

@@ -47,6 +47,12 @@ function deleteLootHistory(lh, updateRemoteData) {
   });
 }
 
+function updateUser(user, updateRemoteData) {
+  postApi('/api/updateUser', {'user': user}).then(_res => {
+    updateRemoteData('users', 'currentUser');
+  });
+}
+
 const Api = {
   player: {
     update: updatePlayer,
@@ -59,6 +65,9 @@ const Api = {
     update: updateLootHistory,
     delete: deleteLootHistory,
   },
+  user: {
+    update: updateUser,
+  }
 };
 
 export default Api;

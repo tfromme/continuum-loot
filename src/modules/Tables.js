@@ -324,3 +324,48 @@ LootHistoryTable.propTypes = {
 LootHistoryTable.defaultProps = {
   loggedInPlayer: null,
 }
+
+export function UserTable(props) {
+  const rowEditable = props.loggedInPlayer && props.loggedInPlayer.permission_level >= 2;
+
+  var permissionLookup = {
+    '0': 'User',
+    '1': 'Loot Council',
+    '2': 'Admin',
+  };
+
+  const [ columns ] = React.useState([
+    { title: 'Name', field: 'name', defaultSort: 'asc' },
+    { title: 'Role', field: 'permission_level', lookup: permissionLookup },
+  ]);
+
+  return (
+    <MaterialTable
+      columns={columns}
+      data={ props.users }
+      title="Users"
+      options={ { paging: false, filtering: true, draggable: false } }
+      localization={{header: {actions: ''}}}
+      editable={ {
+        isEditable: _ => rowEditable,
+        isEditHidden: _ => !rowEditable,
+        onRowUpdate: (newData, _oldData) => {
+          return new Promise((resolve, _reject) => {
+            Api.user.update(newData, props.updateRemoteData);
+            resolve();
+          });
+        },
+      } }
+    />
+  );
+}
+
+UserTable.propTypes = {
+  loggedInPlayer: CustomPropTypes.user,
+  users: PropTypes.arrayOf(CustomPropTypes.user).isRequired,
+  updateRemoteData: PropTypes.func.isRequired,
+}
+
+UserTable.defaultProps = {
+  loggedInPlayer: null,
+}

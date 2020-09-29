@@ -145,6 +145,15 @@ def load_loot_history_line_by_id(row_id):
     return LootHistoryLine.from_db_rows(lh_row)
 
 
+def update_user_information(current, updated):
+    if (current.id != updated.id):
+        return
+
+    with get_db() as db:
+        db.execute('UPDATE players SET name = ?, permission_level = ? WHERE id = ?',
+                   (updated.name, updated.permission_level, current.id))
+
+
 # TODO: Make this less slash'n'burn
 def update_player_information(current, updated):
     if (current.id != updated.id):

@@ -7,7 +7,7 @@ import AssignmentOutlined from '@material-ui/icons/AssignmentOutlined';
 
 import CustomPropTypes from './CustomPropTypes.js';
 import Api from './Api.js';
-import { classes, ranks, roles, itemTiers } from './Constants.js';
+import { classes, ranks, roles, itemTiers, itemCategories } from './Constants.js';
 import { WishlistRow, AttendanceRow, LootHistoryRow, PriorityRow, LootHistoryItemsRow } from './DetailRows.js';
 import { RaidFilter, MultiselectFilter } from './Filters.js';
 
@@ -128,6 +128,7 @@ export function ItemTable(props) {
       ]);
     }) },
     { title: 'Tier', field: 'tier', type: 'numeric' },
+    { title: 'Category', field: 'category', lookup: arrayToObj(itemCategories) },
     { title: 'Notes', field: 'notes', filtering: false },
   ]);
 

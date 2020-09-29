@@ -101,6 +101,27 @@ def logout():
     return '', 204
 
 
+@app.route('/api/resetUserPassword', methods=['POST'])
+def resetUserPassword():
+    data = request.json
+    try:
+        user_id = data['user']['id']
+    except KeyError:
+        return 'Invalid Request Body', 400
+
+    if 'user_id' not in session:
+        return 'Not Allowed', 400
+    else:
+        current_user = dbinterface.load_user_by_id(session['user_id'])
+
+    # TODO: Remove hardcoded permission levels
+    if current_user.permission_level < 2:
+        return 'Not Allowed', 400
+
+    dbinterface.reset_user_password(user_id)
+    return '', 204
+
+
 @app.route('/api/getCurrentUser', methods=['GET'])
 def getCurrentUser():
     try:

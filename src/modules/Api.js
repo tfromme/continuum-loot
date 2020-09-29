@@ -53,6 +53,10 @@ function updateUser(user, updateRemoteData) {
   });
 }
 
+function resetUserPassword(user) {
+  postApi('/api/resetUserPassword', {'user': user});
+}
+
 const Api = {
   player: {
     update: updatePlayer,
@@ -67,6 +71,7 @@ const Api = {
   },
   user: {
     update: updateUser,
+    resetPassword: resetUserPassword,
   }
 };
 

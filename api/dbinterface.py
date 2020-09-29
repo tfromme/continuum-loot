@@ -154,6 +154,12 @@ def update_user_information(current, updated):
                    (updated.name, updated.permission_level, current.id))
 
 
+def reset_user_password(user_id):
+    with get_db() as db:
+        db.execute('UPDATE players SET password_hash = ? WHERE id = ?',
+                   ('', user_id))
+
+
 # TODO: Make this less slash'n'burn
 def update_player_information(current, updated):
     if (current.id != updated.id):

@@ -356,6 +356,15 @@ export function UserTable(props) {
           });
         },
       } }
+      actions={[
+        {
+          icon: 'settings_backup_restore',
+          tooltip: 'Reset Password',
+          onClick: (e, rowData) => {
+            Api.user.resetPassword(rowData);
+          },
+        },
+      ]}
     />
   );
 }

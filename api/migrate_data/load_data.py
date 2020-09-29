@@ -18,6 +18,7 @@ if __name__ == '__main__':
             'name': row['name'].strip(),
             'type': row['type'].strip(),
             'tier': int(row['tier']) if row['tier'] != '' else '',
+            'category': row['category'].strip(),
             'notes': row['notes'].strip(),
             'individual_prio': trim([row['individual_prio_1'], row['individual_prio_2'],
                                      row['individual_prio_3'], row['individual_prio_4'], row['individual_prio_5']]),
@@ -93,8 +94,8 @@ if __name__ == '__main__':
     i_prio_id = 1
     c_prio_id = 1
     for item in items:
-        c.execute('INSERT INTO items VALUES (?, ?, ?, ?, ?)',
-                  (item['id'], item['name'], item['type'], item['tier'], item['notes']))
+        c.execute('INSERT INTO items VALUES (?, ?, ?, ?, ?, ?)',
+                  (item['id'], item['name'], item['type'], item['tier'], item['category'], item['notes']))
 
         for i, player_id in enumerate(item['individual_prio']):
             c.execute('INSERT INTO individual_prio VALUES (?, ?, ?, ?, ?)',

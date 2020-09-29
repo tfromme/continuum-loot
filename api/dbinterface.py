@@ -30,7 +30,7 @@ def load_items():
         db_rows = {table_name: {row['id']: dict(row) for row in db.execute(f'SELECT * FROM {table_name}')}
                    for table_name in ('items', 'individual_prio', 'class_prio', 'bosses', 'boss_loot', 'raid')}
 
-    items = {id: Item(id, row['name'], row['type'], row['tier'], row['notes'])
+    items = {id: Item(id, row['name'], row['type'], row['tier'], row['category'], row['notes'])
              for id, row in db_rows['items'].items()}
 
     for row in db_rows['boss_loot'].values():
@@ -176,8 +176,8 @@ def update_item_information(current, updated):
         boss_name_to_id = {row['name']: row['id'] for row in db.execute('SELECT * FROM bosses')}
 
     with get_db() as db:
-        db.execute('UPDATE items SET name = ?, type = ?, tier = ?, notes = ? WHERE id = ?',
-                   (updated.name, updated.type, updated.tier, updated.notes, current.id))
+        db.execute('UPDATE items SET name = ?, type = ?, tier = ?, category = ?, notes = ? WHERE id = ?',
+                   (updated.name, updated.type, updated.tier, updated.category, updated.notes, current.id))
 
         if set(current.bosses) != set(updated.bosses):
             db.execute('DELETE FROM boss_loot WHERE item_id = ?', (current.id,))

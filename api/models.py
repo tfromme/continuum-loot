@@ -92,11 +92,12 @@ class User:
 
 class Item:
 
-    def __init__(self, id: int, name: str, type: str, tier: str, notes: str):
+    def __init__(self, id: int, name: str, type: str, tier: str, category: str, notes: str):
         self.id = id
         self.name = name
         self.type = type
         self.tier = tier
+        self.category = category
         self.notes = notes
         self.raid = -1
         self.bosses: List[str] = []
@@ -105,7 +106,7 @@ class Item:
 
     @classmethod
     def from_dict(cls, data):
-        new = cls(data.get('id'), data['name'], data['type'], data['tier'], data['notes'])
+        new = cls(data.get('id'), data['name'], data['type'], data['tier'], data['category'], data['notes'])
         new.raid = data['raid']
         new.bosses = data['bosses']
         new.class_prio = [(prio['prio'], prio['class'], prio['set_by']) for prio in data['class_prio']]
@@ -116,7 +117,8 @@ class Item:
     def from_db_rows(cls, item_row, boss_rows, boss_loot_rows, class_prio_rows, individual_prio_rows):
         boss_row_dict = {row['id']: row for row in boss_rows}
 
-        new = cls(item_row['id'], item_row['name'], item_row['type'], item_row['tier'], item_row['notes'])
+        new = cls(item_row['id'], item_row['name'], item_row['type'], item_row['tier'],
+                  item_row['category'], item_row['notes'])
 
         new.raid = boss_rows[0]['raid_id']
         for row in boss_loot_rows:
@@ -132,7 +134,7 @@ class Item:
 
     @classmethod
     def copy(cls, old):
-        new = cls(old.id, old.name, old.type, old.tier, old.notes)
+        new = cls(old.id, old.name, old.type, old.tier, old.category, old.notes)
         new.raid = old.raid
         new.bosses = list(old.bosses)
         new.class_prio = list(old.class_prio)
@@ -150,6 +152,7 @@ class Item:
             'name': self.name,
             'type': self.type,
             'tier': self.tier,
+            'category': self.category,
             'notes': self.notes,
             'raid': self.raid,
             'bosses': self.bosses,

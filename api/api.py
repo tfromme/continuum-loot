@@ -1,16 +1,27 @@
 import json
 import functools
+import logging
+from logging.handlers import RotatingFileHandler
 
 from flask import Flask, jsonify, request, session
 from werkzeug.security import check_password_hash, generate_password_hash
 from unidecode import unidecode  # type: ignore
 
+import settings
 import dbinterface
 from utils import str_to_date_ui
 from models import Player, User, Item, LootHistoryLine
 
 app = Flask(__name__)
-app.secret_key = 'secret'
+app.secret_key = settings.SECRET_KEY
+
+# Set up custom logging
+log_file = settings.LOG_DIR + 'api_access.log'
+logger = logging.getLogger('continuum-loot')
+logger.setLevel(logging.DEBUG)
+log_handler = RotatingFileHandler(log_file, maxBytes=10000, backupCount=5)
+log_handler.setLevel(logging.DEBUG)
+logger.addHandler(log_handler)
 
 
 def requires_login(min_permission_level=None):
@@ -24,8 +35,10 @@ def requires_login(min_permission_level=None):
 
             if (min_permission_level is not None
                     and current_user.permission_level < min_permission_level):
+                logger.info(f'{current_user} tried to access protected API {func.__name__}')
                 return 'Not Allowed', 400
 
+            logger.info(f'{current_user} accessed API {func.__name__} with data {request.data}')
             return func(*args, current_user=current_user, **kwargs)
 
         return wrapper

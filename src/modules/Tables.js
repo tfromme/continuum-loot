@@ -117,7 +117,10 @@ export function ItemTable(props) {
   }
 
   const [ columns, setColumns ] = React.useState([
-    { title: 'Name', field: 'name', defaultSort: 'asc', editable: 'never' },
+    { title: 'Name', field: 'name', defaultSort: 'asc', editable: 'never',
+      render: (( itemData ) => {
+        return <a href={itemData.url}>{itemData.name}</a>
+      }) },
     { title: 'Type', field: 'type', editable: 'never' },
     { title: 'Raid', field: 'raid', defaultFilter: ['2'], lookup: raidShortNameLookup, editable: 'never' },
     { title: 'Bosses', field: 'bosses', editable: 'never', render: ((rowData) => {
@@ -228,7 +231,7 @@ export function LootHistoryTable(props) {
   var itemLookup = {};
   var tierLookup = {};
   for (const item of props.items) {
-    itemLookup[item.id] = item.name;
+    itemLookup[item.id] = <a href={item.url}>{item.name}</a>
     tierLookup[item.id] = item.tier;
   }
 

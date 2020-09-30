@@ -107,6 +107,7 @@ class Item:
         self.bosses: List[str] = []
         self.class_prio: List[Tuple[int, str, int]] = []
         self.individual_prio: List[Tuple[int, int, int]] = []
+        self.url = self._generate_wowhead_link()
 
     @classmethod
     def from_dict(cls, data):
@@ -164,11 +165,14 @@ class Item:
                            for prio, class_name, set_by in self.class_prio],
             'individual_prio': [{'prio': prio, 'player_id': player, 'set_by': set_by}
                                 for prio, player, set_by in self.individual_prio],
+            'url': self.url
         }
 
     def __str__(self):
         return f"<Item {self.id}: {self.name}>"
 
+    def _generate_wowhead_link(self):
+        return 'https://classic.wowhead.com/item={item_id}'.format(item_id = self.id)
 
 class Raid:
 

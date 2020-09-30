@@ -25,6 +25,7 @@ const item = PropTypes.shape({
   notes: PropTypes.string,
   raid: PropTypes.number,
   bosses: PropTypes.arrayOf(PropTypes.string),
+  url: PropTypes.string,
   class_prio: PropTypes.arrayOf(PropTypes.shape({
     class: PropTypes.string,
     prio: PropTypes.number,

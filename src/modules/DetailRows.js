@@ -33,7 +33,7 @@ export function WishlistRow(props) {
 
   var wishlistLookup = {};
   for (const item of props.items) {
-    wishlistLookup[item.id] = item.name;
+    wishlistLookup[item.id] = <a href={item.url}>{item.name}</a>;
   }
 
   const customEditComponent = index => (xProps => (
@@ -188,7 +188,7 @@ AttendanceRow.propTypes = {
 export function LootHistoryRow(props) {
   var itemLookup = {};
   for (const item of props.items) {
-    itemLookup[item.id] = item.name;
+    itemLookup[item.id] = <a href={item.url}>{item.name}</a>;
   }
 
   const numItems = 6;

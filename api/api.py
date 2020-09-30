@@ -5,7 +5,6 @@ from logging.handlers import RotatingFileHandler
 
 from flask import Flask, jsonify, request, session
 from werkzeug.security import check_password_hash, generate_password_hash
-from unidecode import unidecode  # type: ignore
 
 import settings
 import dbinterface
@@ -280,7 +279,7 @@ def uploadAttendance(current_user):
 
     players, _ = dbinterface.load_players()
 
-    player_names = unidecode(data['data']).split(',')
+    player_names = data['data'].split(',')
 
     for player_name in player_names:
         for player in players.values():

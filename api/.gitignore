@@ -2,3 +2,5 @@
 __pycache__
 contloot.db
 .flaskenv
+.app_env
+dev_logs/*

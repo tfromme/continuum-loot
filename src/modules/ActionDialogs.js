@@ -172,9 +172,8 @@ NewRaidDialog.defaultProps = {
 }
 
 function isCommaSeparatedList(str) {
-  // Removes accent marks - See stackoverflow.com/questions/990904
-  str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-  return /^([a-z]+)(,[a-z]+)*$/.test(str.toLowerCase());
+  // "\p{L}" matches any unicode letter in any language
+  return /^(\p{L}+)(,\p{L}+)*$/u.test(str);
 }
 
 // See stackoverflow.com/questions/9804777

@@ -9,6 +9,7 @@ import CustomPropTypes from './CustomPropTypes.js';
 import Api from './Api.js';
 import { classes, ranks, roles, itemTiers, itemCategories } from './Constants.js';
 import { WishlistRow, AttendanceRow, LootHistoryRow, PriorityRow, LootHistoryItemsRow } from './DetailRows.js';
+import { EditItemAutocomplete } from './EditComponents.js';
 import { RaidFilter, MultiselectFilter } from './Filters.js';
 
 
@@ -262,15 +263,31 @@ export function LootHistoryTable(props) {
     return term.length === 0 || term.includes(item.tier);
   }
 
+  const editNameComponent = xProps => (
+    <EditItemAutocomplete
+      items={props.players}
+      initialValue={props.players.find(x => x.id === xProps.rowData.player_id)}
+      onChange={xProps.onChange}
+    />
+  );
+
+  const editItemComponent = xProps => (
+    <EditItemAutocomplete
+      items={props.items}
+      initialValue={props.items.find(x => x.id === xProps.rowData.item_id)}
+      onChange={xProps.onChange}
+    />
+  );
+
   const [ columns ] = React.useState([
     { title: 'Raid', field: 'raid_day_id', lookup: raidDayLookup, defaultSort: 'desc',
       customSort: raidDaySort, filterComponent: RaidFilter, customFilterAndSearch: raidDaySearch },
-    { title: 'Name', field: 'player_id', lookup: nameLookup },
+    { title: 'Name', field: 'player_id', lookup: nameLookup, editComponent: editNameComponent },
     { title: 'Class', field: 'player_id', lookup: classLookup, editable: 'never',
       filterComponent: classFilter, customFilterAndSearch: classSearch },
     { title: 'Role', field: 'player_id', lookup: roleLookup, editable: 'never',
       filterComponent: roleFilter, customFilterAndSearch: roleSearch },
-    { title: 'Item', field: 'item_id', lookup: itemLookup },
+    { title: 'Item', field: 'item_id', lookup: itemLookup, editComponent: editItemComponent },
     { title: 'Item Tier', field: 'item_id', lookup: tierLookup, editable: 'never',
       filterComponent: tierFilter, customFilterAndSearch: tierSearch },
   ]);

@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 
 import MaterialTable from 'material-table';
 import Paper from '@material-ui/core/Paper';
-import Autocomplete from '@material-ui/lab/Autocomplete';
 import TextField from '@material-ui/core/TextField';
 import TableContainer from '@material-ui/core/TableContainer';
 import Table from '@material-ui/core/Table';
@@ -18,6 +17,7 @@ import Clear from '@material-ui/icons/Clear';
 import  { styled } from '@material-ui/core/styles';
 
 import CustomPropTypes from './CustomPropTypes.js';
+import { EditItemAutocomplete, PriorityEditIndividual } from './EditComponents.js';
 import Api from './Api.js';
 
 const DarkPaper = styled(Paper)({
@@ -37,7 +37,7 @@ export function WishlistRow(props) {
   }
 
   const customEditComponent = index => (xProps => (
-    <WishlistEditItem
+    <EditItemAutocomplete
       items={props.items}
       initialValue={props.items.find(x => x.id === wishlistData[index])}
       onChange={xProps.onChange}
@@ -124,29 +124,6 @@ WishlistRow.propTypes = {
 
 WishlistRow.defaultProps = {
   editable: false,
-}
-
-// TODO: Refactor this and PriorityEditIndividual together
-function WishlistEditItem(props) {
-  const [inputValue, setInputValue] = React.useState('');
-  const [value, setValue] = React.useState(props.initialValue);
-  return (
-    <Autocomplete
-      options={props.items}
-      getOptionLabel={option => option.name}
-      value={value}
-      onChange={(e, newVal) => { setValue(newVal); props.onChange(newVal ? newVal.id : null); }}
-      inputValue={inputValue}
-      onInputChange={(e, newInputVal) => { setInputValue(newInputVal); }}
-      renderInput={params => <TextField {...params} />}
-    />
-  );
-}
-
-WishlistEditItem.propTypes = {
-  items: PropTypes.arrayOf(CustomPropTypes.item).isRequired,
-  initialValue: CustomPropTypes.item.isRequired,
-  onChange: PropTypes.func.isRequired,
 }
 
 // TODO: Refactor away from material-table (overkill for this task)
@@ -487,29 +464,6 @@ PriorityRow.propTypes = {
 PriorityRow.defaultProps = {
   loggedInPlayer: null,
   editable: false,
-}
-
-// TODO: Refactor this and WishlistEditItem together
-function PriorityEditIndividual(props) {
-  const [inputValue, setInputValue] = React.useState('');
-  const [value, setValue] = React.useState(props.initialValue);
-  return (
-    <Autocomplete
-      options={props.players}
-      getOptionLabel={option => option.name}
-      value={value}
-      onChange={(e, newVal) => { setValue(newVal); props.onChange(newVal); }}
-      inputValue={inputValue}
-      onInputChange={(e, newInputVal) => { setInputValue(newInputVal); }}
-      renderInput={params => <TextField {...params} />}
-    />
-  );
-}
-
-PriorityEditIndividual.propTypes = {
-  initialValue: CustomPropTypes.player.isRequired,
-  players: PropTypes.arrayOf(CustomPropTypes.player).isRequired,
-  onChange: PropTypes.func.isRequired,
 }
 
 // TODO: Refactor - combine with LootHistoryRow

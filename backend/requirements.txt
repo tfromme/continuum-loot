@@ -1,0 +1,16 @@
+asgiref==3.2.10
+Django==3.1.2
+django-extensions==3.0.9
+djangorestframework==3.12.1
+flake8==3.8.3
+importlib-metadata==2.0.0
+mccabe==0.6.1
+mypy==0.782
+mypy-extensions==0.4.3
+pycodestyle==2.6.0
+pyflakes==2.2.0
+pytz==2020.1
+sqlparse==0.3.1
+typed-ast==1.4.1
+typing-extensions==3.7.4.3
+zipp==3.2.0

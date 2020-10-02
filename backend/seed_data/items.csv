@@ -125,7 +125,7 @@ id,name,type,tier,notes,individual_prio_1,individual_prio_2,individual_prio_3,in
 19380,Therazane's Link,Waist,1,Roll,,,,,,Ret Pally,Hunter,,,
 19342,Venomous Totem,Trinket,1,Roll,,,,,,Rogue,,,,
 16960,Waistband of Wrath,Waist,2,Roll,,,,,,Warrior,,,,
-21702,Amulet of Foul Warding,Neck,2,NR - roll soakers,,,,,,Melee NR,,,,NR
+21702,Amulet of Foul Warding,Neck,2,NR - roll soakers,,,,,,Melee NR,,,,Nature Res
 21608,Amulet of Vek'nilash,Neck,,Roll,,,,,,Caster DPS,Healers,,,Caster
 21650,Ancient Qiraji Ripper,1H Sword,,Melee w/o CTS+,,,,,,Physical DPS / Tanks,,,,Physical
 21690,Angelista's Charm,Neck,2,Roll,,,,,,Healers,,,,Healer
@@ -135,7 +135,7 @@ id,name,type,tier,notes,individual_prio_1,individual_prio_2,individual_prio_3,in
 21635,Barb of the Sand Reaver,Polearm,2,Shuaa only has 1 BiS wep,Shuaa,,,,,Hunter,,,,Physical
 21664,Barbed Choker,Neck,,Roll,,,,,,Fury Warrior,,,,Physical
 21699,Barrage Shoulders,Shoulder,3,Roll,,,,,,Hunter,,,,Physical
-21708,Beetle Scaled Wristguards,Wrist,2,NR - roll soakers,,,,,,Rogue/Hunter NR,,,,NR
+21708,Beetle Scaled Wristguards,Wrist,2,NR - roll soakers,,,,,,Rogue/Hunter NR,,,,Nature Res
 21586,Belt of Never-ending Agony,Waist,,Roll,,,,,,Rogues / Feral,Hunters,,,Physical
 21606,Belt of the Fallen Emperor,Waist,,Roll,,,,,,Paladin,,,,Healer
 21682,Bile-Covered Gauntlets,Hands,2,NR - roll soakers,,,,,,Physical NR,,,,Physical
@@ -196,7 +196,7 @@ id,name,type,tier,notes,individual_prio_1,individual_prio_2,individual_prio_3,in
 21684,Mantle of the Desert's Fury,Shoulder,,Roll,,,,,,Pally Healer (Shaman),,,,Healer
 21665,Mantle of Wicked Revenge,Shoulder,4,Roll,,,,,,Feral / Hunters,,,,Physical
 22732,Mark of C'Thun,Neck,,Roll,,,,,,Tanks,,,,Physical
-21678,Necklace of Purity,Neck,2,NR - roll soakers,,,,,,Caster NR (Anyone really),,,,NR
+21678,Necklace of Purity,Neck,2,NR - roll soakers,,,,,,Caster NR (Anyone really),,,,Nature Res
 21856,"Neretzek, The Blood Drinker",2H Axe,1,Roll,,,,,,PvP,,,,
 21691,Ooze-ridden Gauntlets,Hands,2,NR - roll soakers,,,,,,Warrior/Ret NR,,,,
 20927,Ouro's Intact Hide,Token - Legs,,Warrior -> Rogue,,,,,,Fury/ Rogue / Tank,,,,

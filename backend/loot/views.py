@@ -8,27 +8,27 @@ from .serializers import (PlayerSerializer, ItemSerializer, RaidSerializer,
 from .models import Player, Item, Raid, RaidDay, LootHistory
 
 
-class PlayerViewSet(viewsets.ModelViewSet):
+class PlayerViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Player.objects.all().order_by('name')
     serializer_class = PlayerSerializer
 
 
-class ItemViewSet(viewsets.ModelViewSet):
+class ItemViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Item.objects.all()
     serializer_class = ItemSerializer
 
 
-class RaidViewSet(viewsets.ModelViewSet):
+class RaidViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Raid.objects.all()
     serializer_class = RaidSerializer
 
 
-class RaidDayViewSet(viewsets.ModelViewSet):
+class RaidDayViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = RaidDay.objects.all()
     serializer_class = RaidDaySerializer
 
 
-class LootHistoryViewSet(viewsets.ModelViewSet):
+class LootHistoryViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = LootHistory.objects.all()
     serializer_class = LootHistorySerializer
 

@@ -4,11 +4,11 @@ from rest_framework import routers
 from . import views
 
 router = routers.DefaultRouter()
-router.register('players', views.PlayerViewSet)
-router.register('items', views.ItemViewSet)
-router.register('raids', views.RaidViewSet)
-router.register('raidDays', views.RaidDayViewSet)
-router.register('lootHistory', views.LootHistoryViewSet)
+router.register('getPlayers', views.PlayerViewSet)
+router.register('getItems', views.ItemViewSet)
+router.register('getRaids', views.RaidViewSet)
+router.register('getRaidDays', views.RaidDayViewSet)
+router.register('getLootHistory', views.LootHistoryViewSet)
 
 urlpatterns = [
     path('api/', include(router.urls)),

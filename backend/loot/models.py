@@ -15,7 +15,7 @@ class Player(models.Model):
         WARRIOR = 'WR'
 
     class Roles(models.TextChoices):
-        DPS = 'D'
+        DPS = 'D', 'DPS'
         TANK = 'T'
         HEALER = 'H'
 
@@ -28,7 +28,7 @@ class Player(models.Model):
         CORE_RAIDER = 50
         CLASS_LEAD = 60
         OFFICER = 70
-        GM = 80
+        GM = 80, 'GM'
 
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True)
     name = models.CharField(max_length=20)

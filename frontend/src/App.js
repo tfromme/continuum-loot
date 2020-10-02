@@ -48,8 +48,8 @@ class App extends React.Component {
       'players': this.getPlayers.bind(this),
       'lootHistory': this.getLootHistory.bind(this),
       'raids': this.getRaids.bind(this),
+      'raidDays': this.getRaidDays.bind(this),
       'currentUser': this.getCurrentUser.bind(this),
-      'users': this.getUsers.bind(this),
     }
 
     for (const key of data) {
@@ -58,7 +58,7 @@ class App extends React.Component {
   }
 
   getItems() {
-    fetch('/api/getItems').then(res => res.json()).then(data => {
+    fetch('/api/getItems/').then(res => res.json()).then(data => {
       for (const item of data) {
         const oldItem = this.state.items.find(i => i.id === item.id);
         if (oldItem) {
@@ -70,7 +70,7 @@ class App extends React.Component {
   }
 
   getPlayers() {
-    fetch('/api/getPlayers').then(res => res.json()).then(data => {
+    fetch('/api/getPlayers/').then(res => res.json()).then(data => {
       for (const player of data) {
         const oldPlayer = this.state.players.find(p => p.id === player.id);
         if (oldPlayer) {
@@ -82,25 +82,23 @@ class App extends React.Component {
   }
 
   getLootHistory() {
-    fetch('/api/getLootHistory').then(res => res.json()).then(data => {
+    fetch('/api/getLootHistory/').then(res => res.json()).then(data => {
       data.sort((a, b) => (a.id < b.id) ? 1 : -1)
       this.setState({lootHistory: data})
     });
   }
 
   getRaids() {
-    fetch('/api/getRaids').then(res => res.json()).then(data => {
-      data.raid_days.sort((a, b) => (a.id < b.id) ? 1 : -1)
-      this.setState({raids: data.raids, raidDays: data.raid_days})
+    fetch('/api/getRaids/').then(res => res.json()).then(data => {
+      this.setState({raids: data})
     });
   }
 
-  getUsers() {
-    if (this.state.loggedInPlayer !== null && this.state.loggedInPlayer.permission_level >= 2) {
-      fetch('/api/getUsers').then(res => res.json()).then(data => {
-        this.setState({users: data});
-      });
-    }
+  getRaidDays() {
+    fetch('/api/getRaidDays/').then(res => res.json()).then(data => {
+      data.sort((a, b) => (a.id < b.id) ? 1 : -1)
+      this.setState({raidDays: data})
+    });
   }
 
   getCurrentUser() {
@@ -114,9 +112,8 @@ class App extends React.Component {
     this.getPlayers();
     this.getLootHistory();
     this.getRaids();
-    this.getCurrentUser().then(_ => {
-      this.getUsers();
-    });
+    this.getRaidDays();
+    this.getCurrentUser();
   }
 
   handleTabValueChange(e, v) {
@@ -125,7 +122,6 @@ class App extends React.Component {
 
   setLoggedInPlayer(v) {
     this.setState({loggedInPlayer: v});
-    this.getUsers();
   }
 
   render() {
@@ -159,8 +155,6 @@ class App extends React.Component {
         ];
 
         loginButtons = [ <LogoutDialog key="20" setLoggedInPlayer={this.setLoggedInPlayer} /> ];
-
-        tabs.push(<Tab key="3" label="Users" value="4" />)
 
       } else {
         loginButtons = [ <LogoutDialog key="20" leftPadded setLoggedInPlayer={this.setLoggedInPlayer} /> ];
@@ -206,12 +200,6 @@ class App extends React.Component {
                                 raidDays={this.state.raidDays}
                                 lootHistory={this.state.lootHistory}
                                 updateRemoteData={this.updateRemoteData}
-              />
-            </TabPanel>
-            <TabPanel value="4">
-              <UserTable loggedInPlayer={this.state.loggedInPlayer}
-                         users={this.state.users}
-                         updateRemoteData={this.updateRemoteData}
               />
             </TabPanel>
           </TabContext>

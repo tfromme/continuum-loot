@@ -22,7 +22,7 @@ export function LogoutDialog(props) {
   const handleClick = () => {
     props.setLoggedInPlayer(null);
     // Don't care if it was successful or not
-    fetch('/api/logout');
+    fetch('/logout');
   };
 
   const MyButton = props.leftPadded ? LeftPaddedButton : StyledButton;
@@ -56,7 +56,7 @@ export function LoginDialog(props) {
       'password': password,
     };
 
-    postApi('/api/login', data).then(res => {
+    postApi('/login', data).then(res => {
       if (res.error) {
         setErrorMessage(res.error);
       } else {
@@ -182,7 +182,7 @@ export function SignupDialog(props) {
       }
     }
 
-    postApi('/api/signup', data).then(res => {
+    postApi('/signup', data).then(res => {
       if (res.error) {
         setErrorMessage(res.error);
       } else {

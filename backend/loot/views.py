@@ -78,8 +78,17 @@ class LoginViewSet(generics.CreateAPIView):
             return Response({'error': 'Invalid Username or Password'})
 
 
-class LogoutViewSet(generics.CreateAPIView):
+class LogoutViewSet(generics.RetrieveAPIView):
 
-    def post(self, request, *args, **kwargs):
+    def get(self, request, *args, **kwargs):
         logout(request)
         return Response(status=204)
+
+
+class CurrentUserViewSet(generics.RetrieveAPIView):
+
+    def get(self, request, *args, **kwargs):
+        if request.user is None:
+            return Response({'player': None})
+        else:
+            return Response(CurrentUserSerializer(request.user).data)

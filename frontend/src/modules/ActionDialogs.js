@@ -77,7 +77,7 @@ function NewRaidDialog(props) {
     }
     
     return postApi(props.apiTarget, data).then(_res => {
-      props.updateRemoteData('players', 'lootHistory', 'raids');
+      props.updateRemoteData('players', 'lootHistory', 'raidDays');
     });
   };
 

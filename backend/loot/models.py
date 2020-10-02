@@ -30,6 +30,7 @@ class Player(models.Model):
         OFFICER = 70
         GM = 80
 
+    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True)
     name = models.CharField(max_length=20)
     notes = models.TextField()
     player_class = models.CharField(max_length=2, choices=Classes.choices, default=Classes.WARRIOR)

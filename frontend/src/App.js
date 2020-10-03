@@ -5,7 +5,7 @@ import Tab from '@material-ui/core/Tab';
 import AppBar from '@material-ui/core/AppBar';
 import { TabPanel, TabContext, TabList } from '@material-ui/lab';
 
-import { PlayerTable, ItemTable, LootHistoryTable, UserTable } from './modules/Tables.js';
+import { PlayerTable, ItemTable, LootHistoryTable } from './modules/Tables.js';
 import { LoginDialog, SignupDialog, LogoutDialog } from './modules/LoginDialogs.js';
 import { AttendanceDialog, LootHistoryDialog } from './modules/ActionDialogs.js';
 

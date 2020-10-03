@@ -12,6 +12,7 @@ router.register('getLootHistory', views.LootHistoryViewSet)
 
 urlpatterns = [
     path('api/getCurrentUser', views.CurrentUserViewSet.as_view(), name='currentUser'),
+    path('api/updatePlayer', views.UpdatePlayerViewSet.as_view(), name='updatePlayer'),
     path('api/', include(router.urls)),
     path('login', views.LoginViewSet.as_view(), name='login'),
     path('signup', views.SignupViewSet.as_view(), name='signup'),

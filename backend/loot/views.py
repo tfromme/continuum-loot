@@ -2,10 +2,19 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from rest_framework import generics, viewsets
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 
 from .serializers import (PlayerSerializer, ItemSerializer, RaidSerializer,
                           RaidDaySerializer, LootHistorySerializer, CurrentUserSerializer)
-from .models import Player, Item, Raid, RaidDay, LootHistory
+from .models import Player, Item, Raid, RaidDay, LootHistory, Wishlist
+from .permissions import IsUserOrAdmin
+
+
+class CsrfExemptSessionAuthentication(SessionAuthentication):
+
+    def enforce_csrf(self, request):
+        return
 
 
 class PlayerViewSet(viewsets.ReadOnlyModelViewSet):
@@ -60,6 +69,7 @@ class SignupViewSet(generics.CreateAPIView):
         user.save()
         player.user = user
         player.save()
+        login(request, user)
         return Response(CurrentUserSerializer(user).data)
 
 
@@ -92,3 +102,38 @@ class CurrentUserViewSet(generics.RetrieveAPIView):
             return Response({'player': None})
         else:
             return Response(CurrentUserSerializer(request.user).data)
+
+
+class UpdatePlayerViewSet(generics.CreateAPIView):
+    permission_classes = [IsAuthenticated, IsUserOrAdmin]
+    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+
+    def post(self, request, *args, **kwargs):
+        print('hi')
+        player = Player.objects.get(id=request.data['player']['id'])
+        self.check_object_permissions(request, player)
+
+        # Only Superuser can update name/class/rank/attendance
+        if request.user.is_superuser:
+            player.name = request.data['player']['name']
+            player.player_class = Player.Classes[request.data['player']['class'].upper().replace(" ", "_")]
+            player.rank = Player.Ranks[request.data['player']['rank'].upper().replace(" ", "_")]
+            player.attendance.clear()
+            for raid_day_id in request.data['player']['attendance']:
+                player.attendance.add(RaidDay.objects.get(id=raid_day_id))
+
+        player.notes = request.data['player']['notes']
+        player.role = Player.Roles[request.data['player']['role'].upper().replace(" ", "_")]
+
+        for wishlist in player.wishlist.all():
+            wishlist_dict = {'item_id': wishlist.item_id, 'prio': wishlist.priority}
+            if wishlist_dict not in request.data['player']['wishlist']:
+                wishlist.delete()
+
+        for wishlist_dict in request.data['player']['wishlist']:
+            item_id = wishlist_dict['item_id']
+            prio = wishlist_dict['prio']
+            Wishlist.objects.get_or_create(player=player, item_id=item_id, priority=prio)
+
+        player.save()
+        return Response(status=204)

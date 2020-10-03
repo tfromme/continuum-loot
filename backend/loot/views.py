@@ -102,10 +102,10 @@ class LogoutViewSet(generics.RetrieveAPIView):
 class CurrentUserViewSet(generics.RetrieveAPIView):
 
     def get(self, request, *args, **kwargs):
-        if request.user is None:
-            return Response({'player': None})
-        else:
+        try:
             return Response(CurrentUserSerializer(request.user).data)
+        except AttributeError:  # No User logged in
+            return Response({'player': None})
 
 
 class UpdatePlayerViewSet(generics.CreateAPIView):

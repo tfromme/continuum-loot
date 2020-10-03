@@ -1,0 +1,87 @@
+#!/bin/bash
+
+usage() {
+  cat <<HERETO
+Usage: ./manage [command]
+
+Commands:
+    init-frontend   Downloads dependencies for React through yarn
+
+    init-backend    Initializes python venv, downloads dependencies, initializes Database
+HERETO
+}
+
+initFrontend() {
+  pushd frontend
+  yarn
+  popd
+}
+
+initBackend() {
+  pushd backend
+  python3 -m venv env
+  env/bin/pip install --upgrade pip
+  env/bin/pip install -r requirements.txt
+  env/bin/python manage.py migrate
+  env/bin/python manage.py runscript seed_db
+  popd
+}
+
+cleanBackend() {
+  pushd backend
+  cd continuum_loot
+  rm -rf __pycache__
+  cd ../loot
+  rm -rf __pycache__
+  cd migrations
+  rm -rf __pycache__
+  cd ../../scripts
+  rm -rf __pycache__
+  popd
+}
+
+build() {
+  pushd frontend
+  yarn build
+  cd ../backend
+  env/bin/python manage.py collectstatic --noinput
+  popd
+}
+
+deploy() {
+  # This will only work from my machine since I have the proper ssh keys
+  ssh root@continuum-loot.tfrom.me 'rm -rf /etc/continuum-loot/build'
+  pushd frontend
+  scp -r build root@continuum-loot.tfrom.me:/etc/continuum-loot
+  cd ..
+
+  cleanBackend
+
+  cd backend
+  scp -r continuum_loot root@continuum-loot.tfrom.me:/etc/continuum-loot/backend
+  scp -r loot root@continuum-loot.tfrom.me:/etc/continuum-loot/backend
+  scp -r scripts root@continuum-loot.tfrom.me:/etc/continuum-loot/backend
+  scp manage.py requirements.txt root@continuum-loot.tfrom.me:/etc/continuum-loot/backend
+  ssh root@continuum-loot.tfrom.me 'cd /etc/continuum-loot/backend && env/bin/pip install -r requirements.txt && env/bin/python manage.py migrate'
+  ssh root@continuum-loot.tfrom.me 'service continuum-loot-api restart'
+
+  popd
+}
+
+cmd="$1"
+case "$cmd" in 
+  'init-frontend' )
+    shift
+    initFrontend $@
+    ;;
+  'init-backend' )
+    shift
+    initBackend $@
+    ;;
+  build|deploy )
+    $@
+    ;;
+  * )
+    usage
+    ;;
+esac

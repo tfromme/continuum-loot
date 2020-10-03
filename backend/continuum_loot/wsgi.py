@@ -8,8 +8,15 @@ https://docs.djangoproject.com/en/3.1/howto/deployment/wsgi/
 """
 
 import os
+from pathlib import Path
+from dotenv import load_dotenv
 
 from django.core.wsgi import get_wsgi_application
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+env_path = BASE_DIR / '.env'
+load_dotenv(dotenv_path=env_path)
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'continuum_loot.settings')
 

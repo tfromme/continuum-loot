@@ -160,8 +160,8 @@ export function SignupDialog(props) {
   const [passwordError, setPasswordError] = React.useState(false);
   const [password2Error, setPassword2Error] = React.useState(false);
   const [passwordErrorText, setPasswordErrorText] = React.useState('');
-  const [playerClass, setPlayerClass] = React.useState(classes[0]);
-  const [playerRole, setPlayerRole] = React.useState(roles[0]);
+  const [playerClass, setPlayerClass] = React.useState(Object.keys(classes)[0]);
+  const [playerRole, setPlayerRole] = React.useState(Object.keys(roles)[0]);
   const [errorMessage, setErrorMessage] = React.useState('');
 
   const postSignup = () => {
@@ -290,16 +290,16 @@ export function SignupDialog(props) {
       <FormControl variant="filled">
         <InputLabel id="class-select-label">Class</InputLabel>
         <PaddedSelect labelId="class-select-label" value={playerClass} onChange={handlePlayerClassChange}>
-          {classes.map((className, index) =>
-            <MenuItem value={className} key={index}>{className}</MenuItem>
+          {Object.entries(classes).map((klass, index) =>
+            <MenuItem value={klass[0]} key={index}>{klass[1]}</MenuItem>
           )}
         </PaddedSelect>
       </FormControl>
       <FormControl variant="filled">
         <InputLabel id="role-select-label">Role</InputLabel>
         <PaddedSelect labelId="role-select-label" value={playerRole} onChange={handlePlayerRoleChange}>
-          {roles.map((role, index) =>
-            <MenuItem value={role} key={index}>{role}</MenuItem>
+          {Object.entries(roles).map((role, index) =>
+            <MenuItem value={role[0]} key={index}>{role[1]}</MenuItem>
           )}
         </PaddedSelect>
       </FormControl>
@@ -318,7 +318,7 @@ export function SignupDialog(props) {
             <InputLabel id="player-select-label">Character</InputLabel>
             <PaddedSelect labelId="player-select-label" value={playerId} onChange={handlePlayerIdChange}>
               <MenuItem value={0}>New Character</MenuItem>
-              {props.players.filter(player => player.rank !== 'Inactive').map(player =>
+              {props.players.map(player =>
                 <MenuItem value={player.id} key={player.id}>{player.name}</MenuItem>
               )}
             </PaddedSelect>

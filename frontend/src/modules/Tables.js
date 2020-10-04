@@ -13,26 +13,17 @@ import { EditItemAutocomplete } from './EditComponents.js';
 import { RaidFilter, MultiselectFilter } from './Filters.js';
 
 
-function arrayToObj(arr) {
-  var obj = {}
-  for (const item of arr) {
-    obj[item] = item;
-  }
-  return obj;
-}
-
 export function PlayerTable(props) {
   const fullEditable = props.loggedInPlayer && props.loggedInPlayer.permission_level >= 2 ? 'always' : 'never';
   const rowEditable = rowData => (props.loggedInPlayer
                                   ? (rowData.id === props.loggedInPlayer.id || props.loggedInPlayer.permission_level >= 2)
                                   : false);
-  const defaultFilter = ranks.filter(name => name !== 'Inactive');
 
   const [ columns ] = React.useState([
     { title: 'Name', field: 'name', filtering: false, defaultSort: 'asc', editable: fullEditable },
-    { title: 'Class', field: 'class', lookup: arrayToObj(classes), editable: fullEditable },
-    { title: 'Rank', field: 'rank', defaultFilter: defaultFilter, lookup: arrayToObj(ranks), editable: fullEditable },
-    { title: 'Role', field: 'role', lookup: arrayToObj(roles) },
+    { title: 'Class', field: 'class', lookup: classes, editable: fullEditable },
+    { title: 'Rank', field: 'rank', lookup: ranks, editable: fullEditable },
+    { title: 'Role', field: 'role', lookup: roles },
     { title: 'Notes', field: 'notes', filtering: false },
   ]);
 
@@ -129,7 +120,7 @@ export function ItemTable(props) {
       ]);
     }) },
     { title: 'Tier', field: 'tier', type: 'numeric' },
-    { title: 'Category', field: 'category', lookup: arrayToObj(itemCategories) },
+    { title: 'Category', field: 'category', lookup: itemCategories },
     { title: 'Notes', field: 'notes', filtering: false },
   ]);
 
@@ -244,8 +235,12 @@ export function LootHistoryTable(props) {
     return term.length === 0 || term.includes(raidDay.raid_id);
   }
 
-  const classFilter = props => <MultiselectFilter choices={classes} {...props} />;
-  const roleFilter = props => <MultiselectFilter choices={roles} {...props} />;
+  const classFilter = props => <MultiselectFilter choices={Object.keys(classes)}
+                                                  choiceTexts={Object.values(classes)}
+                                                  {...props} />;
+  const roleFilter = props => <MultiselectFilter choices={Object.keys(roles)}
+                                                 choiceTexts={Object.values(roles)}
+                                                 {...props} />;
   const tierFilter = props => <MultiselectFilter choices={itemTiers} {...props} />;
 
   const classSearch = (term, rowData) => {

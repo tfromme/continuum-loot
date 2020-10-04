@@ -57,7 +57,7 @@ export function MultiselectFilter(props) {
         {props.choices.map((choice, index) => 
           <MenuItem key={index} value={choice}>
             <Checkbox checked={selectedVal.includes(choice)} />
-            <ListItemText primary={choice} />
+            <ListItemText primary={props.choiceTexts ? props.choiceTexts[index] : choice} />
           </MenuItem>
         )}
       </Select>
@@ -69,4 +69,9 @@ MultiselectFilter.propTypes = {
   onFilterChanged: PropTypes.func.isRequired,
   columnDef: PropTypes.shape({tableData: PropTypes.object}).isRequired,
   choices: PropTypes.array.isRequired,
+  choiceTexts: PropTypes.array,
+}
+
+MultiselectFilter.defaultProps = {
+  choiceTexts: null,
 }

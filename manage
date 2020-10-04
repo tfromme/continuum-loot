@@ -68,6 +68,8 @@ deploy() {
   clean-backend
 
   cd backend
+  ssh root@continuum-loot.tfrom.me 'rm -rf /etc/continuum-loot/backend/continuum_loot'
+  ssh root@continuum-loot.tfrom.me 'rm -rf /etc/continuum-loot/backend/loot'
   scp -r continuum_loot root@continuum-loot.tfrom.me:/etc/continuum-loot/backend
   scp -r loot root@continuum-loot.tfrom.me:/etc/continuum-loot/backend
   scp -r scripts root@continuum-loot.tfrom.me:/etc/continuum-loot/backend

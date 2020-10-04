@@ -1,4 +1,5 @@
 import json
+import logging
 from datetime import datetime
 from contextlib import suppress
 from django.core.exceptions import PermissionDenied
@@ -13,6 +14,8 @@ from .serializers import (PlayerSerializer, ItemSerializer, RaidSerializer,
                           RaidDaySerializer, LootHistorySerializer, CurrentUserSerializer)
 from .models import Player, Item, Raid, RaidDay, LootHistory, Wishlist, ClassPrio, IndividualPrio
 from .permissions import IsUserOrAdmin
+
+logger = logging.getLogger('loot')
 
 
 class CsrfExemptSessionAuthentication(SessionAuthentication):
@@ -112,8 +115,14 @@ class UpdatePlayerViewSet(generics.CreateAPIView):
     authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
 
     def post(self, request, *args, **kwargs):
+        logger.info(f"UpdatePlayer called by {request.user} with data {request.data}")
         player = Player.objects.get(id=request.data['player']['id'])
-        self.check_object_permissions(request, player)
+
+        try:
+            self.check_object_permissions(request, player)
+        except PermissionDenied:
+            logger.warning(f"UpdatePlayer cannot be called by {request.user}")
+            raise
 
         # Only Superuser can update name/class/rank/attendance
         if request.user.is_superuser:
@@ -149,7 +158,9 @@ class UpdateItemViewSet(generics.CreateAPIView):
     authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
 
     def post(self, request, *args, **kwargs):
+        logger.info(f"UpdateItem called by {request.user} with data {request.data}")
         if not request.user.has_perm('loot.change_item'):
+            logger.warning(f"UpdateItem cannot be called by {request.user}")
             raise PermissionDenied
 
         item = Item.objects.get(id=request.data['item']['id'])
@@ -195,7 +206,9 @@ class UpdateLootHistoryViewSet(generics.CreateAPIView):
     authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
 
     def post(self, request, *args, **kwargs):
+        logger.info(f"UpdateLootHistory called by {request.user} with data {request.data}")
         if not request.user.has_perm('loot.change_loothistory'):
+            logger.warning(f"UpdateLootHistory cannot be called by {request.user}")
             raise PermissionDenied
 
         loot_history = LootHistory.objects.get(id=request.data['row']['id'])
@@ -213,7 +226,9 @@ class AddLootHistoryViewSet(generics.CreateAPIView):
     authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
 
     def post(self, request, *args, **kwargs):
+        logger.info(f"AddLootHistory called by {request.user} with data {request.data}")
         if not request.user.has_perm('loot.add_loothistory'):
+            logger.warning(f"AddLootHistory cannot be called by {request.user}")
             raise PermissionDenied
 
         LootHistory.objects.create(
@@ -230,7 +245,9 @@ class DeleteLootHistoryViewSet(generics.CreateAPIView):
     authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
 
     def post(self, request, *args, **kwargs):
+        logger.info(f"DeleteLootHistory called by {request.user} with data {request.data}")
         if not request.user.has_perm('loot.delete_loothistory'):
+            logger.warning(f"DeleteLootHistory cannot be called by {request.user}")
             raise PermissionDenied
 
         with suppress(LootHistory.DoesNotExist):
@@ -244,6 +261,7 @@ class UploadAttendanceViewSet(generics.CreateAPIView):
     authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
 
     def post(self, request, *args, **kwargs):
+        logger.info(f"UploadAttendance called by {request.user} with data {request.data}")
         if request.data['raid_day_id'] == 'New':
             raid_day = RaidDay.objects.create(
                 name=request.data['raid_day_name'],
@@ -272,6 +290,7 @@ class UploadLootHistoryViewSet(generics.CreateAPIView):
     authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
 
     def post(self, request, *args, **kwargs):
+        logger.info(f"UploadLootHistory called by {request.user} with data {request.data}")
         if request.data['raid_day_id'] == 'New':
             raid_day = RaidDay.objects.create(
                 name=request.data['raid_day_name'],

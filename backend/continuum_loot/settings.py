@@ -10,22 +10,27 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
+import os
 from pathlib import Path
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+env_path = BASE_DIR / '.env'
+load_dotenv(dotenv_path=env_path)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'jil75n94i_7!m2y-$0^*vd$cyo@n6p3xx$n4)e#3zdn6-z4pr#'
+SECRET_KEY = os.getenv('SECRET_KEY', 'jil75n94i_7!m2y-$0^*vd$cyo@n6p3xx$n4)e#3zdn6-z4pr#')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = []
+DB_FILE = os.getenv('DB_FILE', BASE_DIR / 'contloot.sqlite3')
+
+ALLOWED_HOSTS = ['localhost', 'continuum-loot.tfrom.me']
 
 
 # Application definition
@@ -79,7 +84,7 @@ WSGI_APPLICATION = 'continuum_loot.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'contloot.sqlite3',
+        'NAME': DB_FILE,
     }
 }
 

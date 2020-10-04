@@ -8,7 +8,7 @@ const wishlist = PropTypes.shape({
 const player = PropTypes.shape({
   id: PropTypes.number,
   name: PropTypes.string,
-  rank: PropTypes.string,
+  rank: PropTypes.number,
   class: PropTypes.string,
   role: PropTypes.string,
   notes: PropTypes.string,

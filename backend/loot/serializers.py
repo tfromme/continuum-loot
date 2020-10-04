@@ -15,8 +15,6 @@ class WishlistSerializer(serializers.ModelSerializer):
 
 class PlayerSerializer(serializers.ModelSerializer):
     wishlist = WishlistSerializer(many=True)
-    role = serializers.CharField(source='get_role_display')
-    rank = serializers.CharField(source='get_rank_display')
 
     class Meta:
         model = Player
@@ -24,7 +22,7 @@ class PlayerSerializer(serializers.ModelSerializer):
 
 
 # Oh reserved keywords, how I love thee
-PlayerSerializer._declared_fields['class'] = serializers.CharField(source='get_player_class_display')
+PlayerSerializer._declared_fields['class'] = serializers.CharField(source='player_class')
 
 
 # Sub-serializer for ItemSerializer and RaidSerializer
@@ -58,7 +56,6 @@ class IndividualPrioSerializer(serializers.ModelSerializer):
 
 
 class ItemSerializer(serializers.ModelSerializer):
-    category = serializers.CharField(source='get_category_display')
     bosses = BossSerializer(queryset=Boss.objects.all(), many=True)
     class_prio = ClassPrioSerializer(source='class_prios', many=True)
     individual_prio = IndividualPrioSerializer(source='individual_prios', many=True)

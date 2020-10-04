@@ -22,7 +22,7 @@ class CsrfExemptSessionAuthentication(SessionAuthentication):
 
 
 class PlayerViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Player.objects.order_by('name')
+    queryset = Player.objects.exclude(rank=Player.Ranks.INACTIVE).order_by('name')
     serializer_class = PlayerSerializer
 
 
@@ -56,11 +56,9 @@ class SignupViewSet(generics.CreateAPIView):
                 player = Player.objects.get(name__iexact=player_name)
             except Player.DoesNotExist:
                 # Expected if player is truly new
-                player_class = Player.Classes[request.data['class'].upper().replace(" ", "_")]
-                role = Player.Roles[request.data['role'].upper().replace(" ", "_")]
                 player = Player.objects.create(name=player_name.capitalize(),
-                                               player_class=player_class,
-                                               role=role)
+                                               player_class=request.data['class'],
+                                               role=request.data['role'])
         else:
             player = Player.objects.get(id=request.data['player_id'])
 
@@ -120,14 +118,14 @@ class UpdatePlayerViewSet(generics.CreateAPIView):
         # Only Superuser can update name/class/rank/attendance
         if request.user.is_superuser:
             player.name = request.data['player']['name']
-            player.player_class = Player.Classes[request.data['player']['class'].upper().replace(" ", "_")]
-            player.rank = Player.Ranks[request.data['player']['rank'].upper().replace(" ", "_")]
+            player.player_class = request.data['player']['class']
+            player.rank = request.data['player']['rank']
             player.attendance.clear()
             for raid_day_id in request.data['player']['attendance']:
                 player.attendance.add(RaidDay.objects.get(id=raid_day_id))
 
         player.notes = request.data['player']['notes']
-        player.role = Player.Roles[request.data['player']['role'].upper().replace(" ", "_")]
+        player.role = request.data['player']['role']
 
         if request.user.has_perm('loot.change_wishlist'):
             valid_ids = []
@@ -157,7 +155,7 @@ class UpdateItemViewSet(generics.CreateAPIView):
         item = Item.objects.get(id=request.data['item']['id'])
 
         item.tier = request.data['item']['tier']
-        item.category = Item.Categories[request.data['item']['category'].upper().replace(" ", "_")]
+        item.category = request.data['item']['category']
         item.notes = request.data['item']['notes']
 
         if request.user.has_perm('loot.change_classprio'):

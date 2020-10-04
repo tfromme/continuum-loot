@@ -8,16 +8,22 @@ Commands:
     init-frontend   Downloads dependencies for React through yarn
 
     init-backend    Initializes python venv, downloads dependencies, initializes Database
+
+    start-frontend  Alias for "yarn start"
+
+    start-backend   Alias for "python manage.py runserver"
+
+    lint            Runs ESLint and flake8
 HERETO
 }
 
-initFrontend() {
+init-frontend() {
   pushd frontend
   yarn
   popd
 }
 
-initBackend() {
+init-backend() {
   pushd backend
   python3 -m venv env
   env/bin/pip install --upgrade pip
@@ -27,16 +33,20 @@ initBackend() {
   popd
 }
 
-cleanBackend() {
+start-frontend() {
+  cd frontend
+  yarn start
+}
+
+start-backend() {
+  cd backend
+  env/bin/python manage.py runserver
+}
+
+clean-backend() {
   pushd backend
-  cd continuum_loot
-  rm -rf __pycache__
-  cd ../loot
-  rm -rf __pycache__
-  cd migrations
-  rm -rf __pycache__
-  cd ../../scripts
-  rm -rf __pycache__
+  python3 -Bc "import pathlib; [p.unlink() for p in pathlib.Path('.').rglob('*.py[co]')]"
+  python3 -Bc "import pathlib; [p.rmdir() for p in pathlib.Path('.').rglob('__pycache__')]"
   popd
 }
 
@@ -55,7 +65,7 @@ deploy() {
   scp -r build root@continuum-loot.tfrom.me:/etc/continuum-loot
   cd ..
 
-  cleanBackend
+  clean-backend
 
   cd backend
   scp -r continuum_loot root@continuum-loot.tfrom.me:/etc/continuum-loot/backend
@@ -68,17 +78,17 @@ deploy() {
   popd
 }
 
+lint() {
+  pushd frontend > /dev/null
+  node_modules/.bin/eslint src/
+  cd ../backend
+  env/bin/flake8 --exclude __pycache__,migrations manage.py continuum_loot scripts loot
+  popd > /dev/null
+}
+
 cmd="$1"
 case "$cmd" in 
-  'init-frontend' )
-    shift
-    initFrontend $@
-    ;;
-  'init-backend' )
-    shift
-    initBackend $@
-    ;;
-  build|deploy )
+  init-frontend|init-backend|start-frontend|start-backend|build|deploy|lint )
     $@
     ;;
   * )

@@ -18,12 +18,15 @@ class GetTests(APITestCase):
         sulf = Item.objects.create(id=10, name="Sulfuras", type="Weapon", category=Item.Categories.CASTER, raid=bwl)
         sulf.bosses.add(vael)
 
-        tear = Item.objects.create(id=20, name="Nelth's Tear", type="Trinket", category=Item.Categories.CASTER, raid=aq, notes="yikes")
+        tear = Item.objects.create(id=20, name="Nelth's Tear", type="Trinket",
+                                   category=Item.Categories.CASTER, raid=aq, notes="yikes")
         tear.bosses.add(vael)
         tear.bosses.add(huhu)
 
-        nes = Player.objects.create(id=100, name="Nesingtick", player_class=Player.Classes.HUNTER, role=Player.Roles.DPS, rank=Player.Ranks.OFFICER, notes="yikes")
-        morb = Player.objects.create(id=200, name="Morbidmind", player_class=Player.Classes.WARLOCK, role=Player.Roles.DPS, rank=Player.Ranks.GM)
+        nes = Player.objects.create(id=100, name="Nesingtick", player_class=Player.Classes.HUNTER,
+                                    role=Player.Roles.DPS, rank=Player.Ranks.OFFICER, notes="yikes")
+        morb = Player.objects.create(id=200, name="Morbidmind", player_class=Player.Classes.WARLOCK,
+                                     role=Player.Roles.DPS, rank=Player.Ranks.GM)
         nes.attendance.add(bwl1)
         nes.attendance.add(aq1)
 

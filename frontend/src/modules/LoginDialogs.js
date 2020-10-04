@@ -282,9 +282,6 @@ export function SignupDialog(props) {
     setErrorMessage('');
   }
 
-  const players = props.players;
-  players.sort((a, b) => (a.name > b.name) ? 1 : -1);
-
   const newCharacterFields = (
     <>
       <br />
@@ -321,7 +318,7 @@ export function SignupDialog(props) {
             <InputLabel id="player-select-label">Character</InputLabel>
             <PaddedSelect labelId="player-select-label" value={playerId} onChange={handlePlayerIdChange}>
               <MenuItem value={0}>New Character</MenuItem>
-              {players.filter(player => player.rank !== 'Inactive').map(player =>
+              {props.players.filter(player => player.rank !== 'Inactive').map(player =>
                 <MenuItem value={player.id} key={player.id}>{player.name}</MenuItem>
               )}
             </PaddedSelect>

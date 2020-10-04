@@ -1,5 +1,3 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
-
 ## Developer Setup
 
 ### Pre-requisites
@@ -16,47 +14,70 @@ python3-venv - Assumed by setup scripts, general best practice
 
 To setup a new development environment:
 ```bash
-yarn
-yarn init-api
-yarn build-db
+./manage init-frontend
+./manage init-backend
 ```
 
 This will install all dependencies, setup a python venv for the backend, and build the DB with seed data
 
 ## Running Locally
 
-`yarn start` and `yarn start-api` will both need to be running for the app to work
+`yarn start` in `frontend/` will serve the frontend.<br />
+`env/bin/python manage.py runserver` in `backend/` will serve the backend.<br />
+These are aliased by `./manage start-frontend` and `./manage start-backend` respectively.<br />
+The app is hosted on `localhost:3000` and the API is proxied through `localhost:8000`.
+
+## Addon
+
+Written in Lua<br />
 <br />
-The app is hosted on `localhost:3000` and the API is proxied through `localhost:5000`
+Copy `ContinuumLoot` to your `interface/addons` folder.<br />
+In-game: `/cloot attendance` will give you an export sting of everybody in your current group for pasting into the frontend.
 
+## Frontend
 
-## Available Scripts
-
-### `yarn test`
-
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-The current test suite is practically non-existant (I know, I know)
-
-### `yarn lint`
-
-Runs the frontend code through `ESLint` and the backend code through `flake8` and `mypy`
+Written in React<br />
 <br />
-No CI pipelines are setup with this yet, so running it locally is necessary
+There are no special developer scripts here.<br />
+The main file is `App.js` which pulls components from `modules/`
 
-### `yarn build`
+## Backend
 
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
+Written in Django using the Django Rest Framework<br />
 <br />
-This isn't very useful unless you have the rights to deploy (you don't)
-
-### `yarn deploy`
-
-Deploys the app to production (https://continuum-loot.tfrom.me)
+`source env/bin/activate` will enter the python venv and `deactivate` will leave it.<br />
+This will allow you to type `python` and have it reference the venv without having to type `env/bin/python` every time.<br />
 <br />
-This won't work for you since it requires my SSH keys (which you don't have)
+
+### `manage.py`
+
+This is the Django management script.
+
+#### `python manage.py runserver`
+
+This runs the API server.
+
+#### `python manage.py shell_plus`
+
+This enters the Django shell.<br />
+You can interact with the database here to test Django code and see the current state of the data.
+
+#### `python manage.py makemigrations`
+
+Anytime you change something in the models, this will autogenerate a new migration file.
+
+#### `python manage.py migrate`
+
+This will intelligently migrate the database according to the migration files.
+
+#### `python manage.py createsuperuser`
+
+This is how you need to create your first user, you will need to manually link it to your Player in the admin.
+
+### Django Admin
+
+#### `localhost:8000/admin`
+
+This is the Django admin page, you will need to have created a superuser to login.<br />
+This is a built-in website that can be configured to developer needs.<br />
+Here, you can more visually interact with the database and change it live.<br />

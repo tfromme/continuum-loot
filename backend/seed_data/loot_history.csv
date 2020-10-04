@@ -1,0 +1,605 @@
+id,raid_day_name,player,item
+1,BWL 10,Trickypotato,Bloodfang Bracers
+2,BWL 10,Celery,Stormrage Bracers
+3,BWL 10,Thethumb,Mantle of the Blackwing Cabal
+4,BWL 10,Jameshiggins,Helm of Endless Rage
+5,BWL 10,Kyir,Waistband of Wrath
+6,BWL 10,Flanigans,Dragonstalker's Belt
+7,BWL 10,Humanrogue,Venomous Totem
+8,BWL 10,Kyir,Sabatons of Wrath
+9,BWL 10,Braulio,Firemaw's Clutch
+10,BWL 10,Skuzz,Gauntlets of Wrath
+11,BWL 10,Humanrogue,Bloodfang Gloves
+12,BWL 10,Warlox,Ebony Flame Gloves
+13,BWL 10,Braulio,Netherwind Gloves
+14,BWL 10,Kyir,Styleen's Impeding Scarab
+15,BWL 10,Stalfos,"Ashjre'thul, Crossbow of Smiting"
+16,BWL 10,Jdiesel,Empowered Leggings
+17,BWL 10,Galbraith,Stormrage Pauldrons
+18,BWL 10,Galbraith,Stormrage Chestguard
+19,BWL 10,Beargyll,Dragonstalker's Breastplate
+20,BWL 10,Braulio,Cloak of the Brood Lord
+21,BWL 10,Toons,Head of Nefarian
+22,BWL 11,Stalfos,Dragonstalker's Bracers
+23,BWL 11,Miniwheats,Bindings of Transcendence
+24,BWL 11,Trickypotato,Dragonfang Blade
+25,BWL 11,Toons,Bloodfang Belt
+26,BWL 11,Skuzz,Lifegiving Gem
+27,BWL 11,Beargyll,Dragonstalker's Greaves
+28,BWL 11,Matsfan,Stormrage Boots
+29,BWL 11,Scrubzilla,Gloves of Rapid Evolution
+30,BWL 11,Beefdumper,Cloak of Firemaw
+31,BWL 11,Skuzz,Draconic Avenger
+32,BWL 11,Kraatom,Aegis of Preservation
+33,BWL 11,Toons,Bloodfang Gloves
+34,BWL 11,Rijndael,Rejuvenating Gem
+35,BWL 11,Celery,Circle of Applied Force
+36,BWL 11,Gavitor,Empowered Leggings
+37,BWL 11,Glorpy,Pauldrons of Transcendence
+38,BWL 11,Madfamous,"Mish'undare, Circlet of the Mind Flayer"
+39,BWL 11,Toons,Bloodfang Chestpiece
+40,BWL 11,Flanigans,Head of Nefarian
+41,BWL 12,Humanrogue,Bloodfang Bracers
+42,BWL 12,Dbol,Netherwind Bindings
+43,BWL 12,Trickypotato,Bloodfang Belt
+44,BWL 12,Darenis,Helm of Endless Rage
+45,BWL 12,Toons,Bloodfang Boots
+46,BWL 12,Stebert,Nemesis Boots
+47,BWL 12,Kyir,Lifegiving Gem
+48,BWL 12,Stalfos,Dragonstalker's Gauntlets
+49,BWL 12,Nightmagic,Aegis of Preservation
+50,BWL 12,Darenis,Herald of Woe
+51,BWL 12,Ididntdoit,Elementium Reinforced Bulwark
+52,BWL 12,Celery,Elementium Threaded Cloak
+53,BWL 12,Dbol,Netherwind Mantle
+54,BWL 12,Gavitor,Judgement Spaulders
+55,BWL 12,Prunejuice,Neltharion's Tear
+56,BWL 12,Feederika,Robes of Transcendence
+57,BWL 12,Trickypotato,Head of Nefarian
+58,BWL 13,Scrubzilla,Bindings of Transcendence
+59,BWL 13,Stalfos,Arcane Infused Gem
+60,BWL 13,Valadrim,Mind Quickening Gem
+61,BWL 13,Gavitor,Judgement Belt
+62,BWL 13,Trickypotato,Claw of the Black Drake
+63,BWL 13,Jameshiggins,Drake Fang Talisman
+64,BWL 13,Gavitor,Shroud of Pure Thought
+65,BWL 13,Gavitor,Drake Talon Cleaver
+66,BWL 13,Feederika,Pure Elementium Band
+67,BWL 13,Dbol,Cloak of the Brood Lord
+68,BWL 13,Miniwheats,Robes of Transcendence
+69,BWL 13,Christophe,Head of Nefarian
+70,BWL 14,Kraatom,Mantle of the Blackwing Cabal
+71,BWL 14,Zzoro,Bloodfang Belt
+72,BWL 14,Ididntdoit,Helm of Endless Rage
+73,BWL 14,Flanigans,Dragonstalker's Bracers
+74,BWL 14,Trickypotato,Bloodfang Boots
+75,BWL 14,Pantherk,Netherwind Boots
+76,BWL 14,Celery,Black Ash Robe
+77,BWL 14,Celery,Malfurion's Blessed Bulwark
+78,BWL 14,Curveball,Ringo's Blizzard Boots
+79,BWL 14,Brekkolu,Girdle of the Fallen Crusader
+80,BWL 14,Pantherk,Netherwind Mantle
+81,BWL 14,Curveball,Netherwind Mantle
+82,BWL 14,Celery,Boots of the Shadow Flame
+83,BWL 14,Ididntdoit,Archimtiros' Ring of Reckoning
+84,BWL 14,Jameshiggins,Head of Nefarian
+85,BWL 15,Kaldorei,Bloodfang Bracers
+86,BWL 15,Drstalfos,Stormrage Bracers
+87,BWL 15,Kaldorei,Bloodfang Belt
+88,BWL 15,Ainsley,Netherwind Belt
+89,BWL 15,Kaldorei,Bloodfang Boots
+90,BWL 15,Gavitor,Judgement Sabatons
+91,BWL 15,Drstalfos,Rune of Metamorphosis
+92,BWL 15,Nightmagic,Handguards of Transcendence
+93,BWL 15,Kaldorei,Malfurion's Blessed Bulwark
+94,BWL 15,Drstalfos,Stormrage Handguards
+95,BWL 15,Drstalfos,Shroud of Pure Thought
+96,BWL 15,Nesingtick,"Ashjre'thul, Crossbow of Smiting"
+97,BWL 15,Beargyll,Dragonstalker's Spaulders
+98,BWL 15,Braulio,Netherwind Mantle
+99,BWL 15,Stebert,Angelista's Grasp
+100,BWL 15,Shuaa,Prestor's Talisman of Connivery
+101,BWL 15,Trickypotato,Boots of the Shadow Flame
+102,BWL 15,Scrubzilla,Robes of Transcendence
+103,BWL 15,Kaldorei,Head of Nefarian
+104,BWL 16,Kaldorei,Venomous Totem
+105,BWL 16,Miniwheats,Handguards of Transcendence
+106,BWL 16,Kraatom,Black Ash Robe
+107,BWL 16,Kraatom,Ebony Flame Gloves
+108,BWL 16,Kaldorei,Bloodfang Gloves
+109,BWL 16,Unflushable,Handguards of Transcendence
+110,BWL 16,Nesingtick,Circle of Applied Force
+111,BWL 16,Glorpy,Empowered Leggings
+112,BWL 16,Miniwheats,Pauldrons of Transcendence
+113,BWL 16,Morbidmind,Neltharion's Tear
+114,BWL 16,Rijndael,"Mish'undare, Circlet of the Mind Flayer"
+115,BWL 16,Drstalfos,Head of Nefarian
+116,BWL 17,Minaomi,Helm of Endless Rage
+117,BWL 17,Braulio,Netherwind Belt
+118,BWL 17,Finntrinsic,Nemesis Belt
+119,BWL 17,Warlox,Bracers of Arcane Accuracy
+120,BWL 17,Kraatom,Band of Dark Dominion
+121,BWL 17,Braulio,Ringo's Blizzard Boots
+122,BWL 17,Varvatos,Legguards of the Fallen Crusader
+123,BWL 17,Braulio,Ring of Blackrock
+124,BWL 17,Finntrinsic,Ebony Flame Gloves
+125,BWL 17,Steb,Herald of Woe
+126,BWL 17,Finntrinsic,Nemesis Spaulders
+127,BWL 17,Minaomi,Archimtiros' Ring of Reckoning
+128,BWL 17,Trickypotato,Bloodfang Chestpiece
+129,BWL 17,Dbol,Netherwind Robes
+130,BWL 17,Matsfan,Head of Nefarian
+131,BWL 18,Pantherk,Netherwind Bindings
+132,BWL 18,Braulio,Mind Quickening Gem
+133,BWL 18,Glorpy,Belt of Transcendence
+134,BWL 18,Drstalfos,Stormrage Boots
+135,BWL 18,Nesingtick,Dragonstalker's Greaves
+136,BWL 18,Narzil,Heartstriker
+137,BWL 18,Drstalfos,Interlaced Shadow Jerkin
+138,BWL 18,Kraatom,Firemaw's Clutch
+139,BWL 18,Kraatom,Shadow Wing Focus Staff
+140,BWL 18,Cui,Dragon's Touch
+141,BWL 18,Rijndael,Empowered Leggings
+142,BWL 18,Narzil,Bloodfang Spaulders
+143,BWL 18,Drstalfos,Stormrage Pauldrons
+144,BWL 18,Beargyll,Prestor's Talisman of Connivery
+145,BWL 18,Beefdumper,Boots of the Shadow Flame
+146,BWL 18,Flanigans,Dragonstalker's Breastplate
+147,BWL 18,Steb,Head of Nefarian
+148,BWL 19,Toons,Bloodfang Bracers
+149,BWL 19,Kraatom,Bindings of Transcendence
+150,BWL 19,Deathgasm,The Untamed Blade
+151,BWL 19,Skuzz,Helm of Endless Rage
+152,BWL 19,Pewpewlasers,Netherwind Belt
+153,BWL 19,Warlox,Nemesis Belt
+154,BWL 19,Morbidmind,Bracers of Arcane Accuracy
+155,BWL 19,Deathgasm,Dragonstalker's Greaves
+156,BWL 19,Darenis,Legguards of the Fallen Crusader
+157,BWL 19,Beargyll,Circle of Applied Force
+158,BWL 19,Glorpy,Handguards of Transcendence
+159,BWL 19,Ddr,Chromatic Boots
+160,BWL 19,Ainsley,Netherwind Mantle
+161,BWL 19,Kaldorei,Boots of the Shadow Flame
+162,BWL 19,Pewpewlasers,Cloak of the Brood Lord
+163,BWL 19,Matsfan,Stormrage Chestguard
+164,BWL 19,Kyir,Head of Nefarian
+165,BWL 20,Ainsley,Netherwind Bindings
+166,BWL 20,Warlox,The Black Book
+167,BWL 20,Braulio,Netherwind Boots
+168,BWL 20,Twinkes,Venomous Totem
+169,BWL 20,Scrubzilla,Handguards of Transcendence
+170,BWL 20,Trickypotato,Cloak of Firemaw
+171,BWL 20,Twinkes,Drake Fang Talisman
+172,BWL 20,Beefdumper,Drake Talon Pauldrons
+173,BWL 20,Miniwheats,Shroud of Pure Thought
+174,BWL 20,Jameshiggins,Chromatic Boots
+175,BWL 20,Beefdumper,Elementium Threaded Cloak
+176,BWL 20,Pewpewlasers,Shadow Wing Focus Staff
+177,BWL 20,Twinkes,Boots of the Shadow Flame
+178,BWL 20,Drstalfos,Archimtiros' Ring of Reckoning
+179,BWL 20,Pantherk,Netherwind Robes
+180,BWL 20,Kaldorei,Bloodfang Chestpiece
+181,BWL 20,Ddr,Head of Nefarian
+182,BWL 21,Pantherk,Mind Quickening Gem
+183,BWL 21,Ididntdoit,Waistband of Wrath
+184,BWL 21,Gavitor,Firemaw's Clutch
+185,BWL 21,Ddr,Gauntlets of Wrath
+186,BWL 21,Kraatom,Handguards of Transcendence
+187,BWL 21,Scrubzilla,Aegis of Preservation
+188,BWL 21,Ididntdoit,Drake Talon Pauldrons
+189,BWL 21,Minaomi,Emberweave Leggings
+190,BWL 21,Toons,Chromatically Tempered Sword
+191,BWL 21,Shuaa,"Ashjre'thul, Crossbow of Smiting"
+192,BWL 21,Nesingtick,Dragonstalker's Spaulders
+193,BWL 21,Jebediah,Judgement Spaulders
+194,BWL 21,Prunejuice,"Mish'undare, Circlet of the Mind Flayer"
+195,BWL 21,Steb,Therazane's Link
+196,BWL 21,Twinkes,Bloodfang Chestpiece
+197,BWL 21,Paleblood,Nemesis Robes
+198,BWL 21,Darenis,Head of Nefarian
+199,BWL 22,Darenis,Judgement Bindings
+200,BWL 22,Madfamous,Mind Quickening Gem
+201,BWL 22,Prunejuice,Nemesis Gloves
+202,BWL 22,Jdiesel,Judgement Belt
+203,BWL 22,Brekkolu,Bracelets of Wrath
+204,BWL 22,Scrubzilla,Black Ash Robe
+205,BWL 22,Beefdumper,Malfurion's Blessed Bulwark
+206,BWL 22,Warlox,Nemesis Gloves
+207,BWL 22,Flanigans,Circle of Applied Force
+208,BWL 22,Trickypotato,Bloodfang Gloves
+209,BWL 22,Minaomi,Chromatic Boots
+210,BWL 22,Rubberducky,Judgement Breastplate
+211,BWL 22,Twinkes,Archimtiros' Ring of Reckoning
+212,BWL 22,Brekkolu,Boots of the Shadow Flame
+213,BWL 22,Ididntdoit,Head of Nefarian
+214,BWL 22,Ididntdoit,Elementium Threaded Cloak
+215,BWL 23,Rubberducky,Judgement Belt
+216,BWL 23,Twinkes,Bloodfang Belt
+217,BWL 23,Jebediah,Judgement Sabatons
+218,BWL 23,Ddr,Sabatons of Wrath
+219,BWL 23,Rubberducky,Black Brood Pauldrons
+220,BWL 23,Prunejuice,Band of Dark Dominion
+221,BWL 23,Subu,Claw of the Black Drake
+222,BWL 23,Beefdumper,Drake Fang Talisman
+223,BWL 23,Cui,Shroud of Pure Thought
+224,BWL 23,Drstalfos,Taut Dragonhide Shoulderpads
+225,BWL 23,Rubberducky,Taut Dragonhide Gloves
+226,BWL 23,Kaldorei,Bloodfang Gloves
+227,BWL 23,Subu,Head of Nefarian
+228,BWL 23,Jebediah,Judgement Breastplate
+229,BWL 23,Steb,Boots of the Shadow Flame
+230,BWL 23,Humanrogue,Prestor's Talisman of Connivery
+231,BWL 24,Drstalfos,Gloves of Rapid Evolution
+232,BWL 24,Jameshiggins,Bracelets of Wrath
+233,BWL 24,Jebediah,Red Dragonscale Protector
+234,BWL 24,Celery,Taut Dragonhide Gloves
+235,BWL 24,Steb,Chromatically Tempered Sword
+236,BWL 24,Marneus,Judgement Spaulders
+237,BWL 24,Celery,Prestor's Talisman of Connivery
+238,BWL 24,Nesingtick,Dragonstalker's Breastplate
+239,BWL 24,Madfamous,Neltharion's Tear
+240,BWL 24,Madfamous,Head of Nefarian
+241,BWL 24,Cui,Ebony Flame Gloves
+242,BWL 24,Marneus,Emberweave Leggings
+243,BWL 24,Madfamous,Ringo's Blizzard Boots
+244,BWL 24,Marneus,Ring of Blackrock
+245,BWL 24,Marneus,Scrolls of Blinding Light
+246,BWL 25,Prunejuice,The Black Book
+247,BWL 25,Steb,Helm of Endless Rage
+248,BWL 25,Jameshiggins,Waistband of Wrath
+249,BWL 25,Madfamous,Netherwind Belt
+250,BWL 25,Mistajonez,Judgement Belt
+251,BWL 25,Celery,Stormrage Boots
+252,BWL 25,Trickypotato,Venomous Totem
+253,BWL 25,Prunejuice,Nemesis Bracers
+254,BWL 25,Mistajonez,Shroud of Pure Thought
+255,BWL 25,Steb,Gauntlets of Wrath
+256,BWL 25,Trickypotato,Taut Dragonhide Belt
+257,BWL 25,Scrubzilla,Firemaw's Clutch
+258,BWL 25,Morbidmind,Band of Dark Dominion
+259,BWL 25,Kraatom,Aegis of Preservation
+260,BWL 25,Subu,Gauntlets of Wrath
+261,BWL 25,Rubberducky,Judgement Spaulders
+262,BWL 25,Trickypotato,Taut Dragonhide Shoulderpads
+263,BWL 25,Nugget,Bloodfang Spaulders
+264,BWL 25,Skuzz,Girdle of the Fallen Crusader
+265,BWL 25,Valadrim,Neltharion's Tear
+266,BWL 25,Zzoro,Bloodfang Chestpiece
+267,BWL 25,Mistajonez,Judgement Breastplate
+268,BWL 25,Nugget,Head of Nefarian
+269,BWL 25,Warlox,Cloak of the Brood Lord
+270,AQ 1,Skuzz,Breastplate of Annihilation
+271,AQ 1,Braulio,Staff of the Qiraji Prophets
+272,AQ 1,Celery,Guise of the Devourer
+273,AQ 1,Gavitor,Angelista's Charm
+274,AQ 1,Shuaa,Silithid Claw
+275,AQ 1,Celery,Gloves of Enforcement
+276,AQ 1,Subu,Barbed Choker
+277,AQ 1,Prunejuice,Fetish of the Sand Reaver
+278,AQ 1,Jebediah,Gloves of the Messiah
+279,AQ 1,Ddr,Qiraji Bindings of Command
+280,AQ 1,Darenis,Qiraji Bindings of Dominance
+281,AQ 1,Morbidmind,Vek'nilash's Circlet
+282,AQ 1,Nightmagic,Bracelets of Royal Redemption
+283,AQ 1,Pantherk,Boots of Epiphany
+284,AQ 1,Kaldorei,Vek'lor's Diadem
+285,AQ 1,Flanigans,Jom Gabbar
+286,AQ 1,Ididntdoit,Ouro's Intact Hide
+287,AQ 1,Darenis,Skin of the Great Sandworm
+288,AQ 2,Toons,Cloak of Concentrated Hatred
+289,AQ 2,Celery,Beetle Scaled Wristguards
+290,AQ 2,Jebediah,Angelista's Charm
+291,AQ 2,Galbraith,Imperial Qiraji Regalia
+292,AQ 2,Celery,Cape of the Trinity
+293,AQ 2,Beargyll,Badge of the Swarmguard
+294,AQ 2,Scrubzilla,Necklace of Purity
+295,AQ 2,Steb,Pauldrons of the Unrelenting
+296,AQ 2,Nesingtick,Mantle of Wicked Revenge
+297,AQ 2,Zzoro,Qiraji Bindings of Command
+298,AQ 2,Valadrim,Qiraji Bindings of Dominance
+299,AQ 2,Jameshiggins,Cloak of the Golden Hive
+300,AQ 2,Jebediah,Regenerating Belt of Vek'nilash
+301,AQ 2,Kraatom,Vek'nilash's Circlet
+302,AQ 2,Trickypotato,Vek'lor's Diadem
+303,AQ 2,Ddr,Qiraji Execution Bracers
+304,AQ 2,Rubberducky,Gloves of the Redeemed Prophecy
+305,AQ 2,Shuaa,Jom Gabbar
+306,AQ 2,Kyir,Ouro's Intact Hide
+307,AQ 2,Rubberducky,Skin of the Great Sandworm
+308,AQ 2,Warlox,Cloak of the Devoured
+309,AQ 2,Glorpy,Scepter of the False Prophet
+310,AQ 2,Pantherk,Eye of C'Thun
+311,AQ 2,Ididntdoit,Carapace of the Old God
+312,AQ 2,Dbol,Husk of the Old God
+313,BWL 26,Mcgroot,Nemesis Belt
+314,BWL 26,Subu,Helm of Endless Rage
+315,BWL 26,Miniwheats,Belt of Transcendence
+316,BWL 26,Cui,Bindings of Transcendence
+317,BWL 26,Jarem,Bloodfang Bracers
+318,BWL 26,Subu,Sabatons of Wrath
+319,BWL 26,Miniwheats,Boots of Transcendence
+320,BWL 26,Ainsley,Netherwind Gloves
+321,BWL 26,Kaldorei,Cloak of Firemaw
+322,BWL 26,Warlox,Band of Dark Dominion
+323,BWL 26,Zzoro,Interlaced Shadow Jerkin
+324,BWL 26,Mcgroot,Ebony Flame Gloves
+325,BWL 26,Flanigans,Dragonstalker's Gauntlets
+326,BWL 26,Pewpewlasers,Netherwind Gloves
+327,BWL 26,Drstalfos,Herald of Woe
+328,BWL 26,Pewpewlasers,Netherwind Mantle
+329,BWL 26,Ididntdoit,Chromatic Boots
+330,BWL 26,Dbol,Neltharion's Tear
+331,BWL 26,Pewpewlasers,Netherwind Robes
+332,BWL 26,Zzoro,Head of Nefarian
+333,BWL 26,Gavitor,Lok'amir il Romathis
+334,AQ 3,Trickypotato,Cloak of Concentrated Hatred
+335,AQ 3,Skuzz,Boots of the Unwavering Will
+336,AQ 3,Nightmagic,Ternary Mantle
+337,AQ 3,Celery,Gloves of Ebru
+338,AQ 3,Glorpy,Sartura's Might
+339,AQ 3,Valadrim,Leggings of the Festering Swarm
+340,AQ 3,Jameshiggins,Silithid Carapace Chestguard
+341,AQ 3,Minaomi,Fetish of the Sand Reaver
+342,AQ 3,Drstalfos,Wasphide Gauntlets
+343,AQ 3,Skuzz,Qiraji Bindings of Command
+344,AQ 3,Prunejuice,Qiraji Bindings of Dominance
+345,AQ 3,Rubberducky,Boots of Epiphany
+346,AQ 3,Toons,Vek'lor's Diadem
+347,AQ 3,Skuzz,Imperial Qiraji Armaments
+348,AQ 3,Valadrim,Vek'nilash's Circlet
+349,AQ 3,Kaldorei,Imperial Qiraji Armaments
+350,AQ 3,Celery,Gloves of the Hidden Temple
+351,AQ 3,Gavitor,Gloves of the Redeemed Prophecy
+352,AQ 3,Celery,Belt of Never-ending Agony
+353,AQ 3,Cui,Grasp of the Old God
+354,AQ 3,Ainsley,Eye of C'Thun
+355,AQ 3,Jameshiggins,Carapace of the Old God
+356,AQ 3,Valadrim,Husk of the Old God
+357,AQ 3,Trickypotato,Ouro's Intact Hide
+358,AQ 3,Holybringer,Skin of the Great Sandworm
+359,AQ 3,Steb,Larvae of the Great Worm
+360,BWL 27,Pewpewlasers,Mantle of the Blackwing Cabal
+361,BWL 27,Beefdumper,Waistband of Wrath
+362,BWL 27,Cui,Boots of Transcendence
+363,BWL 27,Kyir,Heartstriker
+364,BWL 27,Snapdragon,Rune of Metamorphosis
+365,BWL 27,Nugget,Bloodfang Belt
+366,BWL 27,Beefdumper,Pauldrons of Wrath
+367,BWL 27,Pewpewlasers,Angelista's Grasp
+368,BWL 27,Scrubzilla,Shimmering Geta
+369,BWL 27,Tgun,Judgement Gauntlets
+370,BWL 27,Beefdumper,Gauntlets of Wrath
+371,BWL 27,Glorpy,Firemaw's Clutch
+372,BWL 27,Scrubzilla,Ring of Blackrock
+373,BWL 27,Celery,Herald of Woe
+374,BWL 27,Dbol,Band of Forced Concentration
+375,BWL 27,Celery,Stormrage Chestguard
+376,BWL 27,Snapdragon,Stormrage Chestguard
+377,BWL 27,Zzoro,Boots of the Shadow Flame
+378,BWL 27,Flanigans,Prestor's Talisman of Connivery
+379,BWL 27,Prunejuice,Head of Nefarian
+380,AQ 4,Beefdumper,Boots of the Unwavering Will
+381,AQ 4,Skuzz,Amulet of Foul Warding
+382,AQ 4,Warlox,Necklace of Purity
+383,AQ 4,Gavitor,Sartura's Might
+384,AQ 4,Scrubzilla,Robes of the Guardian Saint
+385,AQ 4,Jarem,Hive Tunneler's Boots
+386,AQ 4,Twinkes,Huhuran's Stinger
+387,AQ 4,Steb,Qiraji Bindings of Command
+388,AQ 4,Dbol,Qiraji Bindings of Dominance
+389,AQ 4,Skuzz,Royal Qiraji Belt
+390,AQ 4,Zzoro,Vek'lor's Diadem
+391,AQ 4,Ididntdoit,Vek'nilash's Circlet
+392,AQ 4,Drstalfos,Gloves of the Hidden Temple
+393,AQ 4,Beargyll,Skin of the Great Sandworm
+394,AQ 4,Ddr,Ouro's Intact Hide
+395,AQ 4,Pewpewlasers,Burrower Bracers
+396,AQ 4,Prunejuice,Imperial Qiraji Regalia
+397,AQ 4,Madfamous,Husk of the Old God
+398,AQ 4,Valadrim,Eye of C'Thun
+399,AQ 4,Twinkes,Carapace of the Old God
+400,AQ 4,Kyir,Mark of C'Thun
+401,AQ 4,Morbidmind,Dark Storm Gauntlets
+402,BWL 28,Mcgroot,Nemesis Spaulders
+403,BWL 28,Zzoro,Taut Dragonhide Shoulderpads
+404,BWL 28,Wy,Stormrage Chestguard
+405,BWL 28,Skuzz,"Crul'shorukh, Edge of Chaos"
+406,BWL 28,Shuaa,Head of Nefarian
+407,BWL 28,Scrubzilla,Pure Elementium Band
+408,BWL 28,Celery,Rune of Metamorphosis
+409,BWL 28,Kyir,Drake Talon Pauldrons
+410,BWL 28,Steb,Bracelets of Wrath
+411,BWL 28,Pantherk,Bracers of Arcane Accuracy
+412,BWL 28,Jarem,Bloodfang Gloves
+413,BWL 28,Rijndael,Judgement Belt
+414,BWL 28,Beefdumper,Sabatons of Wrath
+415,BWL 28,Pewpewlasers,Netherwind Belt
+416,BWL 28,Minaomi,Circle of Applied Force
+417,BWL 28,Skuzz,Legguards of the Fallen Crusader
+418,BWL 28,Ainsley,Band of Forced Concentration
+419,AQ 5,Miniwheats,Robes of the Guardian Saint
+420,AQ 5,Warlox,Fetish of the Sand Reaver
+421,AQ 5,Toons,Qiraji Bindings of Command
+422,AQ 5,Pantherk,Qiraji Bindings of Dominance
+423,AQ 5,Zzoro,Huhuran's Stinger
+424,AQ 5,Rijndael,Boots of the Redeemed Prophecy
+425,AQ 5,Scrubzilla,Angelista's Charm
+426,AQ 5,Drstalfos,Robes of the Triumvirate
+427,AQ 5,Jebediah,Leggings of Immersion
+428,AQ 5,Pewpewlasers,Robes of the Battleguard
+429,AQ 5,Pantherk,Necklace of Purity
+430,AQ 5,Rijndael,Wormscale Blocker
+431,AQ 5,Celery,Imperial Qiraji Regalia
+432,AQ 5,Jebediah,Bracelets of Royal Redemption
+433,AQ 5,Steb,Ouro's Intact Hide
+434,AQ 5,Nesingtick,Skin of the Great Sandworm
+435,AQ 5,Toons,Qiraji Execution Bracers
+436,AQ 5,Kyir,Vek'nilash's Circlet
+437,AQ 5,Twinkes,Vek'lor's Diadem
+438,AQ 5,Minaomi,Gauntlets of Annihilation
+439,AQ 5,Dbol,Eyestalk Waist Cord
+440,AQ 5,Prunejuice,Eye of C'Thun
+441,AQ 5,Toons,Carapace of the Old God
+442,AQ 5,Pantherk,Husk of the Old God
+443,AQ 6,Ddr,Silithid Carapace Chestguard
+444,AQ 6,Adreya,Pauldrons of the Unrelenting
+445,AQ 6,Miniwheats,Imperial Qiraji Regalia
+446,AQ 6,Galbraith,Wasphide Gauntlets
+447,AQ 6,Minaomi,Qiraji Bindings of Command
+448,AQ 6,Madfamous,Qiraji Bindings of Dominance
+449,AQ 6,Flanigans,Silithid Claw
+450,AQ 6,Toons,Gloves of Enforcement
+451,AQ 6,Galbraith,Guise of the Devourer
+452,AQ 6,Ddr,Ooze-ridden Gauntlets
+453,AQ 6,Mcgroot,Staff of the Qiraji Prophets
+454,AQ 6,Kaldorei,Beetle Scaled Wristguards
+455,AQ 6,Nesingtick,Vek'lor's Diadem
+456,AQ 6,Jebediah,Don Rigoberto's Lost Hat
+457,AQ 6,Mcgroot,Skin of the Great Sandworm
+458,AQ 6,Adreya,Ouro's Intact Hide
+459,AQ 6,Pantherk,Boots of Epiphany
+460,AQ 6,Kyir,Shard of the Fallen Star
+461,AQ 6,Ididntdoit,Mark of C'Thun
+462,AQ 6,Pewpewlasers,Husk of the Old God
+463,AQ 6,Trickypotato,Death's Sting
+464,AQ 6,Kaldorei,Carapace of the Old God
+465,AQ 6,Warlox,Eye of C'Thun
+466,AQ 6,Steb,Ring of the Qiraji Fury
+468,AQ 6,Pewpewlasers,Qiraji Bindings of Dominance
+469,BWL 29,Jarem,Bloodfang Spaulders
+470,BWL 29,Adreya,Pauldrons of Wrath
+471,BWL 29,Wy,Taut Dragonhide Gloves
+472,BWL 29,Mcgroot,Angelista's Grasp
+473,BWL 29,Miniwheats,Pure Elementium Band
+474,BWL 29,Rijndael,Judgement Breastplate
+475,BWL 29,Marneus,Judgement Breastplate
+476,BWL 29,Mcgroot,Cloak of the Brood Lord
+477,BWL 29,Jarem,Head of Nefarian
+478,BWL 29,Glorpy,Nemesis Belt
+479,BWL 29,Pewpewlasers,Mind Quickening Gem
+480,BWL 29,Flanigans,Arcane Infused Gem
+481,BWL 29,Marneus,Judgement Sabatons
+482,BWL 29,Wy,Shroud of Pure Thought
+483,BWL 29,Wy,Taut Dragonhide Belt
+484,BWL 29,Valadrim,Band of Forced Concentration
+485,AQ 7,Steb,Silithid Carapace Chestguard
+486,AQ 7,Dbol,Fetish of the Sand Reaver
+487,AQ 7,Ainsley,Imperial Qiraji Regalia
+488,AQ 7,Ididntdoit,Cloak of the Golden Hive
+489,AQ 7,Beefdumper,Qiraji Bindings of Command
+490,AQ 7,Warlox,Qiraji Bindings of Dominance
+491,AQ 7,Drstalfos,Guise of the Devourer
+492,AQ 7,Celery,Angelista's Charm
+493,AQ 7,Ididntdoit,Gauntlets of Steadfast Determination
+494,AQ 7,Rubberducky,Boots of the Redeemed Prophecy
+495,AQ 7,Rijndael,Sartura's Might
+496,AQ 7,Celery,Pendant of the Qiraji Guardian
+497,AQ 7,Rijndael,Scepter of the False Prophet
+498,AQ 7,Kyir,Carapace of the Old God
+499,AQ 7,Braulio,Husk of the Old God
+500,AQ 7,Madfamous,Cloak of the Devoured
+501,AQ 7,Morbidmind,Eye of C'Thun
+502,AQ 7,Jebediah,Gloves of the Redeemed Prophecy
+503,AQ 7,Nightmagic,Imperial Qiraji Regalia
+504,AQ 7,Toons,Ouro's Intact Hide
+505,AQ 7,Prunejuice,Skin of the Great Sandworm
+506,AQ 7,Darenis,Vek'lor's Diadem
+507,AQ 7,Pewpewlasers,Vek'nilash's Circlet
+508,AQ 7,Darenis,Kalimdor's Revenge
+509,AQ 7,Celery,Ring of Emperor Vek'lor
+510,AQ 7,Braulio,Burrower Bracers
+511,AQ 7,Ididntdoit,Slime-coated Leggings
+512,AQ 7,Adreya,Qiraji Bindings of Command
+513,AQ 7,Valadrim,Qiraji Bindings of Dominance
+514,BWL 30,Imkenan,Head of Nefarian
+515,BWL 30,Jarem,Bloodfang Chestpiece
+516,BWL 30,Moistytuna,Judgement Breastplate
+517,BWL 30,Pantherk,Staff of the Shadow Flame
+518,BWL 30,Kraatom,Cloak of the Brood Lord
+519,BWL 30,Kraatom,Pauldrons of Transcendence
+520,BWL 30,Wy,Stormrage Bracers
+521,BWL 30,Gavitor,Judgement Bindings
+522,BWL 30,Moistytuna,Judgement Gauntlets
+523,BWL 30,Wy,Stormrage Handguards
+524,BWL 30,Offleash,Dragonstalker's Belt
+525,BWL 30,Wy,Stormrage Belt
+526,BWL 30,Offleash,Dragonstalker's Greaves
+527,BWL 30,Kraatom,Boots of Transcendence
+528,BWL 30,Rijndael,Scrolls of Blinding Light
+529,BWL 30,Adreya,Styleen's Impeding Scarab
+530,BWL 30,Imkenan,Bloodfang Gloves
+531,BWL 30,Minaomi,Elementium Threaded Cloak
+532,BWL 30,Moistytuna,Black Brood Pauldrons
+533,BWL 30,Braulio,Band of Forced Concentration
+534,BWL 30,Adreya,Chromatically Tempered Sword
+535,AQ 8,Celery,Mantle of Wicked Revenge
+536,AQ 8,Pewpewlasers,Fetish of the Sand Reaver
+537,AQ 8,Trickypotato,Gloves of Enforcement
+538,AQ 8,Adreya,Boots of the Unwavering Will
+539,AQ 8,Steb,Ooze-ridden Gauntlets
+540,AQ 8,Beefdumper,Amulet of Foul Warding
+541,AQ 8,Kraatom,Robes of the Triumvirate
+542,AQ 8,Dbol,Leggings of the Festering Swarm
+543,AQ 8,Beefdumper,Carapace of the Old God
+544,AQ 8,Madfamous,Eye of C'Thun
+545,AQ 8,Drstalfos,Cloak of Clarity
+546,AQ 8,Kraatom,Husk of the Old God
+547,AQ 8,Toons,Belt of Never-ending Agony
+548,AQ 8,Jarem,Vek'lor's Diadem
+549,AQ 8,Kraatom,Vek'nilash's Circlet
+550,AQ 8,Celery,Skin of the Great Sandworm
+551,AQ 8,Morbidmind,Qiraji Bindings of Dominance
+552,AQ 8,Kaldorei,Qiraji Bindings of Command
+553,AQ 8,Beargyll,Jom Gabbar
+554,AQ 8,Adreya,Royal Qiraji Belt
+555,AQ 8,Rubberducky,Wasphide Gauntlets
+556,AQ 8,Rubberducky,Belt of the Fallen Emperor
+557,AQ 8,Jameshiggins,Ouro's Intact Hide
+558,AQ 8,Darenis,Qiraji Bindings of Dominance
+559,AQ 8,Kyir,Qiraji Bindings of Command
+560,AQ 8,Rijndael,Scarab Brooch
+561,BWL 31,Mcgroot,Head of Nefarian
+562,BWL 31,Jarem,Boots of the Shadow Flame
+563,BWL 31,Locon,Breastplate of Wrath
+564,BWL 31,Rijndael,Cloak of the Brood Lord
+565,BWL 31,Braulio,Netherwind Bindings
+566,BWL 31,Mcgroot,Nemesis Bracers
+567,BWL 31,Trickypotato,Bloodfang Spaulders
+568,BWL 31,Drstalfos,Malfurion's Blessed Bulwark
+569,BWL 31,Marneus,Judgement Gauntlets
+570,BWL 31,Rijndael,Belt of Transcendence
+571,BWL 31,Kraatom,Shimmering Geta
+572,BWL 31,Nedivh,Netherwind Boots
+573,BWL 31,Melibea,Netherwind Belt
+574,BWL 31,Rubberducky,Scrolls of Blinding Light
+575,BWL 31,Minaomi,Styleen's Impeding Scarab
+576,BWL 31,Kraatom,Bracers of Arcane Accuracy
+577,BWL 31,Jameshiggins,Elementium Reinforced Bulwark
+578,AQ 9,Dbol,Qiraji Bindings of Dominance
+579,AQ 9,Miniwheats,Gloves of the Messiah
+580,AQ 9,Zzoro,Qiraji Bindings of Command
+581,AQ 9,Prunejuice,Ukko's Ring of Darkness
+582,AQ 9,Kyir,Ring of Emperor Vek'lor
+583,AQ 9,Beargyll,Vek'lor's Diadem
+584,AQ 9,Ditto,Regenerating Belt of Vek'nilash
+585,AQ 9,Pantherk,Vek'nilash's Circlet
+586,AQ 9,Beefdumper,Imperial Qiraji Armaments
+587,AQ 9,Drstalfos,Creeping Vine Helm
+588,AQ 9,Twinkes,Cloak of Concentrated Hatred
+589,AQ 9,Drstalfos,Hive Tunneler's Boots
+590,AQ 9,Pewpewlasers,Recomposed Boots
+591,AQ 9,Rijndael,Hammer of Ji'zhi
+592,AQ 9,Minaomi,Barbed Choker
+593,AQ 9,Steb,Angelista's Touch
+594,AQ 9,Twinkes,Imperial Qiraji Armaments
+595,AQ 9,Shuaa,Ring of the Godslayer
+596,AQ 9,Darenis,Dark Edge of Insanity
+597,AQ 9,Flanigans,Skin of the Great Sandworm
+598,AQ 9,Jarem,Ouro's Intact Hide
+599,AQ 9,Prunejuice,Husk of the Old God
+600,AQ 9,Dbol,Burrower Bracers
+601,AQ 9,Dbol,Eye of C'Thun
+602,AQ 9,Zzoro,Carapace of the Old God
+603,AQ 9,Ididntdoit,Qiraji Bindings of Command
+604,AQ 9,Darenis,Gauntlets of the Righteous Champion
+605,AQ 9,Rubberducky,Qiraji Bindings of Dominance

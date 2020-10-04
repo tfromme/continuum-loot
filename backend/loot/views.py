@@ -22,12 +22,12 @@ class CsrfExemptSessionAuthentication(SessionAuthentication):
 
 
 class PlayerViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Player.objects.all().order_by('name')
+    queryset = Player.objects.order_by('name')
     serializer_class = PlayerSerializer
 
 
 class ItemViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Item.objects.all()
+    queryset = Item.objects.order_by('name')
     serializer_class = ItemSerializer
 
 
@@ -37,12 +37,13 @@ class RaidViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class RaidDayViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = RaidDay.objects.all()
+    queryset = RaidDay.objects.order_by('-date')
     serializer_class = RaidDaySerializer
 
 
 class LootHistoryViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = LootHistory.objects.all()
+    # Sort by date descending, then by id descending
+    queryset = LootHistory.objects.order_by('-raid_day__date', '-id')
     serializer_class = LootHistorySerializer
 
 

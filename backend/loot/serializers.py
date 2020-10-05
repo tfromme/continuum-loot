@@ -59,10 +59,11 @@ class ItemSerializer(serializers.ModelSerializer):
     bosses = BossSerializer(queryset=Boss.objects.all(), many=True)
     class_prio = ClassPrioSerializer(source='class_prios', many=True)
     individual_prio = IndividualPrioSerializer(source='individual_prios', many=True)
+    link = serializers.ReadOnlyField()
 
     class Meta:
         model = Item
-        fields = ['id', 'name', 'type', 'tier', 'category', 'notes', 'raid', 'bosses', 'class_prio', 'individual_prio']
+        fields = ['id', 'name', 'type', 'tier', 'category', 'notes', 'raid', 'bosses', 'class_prio', 'individual_prio', 'link']
 
 
 class RaidSerializer(serializers.ModelSerializer):

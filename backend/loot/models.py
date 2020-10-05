@@ -71,6 +71,10 @@ class Item(models.Model):
     # individual_prios
     # class_prios
 
+    @property
+    def link(self):
+        return f"https://classic.wowhead.com/item={self.id}"
+
     def __str__(self):
         return self.name
 

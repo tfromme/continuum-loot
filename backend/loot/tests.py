@@ -8,6 +8,7 @@ from .models import Player, LootHistory, Raid, RaidDay, Item, Boss, ClassPrio, I
 class GetTests(APITestCase):
 
     def setUp(self):
+        user = User.objects.create(username="nes", password="test_password")
         bwl = Raid.objects.create(id=1, name="Blackwing Lair", short_name="BWL")
         aq = Raid.objects.create(id=2, name="Ahn'Qiraj", short_name="AQ")
         vael = Boss.objects.create(id=1, name="Vaelestrasz", raid=bwl)
@@ -30,10 +31,10 @@ class GetTests(APITestCase):
         nes.attendance.add(bwl1)
         nes.attendance.add(aq1)
 
-        ClassPrio.objects.create(item=sulf, class_name="Shaman", prio=1)
-        ClassPrio.objects.create(item=sulf, class_name="Paladin", prio=2)
-        ClassPrio.objects.create(item=tear, class_name="Hunters", prio=1)
-        IndividualPrio.objects.create(item=sulf, player=nes, prio=1)
+        ClassPrio.objects.create(item=sulf, class_name="Shaman", prio=1, set_by=user)
+        ClassPrio.objects.create(item=sulf, class_name="Paladin", prio=2, set_by=user)
+        ClassPrio.objects.create(item=tear, class_name="Hunters", prio=1, set_by=user)
+        IndividualPrio.objects.create(item=sulf, player=nes, prio=1, set_by=user)
         Wishlist.objects.create(player=morb, item=tear, priority=1)
         Wishlist.objects.create(player=morb, item=sulf, priority=2)
 
@@ -86,10 +87,10 @@ class GetTests(APITestCase):
                     'raid': 1,
                     'bosses': ['Vaelestrasz'],
                     'class_prio': [
-                        {'class': 'Shaman', 'prio': 1, 'set_by': None},
-                        {'class': 'Paladin', 'prio': 2, 'set_by': None},
+                        {'class': 'Shaman', 'prio': 1, 'set_by': 1},
+                        {'class': 'Paladin', 'prio': 2, 'set_by': 1},
                     ],
-                    'individual_prio': [{'player_id': 100, 'prio': 1, 'set_by': None}],
+                    'individual_prio': [{'player_id': 100, 'prio': 1, 'set_by': 1}],
                 },
                 {
                     'id': 20,
@@ -100,7 +101,7 @@ class GetTests(APITestCase):
                     'notes': 'yikes',
                     'raid': 2,
                     'bosses': ['Vaelestrasz', 'Huhuran'],
-                    'class_prio': [{'class': 'Hunters', 'prio': 1, 'set_by': None}],
+                    'class_prio': [{'class': 'Hunters', 'prio': 1, 'set_by': 1}],
                     'individual_prio': [],
                 },
             ]
@@ -178,8 +179,8 @@ class LoginTests(APITestCase):
 
         data = {'new': True,
                 'player_name': 'dAvId',
-                'class': 'Paladin',
-                'role': 'Healer',
+                'class': 'PL',
+                'role': 'H',
                 'password': 'test_password',
                 }
         response = self.client.post('/signup', data, format='json')

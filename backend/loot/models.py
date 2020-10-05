@@ -84,7 +84,7 @@ class ClassPrio(models.Model):
     item = models.ForeignKey(Item, related_name='class_prios', on_delete=models.CASCADE)
     class_name = models.CharField(max_length=50)
     prio = models.PositiveSmallIntegerField()
-    set_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    set_by = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
         return f"{self.class_name} has prio {self.prio} on {self.item.name}"
@@ -99,7 +99,7 @@ class IndividualPrio(models.Model):
     item = models.ForeignKey(Item, related_name='individual_prios', on_delete=models.CASCADE)
     player = models.ForeignKey(Player, on_delete=models.CASCADE)
     prio = models.PositiveSmallIntegerField()
-    set_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    set_by = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
         return f"{self.player.name} has prio {self.prio} on {self.item.name}"

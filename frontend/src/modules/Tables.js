@@ -213,8 +213,8 @@ export function LootHistoryTable(props) {
   var roleLookup = {};
   for (const player of props.players) {
     nameLookup[player.id] = player.name;
-    classLookup[player.id] = player.class;
-    roleLookup[player.id] = player.role;
+    classLookup[player.id] = classes[player.class];
+    roleLookup[player.id] = roles[player.role];
   }
 
   var itemLookup = {};
@@ -245,12 +245,12 @@ export function LootHistoryTable(props) {
 
   const classSearch = (term, rowData) => {
     const player = props.players.find(x => x.id === rowData.player_id);
-    return term.length === 0 || term.includes(player.class);
+    return term.length === 0 || term.includes(classes[player.class]);
   }
 
   const roleSearch = (term, rowData) => {
     const player = props.players.find(x => x.id === rowData.player_id);
-    return term.length === 0 || term.includes(player.role);
+    return term.length === 0 || term.includes(roles[player.role]);
   }
 
   const tierSearch = (term, rowData) => {

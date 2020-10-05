@@ -55,7 +55,7 @@ export function MultiselectFilter(props) {
     <FormControl style={{ width: "100%" }}>
       <Select multiple value={selectedVal} onChange={handleChange} renderValue={renderValue}>
         {props.choices.map((choice, index) => 
-          <MenuItem key={index} value={choice}>
+        <MenuItem key={index} value={props.choiceTexts ? props.choiceTexts[index] : choice}>
             <Checkbox checked={selectedVal.includes(choice)} />
             <ListItemText primary={props.choiceTexts ? props.choiceTexts[index] : choice} />
           </MenuItem>

@@ -30,8 +30,35 @@ DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
 DB_FILE = os.getenv('DB_FILE', BASE_DIR / 'contloot.sqlite3')
 
+LOG_DIR = Path(os.getenv('LOG_DIR', BASE_DIR / 'dev_logs/'))
+
 ALLOWED_HOSTS = ['localhost', 'continuum-loot.tfrom.me']
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'loot': {
+            'format': '%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
+        }
+    },
+    'handlers': {
+        'loot': {
+            'level': 'DEBUG' if DEBUG else 'INFO',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': LOG_DIR / 'loot.log',
+            'maxBytes': 1024 * 1024 * 10,  # Max 10MB
+            'backupCount': 5,
+            'formatter': 'loot',
+        },
+    },
+    'loggers': {
+        'loot': {
+            'handlers': ['loot'],
+            'level': 'DEBUG' if DEBUG else 'INFO',
+        },
+    },
+}
 
 # Application definition
 

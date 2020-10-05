@@ -46,7 +46,7 @@ class RaidDayViewSet(viewsets.ReadOnlyModelViewSet):
 
 class LootHistoryViewSet(viewsets.ReadOnlyModelViewSet):
     # Sort by date descending, then by id descending
-    queryset = LootHistory.objects.order_by('-raid_day__date', '-id')
+    queryset = LootHistory.objects.exclude(player__rank=Player.Ranks.INACTIVE).order_by('-raid_day__date', '-id')
     serializer_class = LootHistorySerializer
 
 

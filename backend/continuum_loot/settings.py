@@ -10,23 +10,55 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
+import os
 from pathlib import Path
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+env_path = BASE_DIR / '.env'
+load_dotenv(dotenv_path=env_path)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'jil75n94i_7!m2y-$0^*vd$cyo@n6p3xx$n4)e#3zdn6-z4pr#'
+SECRET_KEY = os.getenv('SECRET_KEY', 'jil75n94i_7!m2y-$0^*vd$cyo@n6p3xx$n4)e#3zdn6-z4pr#')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = []
+DB_FILE = os.getenv('DB_FILE', BASE_DIR / 'contloot.sqlite3')
 
+LOG_DIR = Path(os.getenv('LOG_DIR', BASE_DIR / 'dev_logs/'))
+
+ALLOWED_HOSTS = ['localhost', 'continuum-loot.tfrom.me']
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'loot': {
+            'format': '%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
+        }
+    },
+    'handlers': {
+        'loot': {
+            'level': 'DEBUG' if DEBUG else 'INFO',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': LOG_DIR / 'loot.log',
+            'maxBytes': 1024 * 1024 * 10,  # Max 10MB
+            'backupCount': 5,
+            'formatter': 'loot',
+        },
+    },
+    'loggers': {
+        'loot': {
+            'handlers': ['loot'],
+            'level': 'DEBUG' if DEBUG else 'INFO',
+        },
+    },
+}
 
 # Application definition
 
@@ -79,7 +111,7 @@ WSGI_APPLICATION = 'continuum_loot.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'contloot.sqlite3',
+        'NAME': DB_FILE,
     }
 }
 

@@ -18,6 +18,7 @@ urlpatterns = [
     path('api/addLootHistory', views.AddLootHistoryViewSet.as_view(), name='add_loot_history'),
     path('api/deleteLootHistory', views.DeleteLootHistoryViewSet.as_view(), name='delete_loot_history'),
     path('api/uploadAttendance', views.UploadAttendanceViewSet.as_view(), name='upload_attendance'),
+    path('api/uploadLootHistory', views.UploadLootHistoryViewSet.as_view(), name='upload_loot_history'),
     path('api/', include(router.urls)),
     path('login', views.LoginViewSet.as_view(), name='login'),
     path('signup', views.SignupViewSet.as_view(), name='signup'),

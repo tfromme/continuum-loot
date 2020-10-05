@@ -61,7 +61,7 @@ class Item(models.Model):
         PHYSICAL = 'PH'
         NATURE_RES = 'NR'
 
-    name = models.CharField(max_length=20, unique=True)
+    name = models.CharField(max_length=60, unique=True)
     type = models.CharField(max_length=20)
     tier = models.PositiveSmallIntegerField(null=True, blank=True)
     category = models.CharField(max_length=2, choices=Categories.choices)

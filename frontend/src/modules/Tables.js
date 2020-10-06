@@ -103,37 +103,55 @@ PlayerTable.defaultProps = {
 export function ItemTable(props) {
   const rowEditable = props.loggedInPlayer && props.loggedInPlayer.permission_level >= 1;
 
-  var raidShortNameLookup = {};
+  var choices = props.raids.map(raid => "All " + raid.short_name);
   for (const raid of props.raids) {
-    raidShortNameLookup[raid.id] = raid.short_name;
+    for (const boss of raid.bosses) {
+      choices.push(boss);
+    }
   }
 
-  const [ columns, setColumns ] = React.useState([
+  const defaultFilter = [choices[0]];
+
+  const bossFilter = xProps => <MultiselectFilter initialValue={defaultFilter} choices={choices} {...xProps} />;
+
+  const bossSearch = (selected, rowData) => {
+    if (selected.length === 0) {
+      return true;
+    }
+
+    for (const choice of selected) {
+      const raid = props.raids.find(x => "All " + x.short_name === choice);
+      // Could be raid name
+      if (raid && raid.id === rowData.raid) {
+        return true;
+      }
+      // else its a boss name
+      if (rowData.bosses.includes(choice)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  const [ columns ] = React.useState([
     { title: 'Name', field: 'name', defaultSort: 'asc', editable: 'never',
       render: ( rowData => <a href={rowData.link}>{rowData.name}</a> )},
     { title: 'Type', field: 'type', editable: 'never' },
-    { title: 'Raid', field: 'raid', defaultFilter: ['2'], lookup: raidShortNameLookup, editable: 'never' },
-    { title: 'Bosses', field: 'bosses', editable: 'never', render: ((rowData) => {
-      return rowData.bosses.reduce((all, cur, index) => [
-        ...all,
-        <br key={index}/>,
-        cur,
-      ]);
-    }) },
+    { title: 'Bosses', field: 'bosses', defaultFilter: defaultFilter, editable: 'never',
+      filterComponent: bossFilter, customFilterAndSearch: bossSearch,
+      render: ((rowData) => {
+        return rowData.bosses.reduce((all, cur, index) => [
+          ...all,
+          <br key={index}/>,
+          cur,
+        ]);
+      })
+    },
     { title: 'Tier', field: 'tier', type: 'numeric' },
     { title: 'Category', field: 'category', lookup: itemCategories },
     { title: 'Notes', field: 'notes', filtering: false },
   ]);
-
-  React.useEffect(() => {
-    if (Object.keys(columns[2].lookup).length === 0) {
-      for (const raid of props.raids) {
-        raidShortNameLookup[raid.id] = raid.short_name;
-      }
-      columns[2].lookup = raidShortNameLookup;
-      setColumns(columns);
-    }
-  }, [raidShortNameLookup, columns, props.raids]);
 
   return (
     <MaterialTable
@@ -236,11 +254,9 @@ export function LootHistoryTable(props) {
     return term.length === 0 || term.includes(raidDay.raid_id);
   }
 
-  const classFilter = props => <MultiselectFilter choices={Object.keys(classes)}
-                                                  choiceTexts={Object.values(classes)}
+  const classFilter = props => <MultiselectFilter choices={Object.values(classes)}
                                                   {...props} />;
-  const roleFilter = props => <MultiselectFilter choices={Object.keys(roles)}
-                                                 choiceTexts={Object.values(roles)}
+  const roleFilter = props => <MultiselectFilter choices={Object.values(roles)}
                                                  {...props} />;
   const tierFilter = props => <MultiselectFilter choices={itemTiers} {...props} />;
 

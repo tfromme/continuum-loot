@@ -28,7 +28,7 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      tabValue: "2",
+      tabValue: "1",
       loggedInPlayer: null,
       items: [],
       players: [],

@@ -91,6 +91,7 @@ class GetTests(APITestCase):
                         {'class': 'Paladin', 'prio': 2, 'set_by': 1},
                     ],
                     'individual_prio': [{'player_id': 100, 'prio': 1, 'set_by': 1}],
+                    'link': 'https://classic.wowhead.com/item=10',
                 },
                 {
                     'id': 20,
@@ -103,6 +104,7 @@ class GetTests(APITestCase):
                     'bosses': ['Vaelestrasz', 'Huhuran'],
                     'class_prio': [{'class': 'Hunters', 'prio': 1, 'set_by': 1}],
                     'individual_prio': [],
+                    'link': 'https://classic.wowhead.com/item=20',
                 },
             ]
         )

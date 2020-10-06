@@ -11,8 +11,8 @@ class GetTests(APITestCase):
         user = User.objects.create(username="nes", password="test_password")
         bwl = Raid.objects.create(id=1, name="Blackwing Lair", short_name="BWL")
         aq = Raid.objects.create(id=2, name="Ahn'Qiraj", short_name="AQ")
-        vael = Boss.objects.create(id=1, name="Vaelestrasz", raid=bwl)
-        huhu = Boss.objects.create(id=2, name="Huhuran", raid=aq)
+        vael = Boss.objects.create(id=1, name="Vaelestrasz", raid=bwl, order=1)
+        huhu = Boss.objects.create(id=2, name="Huhuran", raid=aq, order=2)
         bwl1 = RaidDay.objects.create(id=50, name="BWL 1", date=date(2020, 2, 18), raid=bwl)
         aq1 = RaidDay.objects.create(id=60, name="AQ 1", date=date(2020, 8, 9), raid=aq)
 

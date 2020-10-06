@@ -122,9 +122,11 @@ class Boss(models.Model):
 
     class Meta:
         verbose_name_plural = 'Bosses'
+        ordering = ['order']
 
     name = models.CharField(max_length=30)
     raid = models.ForeignKey(Raid, related_name='bosses', on_delete=models.CASCADE)
+    order = models.PositiveSmallIntegerField()
 
     def __str__(self):
         return self.name

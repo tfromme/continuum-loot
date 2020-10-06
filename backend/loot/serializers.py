@@ -63,7 +63,8 @@ class ItemSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Item
-        fields = ['id', 'name', 'type', 'tier', 'category', 'notes', 'raid', 'bosses', 'class_prio', 'individual_prio', 'link']
+        fields = ['id', 'name', 'type', 'tier', 'category', 'notes', 'raid',
+                  'bosses', 'class_prio', 'individual_prio', 'link']
 
 
 class RaidSerializer(serializers.ModelSerializer):

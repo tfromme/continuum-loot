@@ -35,7 +35,7 @@ class ItemViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class RaidViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Raid.objects.all()
+    queryset = Raid.objects.order_by('-id')
     serializer_class = RaidSerializer
 
 

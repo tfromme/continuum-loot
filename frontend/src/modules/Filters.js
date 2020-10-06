@@ -42,7 +42,7 @@ RaidFilter.propTypes = {
 }
 
 export function MultiselectFilter(props) {
-  const [selectedVal, setSelectedVal] = React.useState([]);
+  const [selectedVal, setSelectedVal] = React.useState(props.initialValue);
 
   const handleChange = e => {
     setSelectedVal(e.target.value);
@@ -55,9 +55,9 @@ export function MultiselectFilter(props) {
     <FormControl style={{ width: "100%" }}>
       <Select multiple value={selectedVal} onChange={handleChange} renderValue={renderValue}>
         {props.choices.map((choice, index) => 
-        <MenuItem key={index} value={props.choiceTexts ? props.choiceTexts[index] : choice}>
+          <MenuItem key={index} value={choice}>
             <Checkbox checked={selectedVal.includes(choice)} />
-            <ListItemText primary={props.choiceTexts ? props.choiceTexts[index] : choice} />
+            <ListItemText primary={choice} />
           </MenuItem>
         )}
       </Select>
@@ -69,9 +69,9 @@ MultiselectFilter.propTypes = {
   onFilterChanged: PropTypes.func.isRequired,
   columnDef: PropTypes.shape({tableData: PropTypes.object}).isRequired,
   choices: PropTypes.array.isRequired,
-  choiceTexts: PropTypes.array,
+  initialValue: PropTypes.array,
 }
 
 MultiselectFilter.defaultProps = {
-  choiceTexts: null,
+  initialValue: [],
 }

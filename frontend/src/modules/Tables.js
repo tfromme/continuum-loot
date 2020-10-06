@@ -134,10 +134,14 @@ export function ItemTable(props) {
     return false;
   }
 
+  var playerLookup = {};
+  for (const player of props.players) {
+    playerLookup[player.id] = player.name;
+  }
+
   const [ columns ] = React.useState([
     { title: 'Name', field: 'name', defaultSort: 'asc', editable: 'never',
       render: ( rowData => <a href={rowData.link}>{rowData.name}</a> )},
-    { title: 'Type', field: 'type', editable: 'never' },
     { title: 'Bosses', field: 'bosses', defaultFilter: defaultFilter, editable: 'never',
       filterComponent: bossFilter, customFilterAndSearch: bossSearch,
       render: ((rowData) => {
@@ -150,6 +154,9 @@ export function ItemTable(props) {
     },
     { title: 'Tier', field: 'tier', type: 'numeric' },
     { title: 'Category', field: 'category', lookup: itemCategories },
+    { title: 'Prio 1', field: 'iprio_1', lookup: playerLookup, editable: 'never', filtering: false },
+    { title: 'Prio 2', field: 'iprio_2', lookup: playerLookup, editable: 'never', filtering: false },
+    { title: 'Class Prio 1', field: 'cprio_1', editable: 'never', filtering: false },
     { title: 'Notes', field: 'notes', filtering: false },
   ]);
 

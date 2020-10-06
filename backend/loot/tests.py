@@ -92,6 +92,9 @@ class GetTests(APITestCase):
                     ],
                     'individual_prio': [{'player_id': 100, 'prio': 1, 'set_by': 1}],
                     'link': 'https://classic.wowhead.com/item=10',
+                    'iprio_1': 100,
+                    'iprio_2': None,
+                    'cprio_1': 'Shaman',
                 },
                 {
                     'id': 20,
@@ -105,6 +108,9 @@ class GetTests(APITestCase):
                     'class_prio': [{'class': 'Hunters', 'prio': 1, 'set_by': 1}],
                     'individual_prio': [],
                     'link': 'https://classic.wowhead.com/item=20',
+                    'iprio_1': None,
+                    'iprio_2': None,
+                    'cprio_1': 'Hunters',
                 },
             ]
         )

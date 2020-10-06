@@ -60,11 +60,39 @@ class ItemSerializer(serializers.ModelSerializer):
     class_prio = ClassPrioSerializer(source='class_prios', many=True)
     individual_prio = IndividualPrioSerializer(source='individual_prios', many=True)
     link = serializers.ReadOnlyField()
+    iprio_1 = serializers.SerializerMethodField()
+    iprio_2 = serializers.SerializerMethodField()
+    cprio_1 = serializers.SerializerMethodField()
 
     class Meta:
         model = Item
         fields = ['id', 'name', 'type', 'tier', 'category', 'notes', 'raid',
-                  'bosses', 'class_prio', 'individual_prio', 'link']
+                  'bosses', 'class_prio', 'individual_prio', 'link',
+                  'iprio_1', 'iprio_2', 'cprio_1',
+                  ]
+
+    def _get_iprio(self, obj, prio):
+        try:
+            i = obj.individual_prios.get(prio=prio)
+            return i.player_id
+        except IndividualPrio.DoesNotExist:
+            return None
+
+    def _get_cprio(self, obj, prio):
+        try:
+            c = obj.class_prios.get(prio=prio)
+            return c.class_name
+        except ClassPrio.DoesNotExist:
+            return None
+
+    def get_iprio_1(self, obj):
+        return self._get_iprio(obj, 1)
+
+    def get_iprio_2(self, obj):
+        return self._get_iprio(obj, 2)
+
+    def get_cprio_1(self, obj):
+        return self._get_cprio(obj, 1)
 
 
 class RaidSerializer(serializers.ModelSerializer):

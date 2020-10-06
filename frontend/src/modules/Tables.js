@@ -13,6 +13,12 @@ import { EditItemAutocomplete } from './EditComponents.js';
 import { RaidFilter, MultiselectFilter } from './Filters.js';
 
 
+function rowStyleFun(data, index) {
+  if (index % 2) {
+    return { backgroundColor: "#EEE" };
+  }
+}
+
 export function PlayerTable(props) {
   const fullEditable = props.loggedInPlayer && props.loggedInPlayer.permission_level >= 2 ? 'always' : 'never';
   const rowEditable = rowData => (props.loggedInPlayer
@@ -32,7 +38,7 @@ export function PlayerTable(props) {
       columns={columns}
       data={ props.players }
       title="Players"
-      options={ { paging: false, filtering: true, draggable: false} }
+      options={ { paging: false, filtering: true, draggable: false, rowStyle: rowStyleFun } }
       localization={{header: {actions: ''}}}
       editable={ {
         isEditable: rowEditable,
@@ -165,7 +171,7 @@ export function ItemTable(props) {
       columns={columns}
       data={ props.items }
       title="Items"
-      options={ { paging: false, filtering: true } }
+      options={ { paging: false, filtering: true, rowStyle: rowStyleFun } }
       localization={{header: {actions: ''}}}
       editable={ {
         isEditable: _ => rowEditable,
@@ -316,7 +322,8 @@ export function LootHistoryTable(props) {
       columns={columns}
       data={ props.lootHistory }
       title="Loot History"
-      options={ { paging: false, filtering: true, draggable: false, addRowPosition: 'first' } }
+      options={ { paging: false, filtering: true, draggable: false,
+                  addRowPosition: 'first', rowStyle: rowStyleFun } }
       localization={{header: {actions: ''}}}
       editable={ {
         isEditable: _ => rowEditable,

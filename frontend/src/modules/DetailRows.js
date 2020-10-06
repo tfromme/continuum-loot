@@ -21,7 +21,7 @@ import { EditItemAutocomplete, PriorityEditIndividual } from './EditComponents.j
 import Api from './Api.js';
 
 const DarkPaper = styled(Paper)({
-  background: '#EEE',
+  background: '#ccc',
 });
 
 // TODO: Refactor away from material-table (overkill for this task)

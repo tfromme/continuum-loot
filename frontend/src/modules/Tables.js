@@ -21,9 +21,17 @@ function rowStyleFun(data, index) {
 
 export function PlayerTable(props) {
   const fullEditable = props.loggedInPlayer && props.loggedInPlayer.permission_level >= 2 ? 'always' : 'never';
-  const rowEditable = rowData => (props.loggedInPlayer
-                                  ? (rowData.id === props.loggedInPlayer.id || props.loggedInPlayer.permission_level >= 2)
-                                  : false);
+  const rowEditable = rowData => {
+    if (props.loggedInPlayer) {
+      if (props.loggedInPlayer.permission_level >= 2
+       || rowData.id === props.loggedInPlayer.id
+       || rowData.alts.includes(props.loggedInPlayer.id)
+      ) {
+        return true;
+      }
+    }
+    return false;
+  }
 
   const [ columns ] = React.useState([
     { title: 'Name', field: 'name', filtering: false, defaultSort: 'asc', editable: fullEditable },
@@ -71,6 +79,7 @@ export function PlayerTable(props) {
           render: rowData => (
             <AttendanceRow
               rowData={rowData}
+              players={props.players}
               raidDays={props.raidDays}
             />
           ),

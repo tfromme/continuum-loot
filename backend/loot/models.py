@@ -36,6 +36,7 @@ class Player(models.Model):
     player_class = models.CharField(max_length=2, choices=Classes.choices, default=Classes.WARRIOR)
     role = models.CharField(max_length=1, choices=Roles.choices, default=Roles.DPS)
     rank = models.IntegerField(choices=Ranks.choices, default=Ranks.TRIAL)
+    alts = models.ManyToManyField('self')
     attendance = models.ManyToManyField('RaidDay', blank=True)
     # wishlist
 

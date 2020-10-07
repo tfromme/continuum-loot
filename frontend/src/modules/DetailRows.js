@@ -128,9 +128,29 @@ WishlistRow.defaultProps = {
 
 // TODO: Refactor away from material-table (overkill for this task)
 export function AttendanceRow(props) {
+
+  const getAttendanceStr = (rowData, raidId) => {
+    if (rowData.attendance.includes(raidId)) {
+      return 'Yes';
+    }
+    for (const altId of rowData.alts) {
+      if (props.players.find(x => x.id === altId).attendance.includes(raidId)) {
+        return 'Alt';
+      }
+    }
+    return 'No';
+  }
+
+  const getCellStyle = cellData => {
+    if (cellData === 'Yes') {
+      return {fontWeight: '500', color: '#4CAF50'};
+    } else if (cellData === 'No') {
+      return {fontWeight: '500', color: '#F44336'};
+    } else if (cellData === 'Alt') {
+      return {fontWeight: '500', color: '#2196F3'};
+    }
+  }
   
-  const yesStyle = {fontWeight: '500', color: '#4CAF50'};
-  const noStyle = {fontWeight: '500', color: '#F44336'};
 
   // 45 is a "good enough" attempt to get the first columns lined up
   var attendanceColumns = [{width: 45}, {title: '', field: 'name', cellStyle: {fontWeight: '500'}}];
@@ -139,10 +159,10 @@ export function AttendanceRow(props) {
   const numRaids = 12;
   const lastXRaidDays = props.raidDays.slice(0, numRaids).reverse();
   for (var i=0; i<numRaids; i++) {
-    attendanceData[i.toString()] = props.rowData.attendance.includes(lastXRaidDays[numRaids-1-i].id) ? 'Yes' : 'No';
+    attendanceData[i.toString()] = getAttendanceStr(props.rowData, lastXRaidDays[numRaids-1-i].id);
     attendanceColumns.push({title: lastXRaidDays[numRaids-1-i].name,
                             field: i.toString(),
-                            cellStyle: cellData => cellData === 'Yes' ? yesStyle : noStyle,
+                            cellStyle: getCellStyle,
     });
   }
 
@@ -157,6 +177,7 @@ export function AttendanceRow(props) {
 }
 
 AttendanceRow.propTypes = {
+  players: PropTypes.arrayOf(CustomPropTypes.player).isRequired,
   rowData: CustomPropTypes.player.isRequired,
   raidDays: PropTypes.arrayOf(CustomPropTypes.raidDay).isRequired,
 }

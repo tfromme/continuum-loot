@@ -26,6 +26,9 @@ def setup_test_data():
                                 role=Player.Roles.DPS, rank=Player.Ranks.OFFICER, notes="yikes")
     morb = Player.objects.create(id=200, name="Morbidmind", player_class=Player.Classes.WARLOCK,
                                  role=Player.Roles.DPS, rank=Player.Ranks.GM)
+    nesalt = Player.objects.create(id=300, name="Ticksor", player_class=Player.Classes.WARRIOR,
+                                   role=Player.Roles.TANK, rank=Player.Ranks.MEMBER)
+    nes.alts.add(nesalt)
     nes.attendance.add(bwl1)
     nes.attendance.add(aq1)
     nes.user = user
@@ -63,6 +66,7 @@ class GetTests(APITestCase):
                     'notes': 'yikes',
                     'attendance': [50, 60],
                     'wishlist': [],
+                    'alts': [300],
                 },
                 {
                     'id': 200,
@@ -73,6 +77,18 @@ class GetTests(APITestCase):
                     'notes': '',
                     'attendance': [],
                     'wishlist': [{'item_id': 20, 'prio': 1}, {'item_id': 10, 'prio': 2}],
+                    'alts': [],
+                },
+                {
+                    'id': 300,
+                    'name': 'Ticksor',
+                    'class': 'WR',
+                    'role': 'T',
+                    'rank': 30,
+                    'notes': '',
+                    'attendance': [],
+                    'wishlist': [],
+                    'alts': [100],
                 },
             ])
 

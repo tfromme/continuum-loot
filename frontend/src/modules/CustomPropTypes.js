@@ -14,6 +14,7 @@ const player = PropTypes.shape({
   notes: PropTypes.string,
   attendance: PropTypes.arrayOf(PropTypes.number),
   wishlist: PropTypes.arrayOf(wishlist),
+  alts: PropTypes.arrayOf(PropTypes.number),
 });
 
 const item = PropTypes.shape({

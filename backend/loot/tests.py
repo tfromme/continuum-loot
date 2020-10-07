@@ -5,42 +5,47 @@ from rest_framework.test import APITestCase
 from .models import Player, LootHistory, Raid, RaidDay, Item, Boss, ClassPrio, IndividualPrio, Wishlist
 
 
+def setup_test_data():
+    user = User.objects.create(username="nesingtick", password="test_password", is_superuser=True)
+    bwl = Raid.objects.create(id=1, name="Blackwing Lair", short_name="BWL")
+    aq = Raid.objects.create(id=2, name="Ahn'Qiraj", short_name="AQ")
+    vael = Boss.objects.create(id=1, name="Vaelestrasz", raid=bwl, order=1)
+    huhu = Boss.objects.create(id=2, name="Huhuran", raid=aq, order=2)
+    bwl1 = RaidDay.objects.create(id=50, name="BWL 1", date=date(2020, 2, 18), raid=bwl)
+    aq1 = RaidDay.objects.create(id=60, name="AQ 1", date=date(2020, 8, 9), raid=aq)
+
+    sulf = Item.objects.create(id=10, name="Sulfuras", type="Weapon", category=Item.Categories.CASTER, raid=bwl)
+    sulf.bosses.add(vael)
+
+    tear = Item.objects.create(id=20, name="Nelth's Tear", type="Trinket",
+                               category=Item.Categories.CASTER, raid=aq, notes="yikes")
+    tear.bosses.add(vael)
+    tear.bosses.add(huhu)
+
+    nes = Player.objects.create(id=100, name="Nesingtick", player_class=Player.Classes.HUNTER,
+                                role=Player.Roles.DPS, rank=Player.Ranks.OFFICER, notes="yikes")
+    morb = Player.objects.create(id=200, name="Morbidmind", player_class=Player.Classes.WARLOCK,
+                                 role=Player.Roles.DPS, rank=Player.Ranks.GM)
+    nes.attendance.add(bwl1)
+    nes.attendance.add(aq1)
+    nes.user = user
+    nes.save()
+
+    ClassPrio.objects.create(item=sulf, class_name="Shaman", prio=1, set_by=user)
+    ClassPrio.objects.create(item=sulf, class_name="Paladin", prio=2, set_by=user)
+    ClassPrio.objects.create(item=tear, class_name="Hunters", prio=1, set_by=user)
+    IndividualPrio.objects.create(item=sulf, player=nes, prio=1, set_by=user)
+    Wishlist.objects.create(player=morb, item=tear, priority=1)
+    Wishlist.objects.create(player=morb, item=sulf, priority=2)
+
+    LootHistory.objects.create(id=1, raid_day=bwl1, item=sulf, player=nes)
+    LootHistory.objects.create(id=2, raid_day=aq1, item=tear, player=morb)
+
+
 class GetTests(APITestCase):
 
     def setUp(self):
-        user = User.objects.create(username="nes", password="test_password")
-        bwl = Raid.objects.create(id=1, name="Blackwing Lair", short_name="BWL")
-        aq = Raid.objects.create(id=2, name="Ahn'Qiraj", short_name="AQ")
-        vael = Boss.objects.create(id=1, name="Vaelestrasz", raid=bwl, order=1)
-        huhu = Boss.objects.create(id=2, name="Huhuran", raid=aq, order=2)
-        bwl1 = RaidDay.objects.create(id=50, name="BWL 1", date=date(2020, 2, 18), raid=bwl)
-        aq1 = RaidDay.objects.create(id=60, name="AQ 1", date=date(2020, 8, 9), raid=aq)
-
-        sulf = Item.objects.create(id=10, name="Sulfuras", type="Weapon", category=Item.Categories.CASTER, raid=bwl)
-        sulf.bosses.add(vael)
-
-        tear = Item.objects.create(id=20, name="Nelth's Tear", type="Trinket",
-                                   category=Item.Categories.CASTER, raid=aq, notes="yikes")
-        tear.bosses.add(vael)
-        tear.bosses.add(huhu)
-
-        nes = Player.objects.create(id=100, name="Nesingtick", player_class=Player.Classes.HUNTER,
-                                    role=Player.Roles.DPS, rank=Player.Ranks.OFFICER, notes="yikes")
-        morb = Player.objects.create(id=200, name="Morbidmind", player_class=Player.Classes.WARLOCK,
-                                     role=Player.Roles.DPS, rank=Player.Ranks.GM)
-        nes.attendance.add(bwl1)
-        nes.attendance.add(aq1)
-
-        ClassPrio.objects.create(item=sulf, class_name="Shaman", prio=1, set_by=user)
-        ClassPrio.objects.create(item=sulf, class_name="Paladin", prio=2, set_by=user)
-        ClassPrio.objects.create(item=tear, class_name="Hunters", prio=1, set_by=user)
-        IndividualPrio.objects.create(item=sulf, player=nes, prio=1, set_by=user)
-        Wishlist.objects.create(player=morb, item=tear, priority=1)
-        Wishlist.objects.create(player=morb, item=sulf, priority=2)
-
-        LootHistory.objects.create(id=1, raid_day=bwl1, item=sulf, player=nes)
-        LootHistory.objects.create(id=2, raid_day=aq1, item=tear, player=morb)
-
+        setup_test_data()
         super().setUp()
 
     def test_get_players(self):
@@ -249,6 +254,9 @@ class LoginTests(APITestCase):
         response = self.client.post('/signup', data, format='json')
         self.assertEqual(response.status_code, 200)
 
+        response = self.client.get('/logout')
+        self.assertEqual(response.status_code, 204)
+
         data = {'player_name': 'David', 'password': 'test_password'}
 
         response = self.client.post('/login', data, format='json')
@@ -257,8 +265,42 @@ class LoginTests(APITestCase):
         self.assertEqual(response.data['player']['name'], 'David')
         self.assertEqual(response.data['player']['permission_level'], 0)
 
+    def test_get_current_user(self):
+        response = self.client.get('/api/getCurrentUser')
+        self.assertEqual(response.data, {'player': None})
 
-"""
+        data = {'new': True,
+                'player_name': 'dAvId',
+                'class': 'Paladin',
+                'role': 'Healer',
+                'password': 'test_password',
+                }
+        response = self.client.post('/signup', data, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get('/api/getCurrentUser')
+        self.assertEqual(response.data['player']['name'], 'David')
+        self.assertEqual(response.data['player']['permission_level'], 0)
+
+        response = self.client.get('/logout')
+        self.assertEqual(response.status_code, 204)
+
+        response = self.client.get('/api/getCurrentUser')
+        self.assertEqual(response.data, {'player': None})
+
+        data = {'player_name': 'David', 'password': 'test_password'}
+
+        response = self.client.post('/login', data, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        self.assertEqual(response.data['player']['name'], 'David')
+        self.assertEqual(response.data['player']['permission_level'], 0)
+
+        response = self.client.get('/api/getCurrentUser')
+        self.assertEqual(response.data['player']['name'], 'David')
+        self.assertEqual(response.data['player']['permission_level'], 0)
+
+
 class LootHistoryTests(APITestCase):
 
     def setUp(self):
@@ -271,21 +313,58 @@ class LootHistoryTests(APITestCase):
         RaidDay.objects.create(id=50, name="BWL 1", date=date(2020, 2, 18), raid=bwl)
         RaidDay.objects.create(id=60, name="AQ 1", date=date(2020, 8, 9), raid=aq)
 
-        User.objects.create_user('nesingtick', password='test_password')
+        User.objects.create_user('nesingtick', password='test_password', is_superuser=True)
 
         super().setUp()
 
     def test_add_loot_history(self):
         self.assertEqual(LootHistory.objects.count(), 0)
 
-        data = {'item_id': 10,
-                'player_id': 100,
-                'raid_day_id': 50,
-                }
+        data = {'row': {
+            'item_id': 10,
+            'player_id': 100,
+            'raid_day_id': 50,
+        }}
         self.client.login(username='nesingtick', password='test_password')
-        response = self.client.post('/api/lootHistory/', data, format='json')
-        print(response.content)
-        self.assertEqual(response.status_code, 200)
+        response = self.client.post('/api/addLootHistory', data, format='json')
+        self.assertEqual(response.status_code, 204)
 
         self.assertEqual(LootHistory.objects.count(), 1)
-"""
+
+        lh = LootHistory.objects.all()[0]
+        self.assertEqual(lh.item, Item.objects.get(id=10))
+        self.assertEqual(lh.player, Player.objects.get(id=100))
+        self.assertEqual(lh.raid_day, RaidDay.objects.get(id=50))
+
+    def test_update_loot_history(self):
+        LootHistory.objects.create(id=1, item_id=10, player_id=100, raid_day_id=50)
+        self.assertEqual(LootHistory.objects.count(), 1)
+
+        data = {'row': {
+            'id': 1,
+            'item_id': 20,
+            'player_id': 200,
+            'raid_day_id': 60,
+        }}
+        self.client.login(username='nesingtick', password='test_password')
+        response = self.client.post('/api/updateLootHistory', data, format='json')
+        self.assertEqual(response.status_code, 204)
+
+        self.assertEqual(LootHistory.objects.count(), 1)
+
+        lh = LootHistory.objects.get(id=1)
+        self.assertEqual(lh.item, Item.objects.get(id=20))
+        self.assertEqual(lh.player, Player.objects.get(id=200))
+        self.assertEqual(lh.raid_day, RaidDay.objects.get(id=60))
+
+    def test_delete_loot_history(self):
+        LootHistory.objects.create(id=1, item_id=10, player_id=100, raid_day_id=50)
+        self.assertEqual(LootHistory.objects.count(), 1)
+
+        data = {'id': 1}
+
+        self.client.login(username='nesingtick', password='test_password')
+        response = self.client.post('/api/deleteLootHistory', data, format='json')
+        self.assertEqual(response.status_code, 204)
+
+        self.assertEqual(LootHistory.objects.count(), 0)

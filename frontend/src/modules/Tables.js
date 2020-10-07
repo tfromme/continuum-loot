@@ -46,7 +46,7 @@ export function PlayerTable(props) {
       columns={columns}
       data={ props.players }
       title="Players"
-      options={ { paging: false, filtering: true, draggable: false, rowStyle: rowStyleFun } }
+      options={ { padding: 'dense', paging: false, filtering: true, draggable: false, rowStyle: rowStyleFun } }
       localization={{header: {actions: ''}}}
       editable={ {
         isEditable: rowEditable,
@@ -180,7 +180,7 @@ export function ItemTable(props) {
       columns={columns}
       data={ props.items }
       title="Items"
-      options={ { paging: false, filtering: true, rowStyle: rowStyleFun } }
+      options={ { padding: 'dense', paging: false, filtering: true, rowStyle: rowStyleFun } }
       localization={{header: {actions: ''}}}
       editable={ {
         isEditable: _ => rowEditable,
@@ -331,7 +331,7 @@ export function LootHistoryTable(props) {
       columns={columns}
       data={ props.lootHistory }
       title="Loot History"
-      options={ { paging: false, filtering: true, draggable: false,
+      options={ { padding: 'dense', paging: false, filtering: true, draggable: false,
                   addRowPosition: 'first', rowStyle: rowStyleFun } }
       localization={{header: {actions: ''}}}
       editable={ {

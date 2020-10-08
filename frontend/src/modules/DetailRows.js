@@ -126,7 +126,6 @@ WishlistRow.defaultProps = {
   editable: false,
 }
 
-// TODO: Refactor away from material-table (overkill for this task)
 export function AttendanceRow(props) {
 
   const getAttendanceStr = (rowData, raidId) => {
@@ -151,28 +150,43 @@ export function AttendanceRow(props) {
     }
   }
   
-
-  // 45 is a "good enough" attempt to get the first columns lined up
-  var attendanceColumns = [{width: 45}, {title: '', field: 'name', cellStyle: {fontWeight: '500'}}];
-  var attendanceData = {'name': 'Attendance'};
-  
   const numRaids = 12;
   const lastXRaidDays = props.raidDays.slice(0, numRaids).reverse();
-  for (var i=0; i<numRaids; i++) {
-    attendanceData[i.toString()] = getAttendanceStr(props.rowData, lastXRaidDays[numRaids-1-i].id);
-    attendanceColumns.push({title: lastXRaidDays[numRaids-1-i].name,
-                            field: i.toString(),
-                            cellStyle: getCellStyle,
-    });
+
+  var headerData = [];
+  var attendanceData = [];
+
+  for (let i=lastXRaidDays.length-1; i>=0; i--) {
+    headerData.push(lastXRaidDays[i].name)
+    attendanceData.push(getAttendanceStr(props.rowData, lastXRaidDays[i].id));
+  }
+
+  for (let i=lastXRaidDays.length; i<numRaids; i++) {
+    headerData.push('');
+    attendanceData.push('');
   }
 
   return (
-    <MaterialTable
-      //components={{Container: DarkPaper}}
-      columns={attendanceColumns}
-      data={[attendanceData]}
-      options={ { sorting: false, paging: false, showTitle: false, toolbar: false, draggable: false } }
-    />
+    <TableContainer component={DarkPaper}>
+      <Table size="small" style={{tableLayout: 'fixed'}}>
+        <TableHead>
+          <TableRow>
+            <TableCell className="no-width-fix" />
+            {headerData.map((data, index) =>
+              <TableCell style={{fontWeight: '500'}} key={index}>{data}</TableCell>
+            )}
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          <TableRow>
+            <TableCell variant='head' style={{textAlign: 'center'}}>Attendance</TableCell>
+            {attendanceData.map((data, index) =>
+              <TableCell style={getCellStyle(data)} key={index}>{data}</TableCell>
+            )}
+          </TableRow>
+        </TableBody>
+      </Table>
+    </TableContainer>
   );
 }
 

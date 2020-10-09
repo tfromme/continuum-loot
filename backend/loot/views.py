@@ -25,7 +25,7 @@ class CsrfExemptSessionAuthentication(SessionAuthentication):
 
 
 class PlayerViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Player.objects.exclude(rank=Player.Ranks.INACTIVE).order_by('name')
+    queryset = Player.objects.order_by('name')
     serializer_class = PlayerSerializer
 
 
@@ -46,7 +46,7 @@ class RaidDayViewSet(viewsets.ReadOnlyModelViewSet):
 
 class LootHistoryViewSet(viewsets.ReadOnlyModelViewSet):
     # Sort by date descending, then by id descending
-    queryset = LootHistory.objects.exclude(player__rank=Player.Ranks.INACTIVE).order_by('-raid_day__date', '-id')
+    queryset = LootHistory.objects.order_by('-raid_day__date', '-id')
     serializer_class = LootHistorySerializer
 
 

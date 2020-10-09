@@ -20,7 +20,7 @@ class Player(models.Model):
         HEALER = 'H'
 
     class Ranks(models.IntegerChoices):
-        INACTIVE = 0
+        INACTIVE = 0  # TODO: Remove or rename this
         PUG = 10
         TRIAL = 20
         MEMBER = 30
@@ -38,6 +38,7 @@ class Player(models.Model):
     rank = models.IntegerField(choices=Ranks.choices, default=Ranks.TRIAL)
     alts = models.ManyToManyField('self', blank=True)
     attendance = models.ManyToManyField('RaidDay', blank=True)
+    is_active = models.BooleanField(default=True)
     # wishlist
 
     def __str__(self):

@@ -44,7 +44,7 @@ export function PlayerTable(props) {
   return (
     <MaterialTable
       columns={columns}
-      data={ props.players }
+      data={ props.players.filter(player => player.is_active) }
       title="Players"
       options={ { padding: 'dense', paging: false, filtering: true, draggable: false, rowStyle: rowStyleFun } }
       localization={{header: {actions: ''}}}

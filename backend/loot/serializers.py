@@ -18,7 +18,7 @@ class PlayerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Player
-        fields = ['id', 'name', 'notes', 'class', 'role', 'rank', 'attendance', 'wishlist', 'alts']
+        fields = ['id', 'name', 'notes', 'class', 'role', 'rank', 'is_active', 'attendance', 'wishlist', 'alts']
 
 
 # Oh reserved keywords, how I love thee

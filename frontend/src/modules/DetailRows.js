@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import MaterialTable from 'material-table';
 import Paper from '@material-ui/core/Paper';
 import TextField from '@material-ui/core/TextField';
 import TableContainer from '@material-ui/core/TableContainer';
@@ -24,94 +23,111 @@ const DarkPaper = styled(Paper)({
   background: '#ccc',
 });
 
-// TODO: Refactor away from material-table (overkill for this task)
+const ordinals = ['First', 'Second', 'Third', 'Fourth', 'Fifth',
+                  'Sixth', 'Seventh', 'Eighth', 'Ninth', 'Tenth',
+                  'Eleventh', 'Twelfth', 'Thirteenth', 'Fourteenth'];
+
 export function WishlistRow(props) {
-  var wishlistData = {'name': 'Wishlist'};
+  const numWishlist = 10;
+  var initialData = Array(numWishlist).fill(null);
+
   for (const item of props.rowData.wishlist) {
-    wishlistData[item.prio] = item.item_id;
+    initialData[item.prio - 1] = item.item_id;
   }
+
+  const [editing, setEditing] = React.useState(false);
+  const [wishlistData, setWishlistData] = React.useState(initialData);
 
   var wishlistLookup = {};
   for (const item of props.items) {
     wishlistLookup[item.id] = item.name;
   }
 
-  const customEditComponent = index => (xProps => (
-    <EditItemAutocomplete
-      items={props.items}
-      initialValue={props.items.find(x => x.id === wishlistData[index])}
-      onChange={xProps.onChange}
-    />
-  ));
+  const changeWishlistData = index => (
+    newId => {
+      let newData = [ ...wishlistData ];
+      newData[index] = newId;
+      setWishlistData(newData);
+    }
+  );
+
+  const saveWishlist = () => {
+    setEditing(false);
+
+    var updatedPlayer = props.rowData;
+    updatedPlayer.wishlist = [];
+    wishlistData.forEach((itemId, index) => {
+      if (itemId) {
+        updatedPlayer.wishlist.push({'prio': (index+1), 'item_id': itemId});
+      }
+    });
+    Api.player.update(updatedPlayer, props.updateRemoteData);
+  }
+
+  const clear = () => {
+    setEditing(false);
+    setWishlistData(initialData);
+  }
+
+  var buttons;
+  if (!props.editable) {
+    buttons = null;
+  } else if (editing) {
+    buttons = (
+      <>
+        <IconButton size="small" onClick={saveWishlist}>
+          <Check />
+        </IconButton>
+        <IconButton size="small" onClick={clear}>
+          <Clear />
+        </IconButton>
+      </>
+    );
+  } else {
+    buttons = (
+      <IconButton size="small" onClick={() => setEditing(true)}>
+        <Edit />
+      </IconButton>
+    );
+  }
+
+  var cells = wishlistData.map((itemId, index) =>
+    <TableCell key={index}>{itemId ? wishlistLookup[itemId] : null}</TableCell>
+  );
+  
+  if (editing) {
+    cells = wishlistData.map((itemId, index) =>
+      <TableCell key={index}>
+        <EditItemAutocomplete
+          items={props.items}
+          initialValue={props.items.find(x => x.id === itemId) || null}
+          onChange={changeWishlistData(index)}
+        />
+      </TableCell>
+    );
+  }
 
   return (
-    <MaterialTable
-      //components={{Container: DarkPaper}}
-      columns={[
-        {title: '', field: 'name', editable: 'never', cellStyle: {fontWeight: '500'}}, 
-        {title: 'First', field: '1', lookup: wishlistLookup, editComponent: customEditComponent(1)},
-        {title: 'Second', field: '2', lookup: wishlistLookup, editComponent: customEditComponent(2)},
-        {title: 'Third', field: '3', lookup: wishlistLookup, editComponent: customEditComponent(3)},
-        {title: 'Fourth', field: '4', lookup: wishlistLookup, editComponent: customEditComponent(4)},
-        {title: 'Fifth', field: '5', lookup: wishlistLookup, editComponent: customEditComponent(5)},
-        {title: 'Sixth', field: '6', lookup: wishlistLookup, editComponent: customEditComponent(6)},
-        {title: 'Seventh', field: '7', lookup: wishlistLookup, editComponent: customEditComponent(7)},
-        {title: 'Eighth', field: '8', lookup: wishlistLookup, editComponent: customEditComponent(8)},
-        {title: 'Ninth', field: '9', lookup: wishlistLookup, editComponent: customEditComponent(9)},
-        {title: 'Tenth', field: '10', lookup: wishlistLookup, editComponent: customEditComponent(10)},
-      ]}
-      data={[wishlistData]}
-      options={ { sorting: false, paging: false, showTitle: false, toolbar: false, draggable: props.editable } }
-      localization={{header: {actions: ''}}}
-      editable={ {
-        isEditable: _ => props.editable,
-        isEditHidden: _ => !props.editable,
-        onRowUpdate: (newData, _oldData) => {
-          var updatedPlayer = props.rowData;
-          updatedPlayer.wishlist = [];
-          for (const prio in newData) {
-            if (prio !== 'name' && newData[prio] !== null) {
-              updatedPlayer.wishlist.push({'prio': prio, 'item_id': newData[prio]});
-            }
-          }
-          return new Promise((resolve, _reject) => {
-            Api.player.update(updatedPlayer, props.updateRemoteData);
-            resolve();
-          });
-        },
-      } }
-      onColumnDragged={ (sourceIndex, destIndex) => {
-        if (sourceIndex === destIndex) {
-          return;
-        }
-
-        var updated = false;
-        var updatedPlayer = props.rowData;
-
-        const movedItemIndex = updatedPlayer.wishlist.findIndex(i => i.prio === sourceIndex);
-        const diff = sourceIndex > destIndex ? 1 : -1;  // Which way do intermediate items get moved
-        const lowerBound = sourceIndex > destIndex ? destIndex - 1 : sourceIndex;
-        const upperBound = sourceIndex > destIndex ? sourceIndex - 1 : destIndex;
-
-        for (var itemIndex = 0; itemIndex < updatedPlayer.wishlist.length; itemIndex++) {
-          const prio = updatedPlayer.wishlist[itemIndex].prio;
-          if (prio > lowerBound && prio <= upperBound) {
-            updatedPlayer.wishlist[itemIndex].prio += diff;
-            updated = true;
-          }
-        }
-
-        // undefined check if moving empty col
-        if (updatedPlayer.wishlist[movedItemIndex]) {
-          updatedPlayer.wishlist[movedItemIndex].prio = destIndex;
-          updated = true;
-        }
-
-        if (updated) {
-          Api.player.update(updatedPlayer, props.updateRemoteData);
-        }
-      } }
-    />
+    <TableContainer component={DarkPaper}>
+      <Table size="small" style={{tableLayout: 'fixed'}}>
+        <TableHead>
+          <TableRow>
+            <TableCell className="no-width-fix" />
+            <TableCell />
+            {ordinals.slice(0, numWishlist).map((num, index) =>
+            <TableCell key={index}>{num}</TableCell>
+            )}
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          <TableRow>
+            <TableCell style={{textAlign: 'right'}}>{buttons}</TableCell>
+            <TableCell variant='head'>Wishlist</TableCell>
+            {cells}
+          </TableRow>
+        </TableBody>
+      </Table>
+    </TableContainer>
   );
 }
 
@@ -262,7 +278,6 @@ LootHistoryRow.propTypes = {
 
 // TODO: Add drag'n'drop with react-sortable-hoc
 export function PriorityRow(props) {
-  const ordinals = ['First', 'Second', 'Third', 'Fourth', 'Fifth'];
   const numIndividual = 3;
   const numClass = 3;
 

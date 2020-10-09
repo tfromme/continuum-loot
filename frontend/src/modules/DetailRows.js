@@ -261,70 +261,72 @@ LootHistoryRow.propTypes = {
 }
 
 // TODO: Add drag'n'drop with react-sortable-hoc
-// TODO: Refactor for more/less than 3 prios
 export function PriorityRow(props) {
+  const ordinals = ['First', 'Second', 'Third', 'Fourth', 'Fifth'];
+  const numIndividual = 3;
+  const numClass = 3;
+
   const initialValue = {
-    individual: {
-      1: {},
-      2: {},
-      3: {},
-    },
-    class: {
-      1: {},
-      2: {},
-      3: {},
-    },
+    individual: [],
+    class: [],
   };
 
-  for (let i = 1; i <= 3; i++) {
-    const currentIndividual = props.rowData.individual_prio.find(x => x.prio === i);
+  for (let i = 0; i < numIndividual; i++) {
+    const currentIndividual = props.rowData.individual_prio.find(x => x.prio === (i+1));
     if (currentIndividual) {
       const player = props.players.find(x => x.id === currentIndividual.player_id);
       const setBy = props.players.find(x => x.id === currentIndividual.set_by);
-      initialValue.individual[i] = {player: player, setBy: setBy};
+      initialValue.individual.push({player: player, setBy: setBy});
+    } else {
+      initialValue.individual.push({player: null, setBy: null});
     }
+  }
 
-    const currentClass = props.rowData.class_prio.find(x => x.prio === i);
+  for (let i = 0; i < numClass; i++) {
+    const currentClass = props.rowData.class_prio.find(x => x.prio === (i+1));
     if (currentClass) {
       const setBy = props.players.find(x => x.id === currentClass.set_by);
-      initialValue.class[i] = {class: currentClass.class, setBy: setBy};
+      initialValue.class.push({class: currentClass.class, setBy: setBy});
+    } else {
+      initialValue.class.push({class: '', setBy: null});
     }
   }
 
   const [editingIndividual, setEditingIndividual] = React.useState(false);
   const [editingClass, setEditingClass] = React.useState(false);
-  const [individualOne, setIndividualOne] = React.useState(initialValue.individual[1].player);
-  const [individualTwo, setIndividualTwo] = React.useState(initialValue.individual[2].player);
-  const [individualThree, setIndividualThree] = React.useState(initialValue.individual[3].player);
-  const [classOne, setClassOne] = React.useState(initialValue.class[1].class);
-  const [classTwo, setClassTwo] = React.useState(initialValue.class[2].class);
-  const [classThree, setClassThree] = React.useState(initialValue.class[3].class);
+  const [iPrios, setIPrios] = React.useState(initialValue.individual);
+  const [cPrios, setCPrios] = React.useState(initialValue.class);
 
+  const changeIPrios = index => (
+    newData => {
+      let newPrios = [ ...iPrios ];
+      newPrios[index].player = newData
+      newPrios[index].setBy = props.loggedInPlayer.id
+      setIPrios(iPrios);
+    }
+  );
+
+  const changeCPrios = index => (
+    e => {
+      let newPrios = [ ...cPrios ];
+      newPrios[index].class = e.target.value;
+      newPrios[index].setBy = props.loggedInPlayer.id;
+      setCPrios(newPrios);
+    }
+  );
 
   const saveIndividual = () => {
     setEditingIndividual(false);
 
     var newIndividualPrio = [];
 
-    if (individualOne) {
-      const setBy = individualOne === initialValue.individual[1].player
-                     ? initialValue.individual[1].setBy.id
-                     : props.loggedInPlayer.id;
-      newIndividualPrio.push({player_id: individualOne.id, prio: 1, set_by: setBy});
-    }
-
-    if (individualTwo) {
-      const setBy = individualTwo === initialValue.individual[2].player
-                     ? initialValue.individual[2].setBy.id
-                     : props.loggedInPlayer.id;
-      newIndividualPrio.push({player_id: individualTwo.id, prio: 2, set_by: setBy});
-    }
-
-    if (individualThree) {
-      const setBy = individualThree === initialValue.individual[3].player
-                     ? initialValue.individual[3].setBy.id
-                     : props.loggedInPlayer.id;
-      newIndividualPrio.push({player_id: individualThree.id, prio: 3, set_by: setBy});
+    for (let i = 0; i < numIndividual; i++) {
+      if (iPrios[i].player) {  // Check if anything was selected
+        const setBy = iPrios[i].player === initialValue.individual[i].player
+                       ? initialValue.individual[i].setBy.id
+                       : props.loggedInPlayer.id;
+        newIndividualPrio.push({player_id: iPrios[i].player.id, prio: i + 1, set_by: setBy});
+      }
     }
 
     props.rowData.individual_prio = newIndividualPrio;
@@ -336,25 +338,13 @@ export function PriorityRow(props) {
 
     var newClassPrio = [];
 
-    if (classOne) {
-      const setBy = classOne === initialValue.class[1].class
-                     ? initialValue.class[1].setBy.id
-                     : props.loggedInPlayer.id;
-      newClassPrio.push({class: classOne, prio: 1, set_by: setBy});
-    }
-
-    if (classTwo) {
-      const setBy = classTwo === initialValue.class[2].class
-                     ? initialValue.class[2].setBy.id
-                     : props.loggedInPlayer.id;
-      newClassPrio.push({class: classTwo, prio: 2, set_by: setBy});
-    }
-
-    if (classThree) {
-      const setBy = classThree === initialValue.class[3].class
-                     ? initialValue.class[3].setBy.id
-                     : props.loggedInPlayer.id;
-      newClassPrio.push({class: classThree, prio: 3, set_by: setBy});
+    for (let i = 0; i < numClass; i++) {
+      if (cPrios[i].class) {  // Check if anything was typed
+        const setBy = cPrios[i].class === initialValue.class[i].class
+                       ? initialValue.class[i].setBy.id
+                       : props.loggedInPlayer.id;
+        newClassPrio.push({class: cPrios[i].class, prio: i + 1, set_by: setBy});
+      }
     }
 
     props.rowData.class_prio = newClassPrio;
@@ -364,12 +354,8 @@ export function PriorityRow(props) {
   const clear = () => {
     setEditingIndividual(false);
     setEditingClass(false);
-    setIndividualOne(initialValue.individual[1].player);
-    setIndividualTwo(initialValue.individual[2].player);
-    setIndividualThree(initialValue.individual[3].player);
-    setClassOne(initialValue.class[1].class);
-    setClassTwo(initialValue.class[2].class);
-    setClassThree(initialValue.class[3].class);
+    setIPrios(initialValue.individual);
+    setCPrios(initialValue.class);
   }
 
   var individualButtons;
@@ -401,7 +387,7 @@ export function PriorityRow(props) {
       </>
     );
     individualButtons = null;
-  } else {
+  } else {  // Editable but not editing anything
     individualButtons = (
       <IconButton size="small" onClick={() => setEditingIndividual(true)}>
         <Edit />
@@ -414,45 +400,28 @@ export function PriorityRow(props) {
     );
   }
 
-  var individualCells  = (
-    <>
-      <TableCell>{individualOne ? individualOne.name : null}</TableCell>
-      <TableCell>{individualTwo ? individualTwo.name : null}</TableCell>
-      <TableCell>{individualThree ? individualThree.name : null}</TableCell>
-    </>
+  var individualCells = iPrios.map((prio, index) =>
+    <TableCell key={index}>{prio.player ? prio.player.name : null}</TableCell>
   );
 
   if (editingIndividual) {
-    individualCells = (
-      <>
-        <TableCell>
-          <PriorityEditIndividual players={props.players} initialValue={individualOne} onChange={setIndividualOne} />
+    individualCells = iPrios.map((prio, index) =>
+        <TableCell key={index}>
+          <PriorityEditIndividual players={props.players} initialValue={prio.player}
+                                  onChange={changeIPrios(index)} />
         </TableCell>
-        <TableCell>
-          <PriorityEditIndividual players={props.players} initialValue={individualTwo} onChange={setIndividualTwo} />
-        </TableCell>
-        <TableCell>
-          <PriorityEditIndividual players={props.players} initialValue={individualThree} onChange={setIndividualThree} />
-        </TableCell>
-      </>
     );
   }
 
-  var classCells = (
-    <>
-      <TableCell>{classOne}</TableCell>
-      <TableCell>{classTwo}</TableCell>
-      <TableCell>{classThree}</TableCell>
-    </>
+  var classCells = cPrios.map((prio, index) =>
+    <TableCell key={index}>{prio.class}</TableCell>
   );
 
   if (editingClass) {
-    classCells = (
-      <>
-        <TableCell><TextField value={classOne} onChange={e => setClassOne(e.target.value)} /></TableCell>
-        <TableCell><TextField value={classTwo} onChange={e => setClassTwo(e.target.value)} /></TableCell>
-        <TableCell><TextField value={classThree} onChange={e => setClassThree(e.target.value)} /></TableCell>
-      </>
+    classCells = cPrios.map((prio, index) =>
+      <TableCell key={index}>
+        <TextField value={cPrios[index].class} onChange={changeCPrios(index)} />
+      </TableCell>
     );
   }
 
@@ -463,14 +432,14 @@ export function PriorityRow(props) {
           <TableRow>
             <TableCell className="no-width-fix" />
             <TableCell />
-            <TableCell>First</TableCell>
-            <TableCell>Second</TableCell>
-            <TableCell>Third</TableCell>
+            {ordinals.slice(0, numIndividual).map((num, index) =>
+              <TableCell key={index}>{num}</TableCell>
+            )}
             <TableCell />
             <TableCell />
-            <TableCell>First</TableCell>
-            <TableCell>Second</TableCell>
-            <TableCell>Third</TableCell>
+            {ordinals.slice(0, numClass).map((num, index) =>
+              <TableCell key={index}>{num}</TableCell>
+            )}
           </TableRow>
         </TableHead>
         <TableBody>

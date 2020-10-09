@@ -280,6 +280,7 @@ class UploadAttendanceViewSet(generics.CreateAPIView):
                 player = Player.objects.create(name=player_name.capitalize())
 
             player.attendance.add(raid_day)
+            player.is_active = True
             player.save()
 
         return Response(status=204)
@@ -312,6 +313,9 @@ class UploadLootHistoryViewSet(generics.CreateAPIView):
                     player = Player.objects.get(name__iexact=player_name)
                 except Player.DoesNotExist:
                     player = Player.objects.create(name=player_name.capitalize())
+
+                player.is_active = True
+                player.save()
 
                 item = Item.objects.get(id=item_id)
 

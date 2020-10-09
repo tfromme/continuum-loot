@@ -47,7 +47,7 @@ export function PriorityEditIndividual(props) {
 }
 
 PriorityEditIndividual.propTypes = {
-  initialValue: CustomPropTypes.player.isRequired,
+  initialValue: CustomPropTypes.player,
   players: PropTypes.arrayOf(CustomPropTypes.player).isRequired,
   onChange: PropTypes.func.isRequired,
 }

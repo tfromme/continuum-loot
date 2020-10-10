@@ -12,7 +12,7 @@ function ContinuumLoot:HandleChatCommand(input)
 
   local playerName, _ = UnitName('player')
 
-  if args[1] == 'attendance' then
+  if string.lower(args[1]) == 'attendance' then
     local exportString = ContinuumLoot:CreateExportString()
     if (exportString ~= '') then
       ContinuumLoot:DisplayExportString(exportString)
@@ -43,12 +43,12 @@ function ContinuumLoot:CreateExportString()
     ContinuumLoot:Print('ERROR: Not in Group')
     return ''
   end
-  local exportString = '' .. name
+  local exportString = '' .. name .. '-' .. class
 
   for groupindex = 2,40 do
     name, rank, subgroup, level, class, zone, online, isDead, role, isML, _ = GetRaidRosterInfo(groupindex);
     if (name ~= nil) then
-      exportString = exportString .. ',' .. name
+      exportString = exportString .. ',' .. name .. '-' .. class
     end
   end
   return exportString

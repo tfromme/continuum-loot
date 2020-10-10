@@ -173,7 +173,9 @@ NewRaidDialog.defaultProps = {
 
 function isCommaSeparatedList(str) {
   // "\p{L}" matches any unicode letter in any language
-  return /^(\p{L}+)(,\p{L}+)*$/u.test(str);
+  const classes = '(druid|hunter|mage|paladin|priest|rogue|warlock|warrior)';
+  const re = new RegExp('^(\\p{L}+-' + classes + ')(,\\p{L}+-' + classes + ')*$', 'u');
+  return re.test(str.toLowerCase());
 }
 
 // See stackoverflow.com/questions/9804777

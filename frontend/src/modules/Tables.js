@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { useTable, useSortBy } from 'react-table';
+import { useTable, useSortBy, useFilters } from 'react-table';
 import MaterialTable from 'material-table';
 import HowToRegOutlined from '@material-ui/icons/HowToRegOutlined';
 import AssignmentOutlined from '@material-ui/icons/AssignmentOutlined';
@@ -20,7 +20,7 @@ import Api from './Api.js';
 import { classes, ranks, roles, itemTiers, itemCategories } from './Constants.js';
 import { WishlistRow, AttendanceRow, LootHistoryRow, PriorityRow, LootHistoryItemsRow } from './DetailRows.js';
 import { EditItemAutocomplete } from './EditComponents.js';
-import { RaidFilter, MultiselectFilter } from './Filters.js';
+import { TextFilter, MultiselectFilter, OldMultiselectFilter } from './Filters.js';
 
 
 function rowStyleFun(data, index) {
@@ -137,7 +137,7 @@ export function ItemTable(props) {
 
   const defaultFilter = [choices[0]];
 
-  const bossFilter = xProps => <MultiselectFilter initialValue={defaultFilter} choices={choices} {...xProps} />;
+  const bossFilter = xProps => <OldMultiselectFilter initialValue={defaultFilter} choices={choices} {...xProps} />;
 
   const bossSearch = (selected, rowData) => {
     if (selected.length === 0) {
@@ -249,8 +249,6 @@ ItemTable.defaultProps = {
   loggedInPlayer: null,
 }
 
-
-
 export function LootHistoryTable(props) {
   const rowEditable = props.loggedInPlayer && props.loggedInPlayer.permission_level >= 2;
 
@@ -263,6 +261,10 @@ export function LootHistoryTable(props) {
     [props.raidDays]
   );
 
+  const filterInArray = (rows, id, filterValue) => (
+    rows.filter(row => filterValue.includes(row.values[id]))
+  );
+
   const data = React.useMemo(() => props.lootHistory, [props.lootHistory]);
 
   const columns = React.useMemo(
@@ -273,44 +275,54 @@ export function LootHistoryTable(props) {
         id: 'raid_day',
         sortType: raidDaySort,
         sortDescFirst: true,
+        Filter: TextFilter,
       },
       {
         Header: 'Name',
         accessor: row => props.players.find(x => x.id === row.player_id).name,
         id: 'player',
         sortType: 'basic',
+        Filter: TextFilter,
       },
       {
         Header: 'Class',
         accessor: row => classes[props.players.find(x => x.id === row.player_id).class],
         id: 'player_class',
-        sortType: 'basic',
+        disableSortBy: true,
+        Filter: MultiselectFilter.bind(null, Object.values(classes)),
+        filter: filterInArray,
       },
       {
         Header: 'Role',
         accessor: row => roles[props.players.find(x => x.id === row.player_id).role],
         id: 'player_role',
-        sortType: 'basic',
+        disableSortBy: true,
+        Filter: MultiselectFilter.bind(null, Object.values(roles)),
+        filter: filterInArray,
       },
       {
         Header: 'Item',
         accessor: row => props.items.find(x => x.id === row.item_id).name,
         id: 'item',
         sortType: 'basic',
+        Filter: TextFilter,
       },
       {
         Header: 'Item Tier',
         accessor: row => props.items.find(x => x.id === row.item_id).tier,
         id: 'item_tier',
-        sortType: 'basic',
+        disableSortBy: true,
+        Filter: MultiselectFilter.bind(null, itemTiers),
+        filter: filterInArray,
       },
     ],
     [props.raidDays, props.items, props.players, raidDaySort]
   )
 
-  const tableInstance = useTable({ columns, data }, useSortBy);
+  const tableInstance = useTable({ columns, data }, useFilters, useSortBy);
 
   const {
+    // state,   TODO: Pop this up to App and pass down as "initialState" to save state between tabs
     getTableProps,
     getTableBodyProps,
     headerGroups,
@@ -330,6 +342,7 @@ export function LootHistoryTable(props) {
                   <span>
                     {column.isSorted ? (column.isSortedDesc ? <ArrowDownward /> : <ArrowUpward />) : ''}
                   </span>
+                  <div>{column.canFilter ? column.render('Filter') : null}</div>
                 </TableCell>
               ))}
             </TableRow>
@@ -400,32 +413,10 @@ export function LootHistoryTable(props) {
     />
   );
 
-  const [ columns ] = React.useState([
-    { title: 'Raid', field: 'raid_day_id', lookup: raidDayLookup, defaultSort: 'desc',
-      customSort: raidDaySort, filterComponent: RaidFilter, customFilterAndSearch: raidDaySearch },
-    { title: 'Name', field: 'player_id', lookup: nameLookup, editComponent: editNameComponent },
-    { title: 'Class', field: 'player_id', lookup: classLookup, editable: 'never',
-      filterComponent: classFilter, customFilterAndSearch: classSearch },
-    { title: 'Role', field: 'player_id', lookup: roleLookup, editable: 'never',
-      filterComponent: roleFilter, customFilterAndSearch: roleSearch },
-    { title: 'Item', field: 'item_id', lookup: itemLookup, editComponent: editItemComponent },
-    { title: 'Item Tier', field: 'item_id', lookup: tierLookup, editable: 'never',
-      filterComponent: tierFilter, customFilterAndSearch: tierSearch },
-  ]);
-
   return (
     <MaterialTable
-      columns={columns}
-      data={ props.lootHistory }
-      title="Loot History"
-      options={ { padding: 'dense', paging: false, filtering: true, draggable: false,
-                  addRowPosition: 'first', rowStyle: rowStyleFun } }
-      localization={{header: {actions: ''}}}
       editable={ {
         isEditable: _ => rowEditable,
-        isEditHidden: _ => !rowEditable,
-        isDeletable: _ => rowEditable,
-        isDeleteHidden: _ => !rowEditable,
         onRowUpdate: (newData, _oldData) => {
           return new Promise((resolve, _reject) => {
             Api.lootHistory.update(newData, props.updateRemoteData);

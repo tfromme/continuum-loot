@@ -10,10 +10,13 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Checkbox from '@material-ui/core/Checkbox';
 import ListItemText from '@material-ui/core/ListItemText';
 
-
-export function TextFilter(props) {
+export function TextFilter({column: { filterValue, setFilter }}) {
   return (
     <TextField
+      value={filterValue || ''}
+      onChange={e => {
+        setFilter(e.target.value || undefined)
+      }}
       InputProps={{
         startAdornment: (
           <InputAdornment position="start">
@@ -25,41 +28,28 @@ export function TextFilter(props) {
   );
 }
 
-// TODO: Why did I hardcode this?
-// Maybe combine with MultiselectFilter
-export function RaidFilter(props) {
-  const [selectedVal, setSelectedVal] = React.useState([]);
+export function MultiselectFilter(choices, {column: { filterValue, setFilter }}) {
+  const value = filterValue || [];
 
-  const handleChange = e => {
-    setSelectedVal(e.target.value);
-    props.onFilterChanged(props.columnDef.tableData.id, e.target.value);
-  }
-
-  const raidIdMap = {2: 'AQ', 1: 'BWL'};
-  const renderRaids = selected => selected.map(s => raidIdMap[s]).join(', ');
+  const onChange = e => {
+    setFilter(e.target.value.length ? e.target.value : undefined)
+  };
 
   return (
     <FormControl style={{ width: "100%" }}>
-      <Select multiple value={selectedVal} onChange={handleChange} renderValue={renderRaids}>
-        <MenuItem value={2}>
-          <Checkbox checked={selectedVal.includes(2)} />
-          <ListItemText primary='AQ' />
-        </MenuItem>
-        <MenuItem value={1}>
-          <Checkbox checked={selectedVal.includes(1)} />
-          <ListItemText primary='BWL' />
-        </MenuItem>
+      <Select multiple value={value} onChange={onChange} renderValue={v => v.join(', ')}>
+        {choices.map((choice, index) => 
+          <MenuItem key={index} value={choice}>
+            <Checkbox checked={value.includes(choice)} />
+            <ListItemText primary={choice} />
+          </MenuItem>
+        )}
       </Select>
     </FormControl>
   );
 }
 
-RaidFilter.propTypes = {
-  onFilterChanged: PropTypes.func.isRequired,
-  columnDef: PropTypes.shape({tableData: PropTypes.object}).isRequired,
-}
-
-export function MultiselectFilter(props) {
+export function OldMultiselectFilter(props) {
   const [selectedVal, setSelectedVal] = React.useState(props.initialValue);
 
   const handleChange = e => {
@@ -83,13 +73,13 @@ export function MultiselectFilter(props) {
   );
 }
 
-MultiselectFilter.propTypes = {
+OldMultiselectFilter.propTypes = {
   onFilterChanged: PropTypes.func.isRequired,
   columnDef: PropTypes.shape({tableData: PropTypes.object}).isRequired,
   choices: PropTypes.array.isRequired,
   initialValue: PropTypes.array,
 }
 
-MultiselectFilter.defaultProps = {
+OldMultiselectFilter.defaultProps = {
   initialValue: [],
 }

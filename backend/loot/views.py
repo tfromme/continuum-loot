@@ -273,11 +273,13 @@ class UploadAttendanceViewSet(generics.CreateAPIView):
 
         player_names = request.data['data'].split(',')
 
-        for player_name in player_names:
+        for name_class in player_names:
+            player_name, player_class = name_class.split('-', 2)
             try:
                 player = Player.objects.get(name__iexact=player_name)
             except Player.DoesNotExist:
-                player = Player.objects.create(name=player_name.capitalize())
+                player_class = Player.Classes[player_class.upper()]
+                player = Player.objects.create(name=player_name.capitalize(), player_class=player_class)
 
             player.attendance.add(raid_day)
             player.is_active = True
@@ -312,7 +314,8 @@ class UploadLootHistoryViewSet(generics.CreateAPIView):
                 try:
                     player = Player.objects.get(name__iexact=player_name)
                 except Player.DoesNotExist:
-                    player = Player.objects.create(name=player_name.capitalize())
+                    player_class = Player.Classes[loot_history_data['class'].upper()]
+                    player = Player.objects.create(name=player_name.capitalize(), player_class=player_class)
 
                 player.is_active = True
                 player.save()

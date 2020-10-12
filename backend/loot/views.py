@@ -136,18 +136,17 @@ class UpdatePlayerViewSet(generics.CreateAPIView):
         player.notes = request.data['player']['notes']
         player.role = request.data['player']['role']
 
-        if request.user.has_perm('loot.change_wishlist'):
-            valid_ids = []
-            for wishlist_dict in request.data['player']['wishlist']:
-                w, _ = Wishlist.objects.get_or_create(
-                    player=player,
-                    item_id=wishlist_dict['item_id'],
-                    priority=wishlist_dict['prio'],
-                )
-                valid_ids.append(w.id)
+        valid_ids = []
+        for wishlist_dict in request.data['player']['wishlist']:
+            w, _ = Wishlist.objects.get_or_create(
+                player=player,
+                item_id=wishlist_dict['item_id'],
+                priority=wishlist_dict['prio'],
+            )
+            valid_ids.append(w.id)
 
-            for wishlist in player.wishlist.exclude(id__in=valid_ids):
-                wishlist.delete()
+        for wishlist in player.wishlist.exclude(id__in=valid_ids):
+            wishlist.delete()
 
         player.save()
         return Response(status=204)

@@ -16,7 +16,7 @@ import Clear from '@material-ui/icons/Clear';
 import  { styled } from '@material-ui/core/styles';
 
 import CustomPropTypes from './CustomPropTypes.js';
-import { EditItemAutocomplete, PriorityEditIndividual } from './EditComponents.js';
+import { OldEditItemAutocomplete, PriorityEditIndividual } from './EditComponents.js';
 import Api from './Api.js';
 
 const DarkPaper = styled(Paper)({
@@ -98,7 +98,7 @@ export function WishlistRow(props) {
   if (editing) {
     cells = wishlistData.map((itemId, index) =>
       <TableCell key={index}>
-        <EditItemAutocomplete
+        <OldEditItemAutocomplete
           items={props.items}
           initialValue={props.items.find(x => x.id === itemId) || null}
           onChange={changeWishlistData(index)}

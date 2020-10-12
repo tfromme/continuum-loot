@@ -1,12 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { useTable, useSortBy, useFilters } from 'react-table';
+import { useTable, useSortBy, useFilters, useRowState } from 'react-table';
 import MaterialTable from 'material-table';
 import HowToRegOutlined from '@material-ui/icons/HowToRegOutlined';
 import AssignmentOutlined from '@material-ui/icons/AssignmentOutlined';
 import ArrowUpward from '@material-ui/icons/ArrowUpward';
 import ArrowDownward from '@material-ui/icons/ArrowDownward';
+import Edit from '@material-ui/icons/Edit';
+import Check from '@material-ui/icons/Check';
 import Paper from '@material-ui/core/Paper';
 import TableContainer from '@material-ui/core/TableContainer';
 import Table from '@material-ui/core/Table';
@@ -14,12 +16,14 @@ import TableHead from '@material-ui/core/TableHead';
 import TableBody from '@material-ui/core/TableBody';
 import TableRow from '@material-ui/core/TableRow';
 import TableCell from '@material-ui/core/TableCell';
+import IconButton from '@material-ui/core/IconButton';
+import Tooltip from '@material-ui/core/Tooltip';
 
 import CustomPropTypes from './CustomPropTypes.js';
 import Api from './Api.js';
 import { classes, ranks, roles, itemTiers, itemCategories } from './Constants.js';
 import { WishlistRow, AttendanceRow, LootHistoryRow, PriorityRow, LootHistoryItemsRow } from './DetailRows.js';
-import { EditItemAutocomplete } from './EditComponents.js';
+import { EditCellAutocomplete } from './EditComponents.js';
 import { TextFilter, MultiselectFilter, OldMultiselectFilter } from './Filters.js';
 
 
@@ -261,14 +265,39 @@ export function LootHistoryTable(props) {
     [props.raidDays]
   );
 
-  const filterInArray = (rows, id, filterValue) => (
-    rows.filter(row => filterValue.includes(row.values[id]))
+  const filterInArray = React.useCallback(
+    (rows, id, filterValue) => (
+      rows.filter(row => filterValue.includes(row.values[id]))
+    ),
+    []
   );
 
   const data = React.useMemo(() => props.lootHistory, [props.lootHistory]);
 
   const columns = React.useMemo(
     () => [
+      {
+        id: 'buttons',
+        Cell: ({row: {state, setState}}) => {
+          if (state.editing) {
+            return (
+              <Tooltip title="Save">
+                <IconButton size='small' onClick={() => setState({editing: false})}>
+                  <Check />
+                </IconButton>
+              </Tooltip>
+            );
+          } else {
+            return (
+              <Tooltip title="Edit">
+                <IconButton size='small' onClick={() => setState({editing: true})}>
+                  <Edit />
+                </IconButton>
+              </Tooltip>
+            );
+          }
+        },
+      },
       {
         Header: 'Raid',
         accessor: row => props.raidDays.find(x => x.id === row.raid_day_id).name,
@@ -314,12 +343,13 @@ export function LootHistoryTable(props) {
         disableSortBy: true,
         Filter: MultiselectFilter.bind(null, itemTiers),
         filter: filterInArray,
+        randomThing: 'test_val',
       },
     ],
-    [props.raidDays, props.items, props.players, raidDaySort]
+    [props.raidDays, props.items, props.players, raidDaySort, filterInArray]
   )
 
-  const tableInstance = useTable({ columns, data }, useFilters, useSortBy);
+  const tableInstance = useTable({ columns, data }, useRowState, useFilters, useSortBy);
 
   const {
     // state,   TODO: Pop this up to App and pass down as "initialState" to save state between tabs
@@ -371,32 +401,6 @@ export function LootHistoryTable(props) {
   );
 
   /*
-  const raidDaySearch = (term, rowData) => {
-    const raidDay = props.raidDays.find(x => x.id === rowData.raid_day_id);
-    return term.length === 0 || term.includes(raidDay.raid_id);
-  }
-
-  const classFilter = props => <MultiselectFilter choices={Object.values(classes)}
-                                                  {...props} />;
-  const roleFilter = props => <MultiselectFilter choices={Object.values(roles)}
-                                                 {...props} />;
-  const tierFilter = props => <MultiselectFilter choices={itemTiers} {...props} />;
-
-  const classSearch = (term, rowData) => {
-    const player = props.players.find(x => x.id === rowData.player_id);
-    return term.length === 0 || term.includes(classes[player.class]);
-  }
-
-  const roleSearch = (term, rowData) => {
-    const player = props.players.find(x => x.id === rowData.player_id);
-    return term.length === 0 || term.includes(roles[player.role]);
-  }
-
-  const tierSearch = (term, rowData) => {
-    const item = props.items.find(x => x.id === rowData.item_id);
-    return term.length === 0 || term.includes(item.tier);
-  }
-
   const editNameComponent = xProps => (
     <EditItemAutocomplete
       items={props.players}

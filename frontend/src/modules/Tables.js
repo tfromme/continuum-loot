@@ -1,9 +1,19 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+import { useTable, useSortBy } from 'react-table';
 import MaterialTable from 'material-table';
 import HowToRegOutlined from '@material-ui/icons/HowToRegOutlined';
 import AssignmentOutlined from '@material-ui/icons/AssignmentOutlined';
+import ArrowUpward from '@material-ui/icons/ArrowUpward';
+import ArrowDownward from '@material-ui/icons/ArrowDownward';
+import Paper from '@material-ui/core/Paper';
+import TableContainer from '@material-ui/core/TableContainer';
+import Table from '@material-ui/core/Table';
+import TableHead from '@material-ui/core/TableHead';
+import TableBody from '@material-ui/core/TableBody';
+import TableRow from '@material-ui/core/TableRow';
+import TableCell from '@material-ui/core/TableCell';
 
 import CustomPropTypes from './CustomPropTypes.js';
 import Api from './Api.js';
@@ -244,33 +254,110 @@ ItemTable.defaultProps = {
 export function LootHistoryTable(props) {
   const rowEditable = props.loggedInPlayer && props.loggedInPlayer.permission_level >= 2;
 
-  var raidDayLookup = {};
-  for (const raidDay of props.raidDays) {
-    raidDayLookup[raidDay.id] = raidDay.name;
-  }
+  const raidDaySort = React.useCallback(
+    (a, b) => {
+      const raidDayA = props.raidDays.find(x => x.id === a.original.raid_day_id);
+      const raidDayB = props.raidDays.find(x => x.id === b.original.raid_day_id);
+      return Date.parse(raidDayA.date) - Date.parse(raidDayB.date);
+    },
+    [props.raidDays]
+  );
 
-  var nameLookup = {};
-  var classLookup = {};
-  var roleLookup = {};
-  for (const player of props.players) {
-    nameLookup[player.id] = player.name;
-    classLookup[player.id] = classes[player.class];
-    roleLookup[player.id] = roles[player.role];
-  }
+  const data = React.useMemo(() => props.lootHistory, [props.lootHistory]);
 
-  var itemLookup = {};
-  var tierLookup = {};
-  for (const item of props.items) {
-    itemLookup[item.id] = item.name;
-    tierLookup[item.id] = item.tier;
-  }
+  const columns = React.useMemo(
+    () => [
+      {
+        Header: 'Raid',
+        accessor: row => props.raidDays.find(x => x.id === row.raid_day_id).name,
+        id: 'raid_day',
+        sortType: raidDaySort,
+        sortDescFirst: true,
+      },
+      {
+        Header: 'Name',
+        accessor: row => props.players.find(x => x.id === row.player_id).name,
+        id: 'player',
+        sortType: 'basic',
+      },
+      {
+        Header: 'Class',
+        accessor: row => classes[props.players.find(x => x.id === row.player_id).class],
+        id: 'player_class',
+        sortType: 'basic',
+      },
+      {
+        Header: 'Role',
+        accessor: row => roles[props.players.find(x => x.id === row.player_id).role],
+        id: 'player_role',
+        sortType: 'basic',
+      },
+      {
+        Header: 'Item',
+        accessor: row => props.items.find(x => x.id === row.item_id).name,
+        id: 'item',
+        sortType: 'basic',
+      },
+      {
+        Header: 'Item Tier',
+        accessor: row => props.items.find(x => x.id === row.item_id).tier,
+        id: 'item_tier',
+        sortType: 'basic',
+      },
+    ],
+    [props.raidDays, props.items, props.players, raidDaySort]
+  )
 
-  const raidDaySort = (a, b) => {
-    const raidDayA = props.raidDays.find(x => x.id === a.raid_day_id);
-    const raidDayB = props.raidDays.find(x => x.id === b.raid_day_id);
-    return Date.parse(raidDayA.date) - Date.parse(raidDayB.date);
-  }
+  const tableInstance = useTable({ columns, data }, useSortBy);
 
+  const {
+    getTableProps,
+    getTableBodyProps,
+    headerGroups,
+    rows,
+    prepareRow,
+  } = tableInstance
+
+  return (
+    <TableContainer component={Paper}>
+      <Table {...getTableProps()}>
+        <TableHead>
+          {headerGroups.map(headerGroup => (
+            <TableRow {...headerGroup.getHeaderGroupProps()}>
+              {headerGroup.headers.map(column => (
+                <TableCell {...column.getHeaderProps(column.getSortByToggleProps())}>
+                  {column.render('Header')}
+                  <span>
+                    {column.isSorted ? (column.isSortedDesc ? <ArrowDownward /> : <ArrowUpward />) : ''}
+                  </span>
+                </TableCell>
+              ))}
+            </TableRow>
+          ))}
+        </TableHead>
+        <TableBody {...getTableBodyProps()}>
+          {rows.map((row, index) => {
+            prepareRow(row);
+            const rowProps = row.getRowProps();
+            if (index % 2) {
+              rowProps.style = { backgroundColor: "#EEE" };
+            }
+            return (
+              <TableRow { ...rowProps}>
+                {row.cells.map(cell => (
+                  <TableCell {...cell.getCellProps()}>
+                    {cell.render('Cell')}
+                  </TableCell>
+                ))}
+              </TableRow>
+            )
+          })}
+        </TableBody>
+      </Table>
+    </TableContainer>
+  );
+
+  /*
   const raidDaySearch = (term, rowData) => {
     const raidDay = props.raidDays.find(x => x.id === rowData.raid_day_id);
     return term.length === 0 || term.includes(raidDay.raid_id);
@@ -362,6 +449,7 @@ export function LootHistoryTable(props) {
       } }
     />
   );
+    */
 }
 
 LootHistoryTable.propTypes = {

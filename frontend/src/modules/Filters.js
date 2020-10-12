@@ -1,11 +1,29 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+import TextField from '@material-ui/core/TextField';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import FilterList from '@material-ui/icons/FilterList';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
-import MenuItem from'@material-ui/core/MenuItem';
-import Checkbox from'@material-ui/core/Checkbox';
-import ListItemText from'@material-ui/core/ListItemText';
+import MenuItem from '@material-ui/core/MenuItem';
+import Checkbox from '@material-ui/core/Checkbox';
+import ListItemText from '@material-ui/core/ListItemText';
+
+
+export function TextFilter(props) {
+  return (
+    <TextField
+      InputProps={{
+        startAdornment: (
+          <InputAdornment position="start">
+            <FilterList />
+          </InputAdornment>
+        ),
+      }}
+    />
+  );
+}
 
 // TODO: Why did I hardcode this?
 // Maybe combine with MultiselectFilter

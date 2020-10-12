@@ -12,12 +12,20 @@ a {
   text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
 }
 
+.rt-tr-group {
+  background: #fff;
+}
+
+.rt-tr-group:nth-of-type(even) {
+  background: #eee;
+}
+
 // This is a super dumb way to prevent the
 // detail panel icons column from getting really big
-thead {
-  tr:first-child {
-    th:first-child:not(.no-width-fix) {
-      width: 1px;
-    }
-  }
-}
+//thead {
+//  tr:first-child {
+//    th:first-child:not(.no-width-fix) {
+//      width: 1px;
+//    }
+//  }
+//}

@@ -23,7 +23,7 @@ export function PlayerTable(props) {
   const fullEditable = props.loggedInPlayer && props.loggedInPlayer.permission_level >= 2 ? 'always' : 'never';
   const rowEditable = rowData => {
     if (props.loggedInPlayer) {
-      if (props.loggedInPlayer.permission_level >= 2
+      if (props.loggedInPlayer.permission_level >= 1
        || rowData.id === props.loggedInPlayer.id
        || rowData.alts.includes(props.loggedInPlayer.id)
       ) {

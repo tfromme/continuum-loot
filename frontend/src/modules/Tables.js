@@ -8,7 +8,9 @@ import AssignmentOutlined from '@material-ui/icons/AssignmentOutlined';
 import ArrowUpward from '@material-ui/icons/ArrowUpward';
 import ArrowDownward from '@material-ui/icons/ArrowDownward';
 import Edit from '@material-ui/icons/Edit';
+import DeleteOutline from '@material-ui/icons/DeleteOutline';
 import Check from '@material-ui/icons/Check';
+import Clear from '@material-ui/icons/Clear';
 import Paper from '@material-ui/core/Paper';
 import TableContainer from '@material-ui/core/TableContainer';
 import Table from '@material-ui/core/Table';
@@ -23,7 +25,7 @@ import CustomPropTypes from './CustomPropTypes.js';
 import Api from './Api.js';
 import { classes, ranks, roles, itemTiers, itemCategories } from './Constants.js';
 import { WishlistRow, AttendanceRow, LootHistoryRow, PriorityRow, LootHistoryItemsRow } from './DetailRows.js';
-import { EditCellAutocomplete } from './EditComponents.js';
+import { EditCellAutocomplete, EditCellSelect } from './EditComponents.js';
 import { TextFilter, MultiselectFilter, OldMultiselectFilter } from './Filters.js';
 
 
@@ -274,42 +276,62 @@ export function LootHistoryTable(props) {
 
   const data = React.useMemo(() => props.lootHistory, [props.lootHistory]);
 
+  const buttons = ({row}) => {
+    if (row.state.editing) {
+      console.log(row)
+      return (
+        <>
+          <Tooltip title="Save">
+            <IconButton size='small' onClick={() => row.setState({editing: false})}>
+              <Check />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Cancel">
+            <IconButton size='small' onClick={() => row.setState({editing: false})}>
+              <Clear />
+            </IconButton>
+          </Tooltip>
+        </>
+      );
+    } else {
+      return (
+        <>
+          <Tooltip title="Edit">
+            <IconButton size='small' onClick={() => {
+              row.setState({editing: true, values: {...row.original}})
+            }}>
+              <Edit />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Delete">
+            <IconButton size='small' onClick={() => row.setState({editing: true})}>
+              <DeleteOutline />
+            </IconButton>
+          </Tooltip>
+        </>
+      );
+    }
+  };
+
   const columns = React.useMemo(
     () => [
       {
         id: 'buttons',
-        Cell: ({row: {state, setState}}) => {
-          if (state.editing) {
-            return (
-              <Tooltip title="Save">
-                <IconButton size='small' onClick={() => setState({editing: false})}>
-                  <Check />
-                </IconButton>
-              </Tooltip>
-            );
-          } else {
-            return (
-              <Tooltip title="Edit">
-                <IconButton size='small' onClick={() => setState({editing: true})}>
-                  <Edit />
-                </IconButton>
-              </Tooltip>
-            );
-          }
-        },
+        Cell: buttons,
       },
       {
         Header: 'Raid',
         accessor: row => props.raidDays.find(x => x.id === row.raid_day_id).name,
-        id: 'raid_day',
+        id: 'raid_day_id',
         sortType: raidDaySort,
         sortDescFirst: true,
         Filter: TextFilter,
+        Cell: EditCellSelect.bind(null, props.raidDays),
       },
       {
         Header: 'Name',
         accessor: row => props.players.find(x => x.id === row.player_id).name,
-        id: 'player',
+        id: 'player_id',
         sortType: 'basic',
         Filter: TextFilter,
       },
@@ -332,7 +354,7 @@ export function LootHistoryTable(props) {
       {
         Header: 'Item',
         accessor: row => props.items.find(x => x.id === row.item_id).name,
-        id: 'item',
+        id: 'item_id',
         sortType: 'basic',
         Filter: TextFilter,
       },

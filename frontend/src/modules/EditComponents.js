@@ -3,11 +3,41 @@ import PropTypes from 'prop-types';
 
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import TextField from '@material-ui/core/TextField';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
+import ListItemText from '@material-ui/core/ListItemText';
 
 import CustomPropTypes from './CustomPropTypes.js';
 
+export function EditCellSelect(choices, {value, row, column}) {
+  if (!row.state.editing) {
+    return value
+  }
+
+  const editValue = row.state.values[column.id];
+
+  const onChange = e => {
+    row.setState(currentState =>
+      ({ ...currentState, values: { ...currentState.values, [column.id]: e.target.value}})
+    );
+  };
+
+  return (
+    <FormControl style={{ width: "100%" }}>
+      <Select value={editValue} onChange={onChange}>
+        {choices.map((choice, index) =>
+          <MenuItem key={index} value={choice.id}>
+            <ListItemText primary={choice.name} />
+          </MenuItem>
+        )}
+      </Select>
+    </FormControl>
+  );
+}
+
 // TODO: Refactor this and PriorityEditIndividual together
-export function EditItemAutocomplete(props) {
+export function OldEditItemAutocomplete(props) {
   const [inputValue, setInputValue] = React.useState('');
   const [value, setValue] = React.useState(props.initialValue);
   return (
@@ -23,7 +53,7 @@ export function EditItemAutocomplete(props) {
   );
 }
 
-EditItemAutocomplete.propTypes = {
+OldEditItemAutocomplete.propTypes = {
   items: PropTypes.arrayOf(CustomPropTypes.item).isRequired,
   initialValue: CustomPropTypes.item,  // Should be passed in, but can be null/empty
   onChange: PropTypes.func.isRequired,

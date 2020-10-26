@@ -28,6 +28,13 @@ export function TextFilter({column: { filterValue, setFilter }}) {
   );
 }
 
+TextFilter.propTypes = {
+  column: PropTypes.shape({
+    filterValue: PropTypes.string,
+    setFilter: PropTypes.func.isRequired,
+  }),
+};
+
 export function MultiselectFilter(choices, {column: { filterValue, setFilter }}) {
   const value = filterValue || [];
 

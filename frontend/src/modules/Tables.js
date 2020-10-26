@@ -404,6 +404,7 @@ export function LootHistoryTable(props) {
     prepareRow,
   } = tableInstance
 
+  /* eslint-disable react/jsx-key */
   return (
     <TableContainer component={Paper}>
       <Toolbar>
@@ -446,6 +447,7 @@ export function LootHistoryTable(props) {
       </Table>
     </TableContainer>
   );
+  /* eslint-enable react/jsx-key */
 }
 
 LootHistoryTable.propTypes = {

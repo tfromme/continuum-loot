@@ -3,29 +3,23 @@ import PropTypes from 'prop-types';
 
 import { useTable, useSortBy, useFilters, useRowState } from 'react-table';
 import MaterialTable from 'material-table';
-import HowToRegOutlined from '@material-ui/icons/HowToRegOutlined';
-import AssignmentOutlined from '@material-ui/icons/AssignmentOutlined';
-import ArrowUpward from '@material-ui/icons/ArrowUpward';
-import ArrowDownward from '@material-ui/icons/ArrowDownward';
-import Edit from '@material-ui/icons/Edit';
-import DeleteOutline from '@material-ui/icons/DeleteOutline';
-import Check from '@material-ui/icons/Check';
-import Clear from '@material-ui/icons/Clear';
-import Paper from '@material-ui/core/Paper';
-import TableContainer from '@material-ui/core/TableContainer';
-import Table from '@material-ui/core/Table';
-import TableHead from '@material-ui/core/TableHead';
-import TableBody from '@material-ui/core/TableBody';
-import TableRow from '@material-ui/core/TableRow';
-import TableCell from '@material-ui/core/TableCell';
-import IconButton from '@material-ui/core/IconButton';
-import Tooltip from '@material-ui/core/Tooltip';
+
+import {
+  HowToRegOutlined, AssignmentOutlined, ArrowUpward, ArrowDownward,
+  Edit, DeleteOutline, Check, Clear,
+} from '@material-ui/icons';
+
+import {
+  Toolbar, Typography, Paper,
+  TableContainer, Table, TableHead, TableBody, TableRow, TableCell,
+  IconButton, Tooltip,
+} from '@material-ui/core';
 
 import CustomPropTypes from './CustomPropTypes.js';
 import Api from './Api.js';
 import { classes, ranks, roles, itemTiers, itemCategories } from './Constants.js';
 import { WishlistRow, AttendanceRow, LootHistoryRow, PriorityRow, LootHistoryItemsRow } from './DetailRows.js';
-import { EditCellAutocomplete, EditCellSelect } from './EditComponents.js';
+import { EditCellSelect } from './EditComponents.js';
 import { TextFilter, MultiselectFilter, OldMultiselectFilter } from './Filters.js';
 
 
@@ -255,8 +249,8 @@ ItemTable.defaultProps = {
   loggedInPlayer: null,
 }
 
+// TODO: Create way to Add Items
 export function LootHistoryTable(props) {
-  const rowEditable = props.loggedInPlayer && props.loggedInPlayer.permission_level >= 2;
 
   const raidDaySort = React.useCallback(
     (a, b) => {
@@ -274,45 +268,68 @@ export function LootHistoryTable(props) {
     []
   );
 
-  const data = React.useMemo(() => props.lootHistory, [props.lootHistory]);
+  const onSave = React.useCallback(
+    row => (
+      () => {
+        row.setState({editing: false});
+        Api.lootHistory.update(row.state.values, props.updateRemoteData);
+      }
+    ),
+    [props.updateRemoteData]
+  );
 
-  const buttons = ({row}) => {
-    if (row.state.editing) {
-      console.log(row)
-      return (
-        <>
-          <Tooltip title="Save">
-            <IconButton size='small' onClick={() => row.setState({editing: false})}>
-              <Check />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Cancel">
-            <IconButton size='small' onClick={() => row.setState({editing: false})}>
-              <Clear />
-            </IconButton>
-          </Tooltip>
-        </>
-      );
-    } else {
-      return (
-        <>
-          <Tooltip title="Edit">
-            <IconButton size='small' onClick={() => {
-              row.setState({editing: true, values: {...row.original}})
-            }}>
-              <Edit />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Delete">
-            <IconButton size='small' onClick={() => row.setState({editing: true})}>
-              <DeleteOutline />
-            </IconButton>
-          </Tooltip>
-        </>
-      );
-    }
-  };
+  const onDelete = React.useCallback(
+    row => (
+      () => {
+        Api.lootHistory.delete(row.original, props.updateRemoteData);
+      }
+    ),
+    [props.updateRemoteData]
+  );
 
+  const buttons = React.useCallback(
+    ({row}) => {
+      const rowEditable = props.loggedInPlayer && props.loggedInPlayer.permission_level >= 2;
+      if (!rowEditable) {
+        return null;
+      } else if (row.state.editing) {
+        return (
+          <>
+            <Tooltip title="Save">
+              <IconButton size='small' onClick={onSave(row)}>
+                <Check />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Cancel">
+              <IconButton size='small' onClick={() => row.setState({editing: false})}>
+                <Clear />
+              </IconButton>
+            </Tooltip>
+          </>
+        );
+      } else {
+        return (
+          <>
+            <Tooltip title="Edit">
+              <IconButton size='small' onClick={() => {
+                row.setState({editing: true, values: {...row.original}})
+              }}>
+                <Edit />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Delete">
+              <IconButton size='small' onClick={onDelete(row)}>
+                <DeleteOutline />
+              </IconButton>
+            </Tooltip>
+          </>
+        );
+      }
+    },
+    [props.loggedInPlayer, onSave, onDelete]
+  );
+
+  // TODO: Dynamically update derived column values
   const columns = React.useMemo(
     () => [
       {
@@ -326,6 +343,7 @@ export function LootHistoryTable(props) {
         sortType: raidDaySort,
         sortDescFirst: true,
         Filter: TextFilter,
+        // TODO: Change from Select to autocomplete
         Cell: EditCellSelect.bind(null, props.raidDays),
       },
       {
@@ -334,6 +352,7 @@ export function LootHistoryTable(props) {
         id: 'player_id',
         sortType: 'basic',
         Filter: TextFilter,
+        Cell: EditCellSelect.bind(null, props.players),
       },
       {
         Header: 'Class',
@@ -357,6 +376,7 @@ export function LootHistoryTable(props) {
         id: 'item_id',
         sortType: 'basic',
         Filter: TextFilter,
+        Cell: EditCellSelect.bind(null, props.items),
       },
       {
         Header: 'Item Tier',
@@ -368,8 +388,10 @@ export function LootHistoryTable(props) {
         randomThing: 'test_val',
       },
     ],
-    [props.raidDays, props.items, props.players, raidDaySort, filterInArray]
+    [props.raidDays, props.items, props.players, raidDaySort, filterInArray, buttons]
   )
+
+  const data = React.useMemo(() => props.lootHistory, [props.lootHistory]);
 
   const tableInstance = useTable({ columns, data }, useRowState, useFilters, useSortBy);
 
@@ -384,6 +406,9 @@ export function LootHistoryTable(props) {
 
   return (
     <TableContainer component={Paper}>
+      <Toolbar>
+        <Typography variant="h6">Loot History</Typography>
+      </Toolbar>
       <Table {...getTableProps()}>
         <TableHead>
           {headerGroups.map(headerGroup => (
@@ -421,52 +446,6 @@ export function LootHistoryTable(props) {
       </Table>
     </TableContainer>
   );
-
-  /*
-  const editNameComponent = xProps => (
-    <EditItemAutocomplete
-      items={props.players}
-      initialValue={props.players.find(x => x.id === xProps.rowData.player_id)}
-      onChange={xProps.onChange}
-    />
-  );
-
-  const editItemComponent = xProps => (
-    <EditItemAutocomplete
-      items={props.items}
-      initialValue={props.items.find(x => x.id === xProps.rowData.item_id)}
-      onChange={xProps.onChange}
-    />
-  );
-
-  return (
-    <MaterialTable
-      editable={ {
-        isEditable: _ => rowEditable,
-        onRowUpdate: (newData, _oldData) => {
-          return new Promise((resolve, _reject) => {
-            Api.lootHistory.update(newData, props.updateRemoteData);
-            resolve();
-          });
-        },
-        // This ternary is because there is no `isAddable` prop
-        // it hides add button when user doesnt have permission
-        onRowAdd: rowEditable ? (newData => {
-          return new Promise((resolve, _reject) => {
-            Api.lootHistory.add(newData, props.updateRemoteData);
-            resolve();
-          });
-        }) : false,
-        onRowDelete: oldData => {
-          return new Promise((resolve, _reject) => {
-            Api.lootHistory.delete(oldData, props.updateRemoteData);
-            resolve();
-          });
-        },
-      } }
-    />
-  );
-    */
 }
 
 LootHistoryTable.propTypes = {

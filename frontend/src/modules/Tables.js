@@ -435,11 +435,15 @@ export function LootHistoryTable(props) {
             }
             return (
               <TableRow { ...rowProps}>
-                {row.cells.map(cell => (
-                  <TableCell {...cell.getCellProps()}>
-                    {cell.render('Cell')}
-                  </TableCell>
-                ))}
+                {row.cells.map(cell => {
+                  const cellProps = cell.getCellProps();
+                  cellProps.style = { padding: 4 };
+                  return (
+                    <TableCell {...cellProps}>
+                      {cell.render('Cell')}
+                    </TableCell>
+                  )
+                })}
               </TableRow>
             )
           })}

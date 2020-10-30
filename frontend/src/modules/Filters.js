@@ -55,38 +55,3 @@ export function MultiselectFilter(choices, {column: { filterValue, setFilter }})
     </FormControl>
   );
 }
-
-export function OldMultiselectFilter(props) {
-  const [selectedVal, setSelectedVal] = React.useState(props.initialValue);
-
-  const handleChange = e => {
-    setSelectedVal(e.target.value);
-    props.onFilterChanged(props.columnDef.tableData.id, e.target.value);
-  }
-
-  const renderValue = selected => selected.join(', ');
-
-  return (
-    <FormControl style={{ width: "100%" }}>
-      <Select multiple value={selectedVal} onChange={handleChange} renderValue={renderValue}>
-        {props.choices.map((choice, index) => 
-          <MenuItem key={index} value={choice}>
-            <Checkbox checked={selectedVal.includes(choice)} />
-            <ListItemText primary={choice} />
-          </MenuItem>
-        )}
-      </Select>
-    </FormControl>
-  );
-}
-
-OldMultiselectFilter.propTypes = {
-  onFilterChanged: PropTypes.func.isRequired,
-  columnDef: PropTypes.shape({tableData: PropTypes.object}).isRequired,
-  choices: PropTypes.array.isRequired,
-  initialValue: PropTypes.array,
-}
-
-OldMultiselectFilter.defaultProps = {
-  initialValue: [],
-}

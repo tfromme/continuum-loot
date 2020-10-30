@@ -20,7 +20,7 @@ import Api from './Api.js';
 import { classes, ranks, roles, itemTiers, itemCategories } from './Constants.js';
 import { WishlistRow, AttendanceRow, LootHistoryRow, PriorityRow, LootHistoryItemsRow } from './DetailRows.js';
 import { EditCellSelect } from './EditComponents.js';
-import { TextFilter, MultiselectFilter, OldMultiselectFilter } from './Filters.js';
+import { TextFilter, MultiselectFilter } from './Filters.js';
 import { AddLootHistoryDialog } from './ActionDialogs.js';
 
 
@@ -28,6 +28,10 @@ function rowStyleFun(data, index) {
   if (index % 2) {
     return { backgroundColor: "#EEE" };
   }
+}
+
+function filterInArray(rows, id, filterValue) {
+  return rows.filter(row => filterValue.includes(row.values[id]));
 }
 
 export function PlayerTable(props) {
@@ -127,82 +131,219 @@ PlayerTable.defaultProps = {
 }
 
 export function ItemTable(props) {
-  const rowEditable = props.loggedInPlayer && props.loggedInPlayer.permission_level >= 1;
-
-  var choices = props.raids.map(raid => "All " + raid.short_name);
-  for (const raid of props.raids) {
-    for (const boss of raid.bosses) {
-      choices.push(boss);
-    }
-  }
-
-  const defaultFilter = [choices[0]];
-
-  const bossFilter = xProps => <OldMultiselectFilter initialValue={defaultFilter} choices={choices} {...xProps} />;
-
-  const bossSearch = (selected, rowData) => {
-    if (selected.length === 0) {
-      return true;
-    }
-
-    for (const choice of selected) {
-      const raid = props.raids.find(x => "All " + x.short_name === choice);
-      // Could be raid name
-      if (raid && raid.id === rowData.raid) {
-        return true;
+  const bossChoices = React.useMemo(
+    () => {
+      let choices = props.raids.map(raid => "All " + raid.short_name);
+      for (const raid of props.raids) {
+        for (const boss of raid.bosses) {
+          choices.push(boss);
+        }
       }
-      // else its a boss name
-      if (rowData.bosses.includes(choice)) {
-        return true;
-      }
-    }
+      return choices;
+    },
+    [props.raids],
+  );
 
-    return false;
-  }
-
-  var playerLookup = {};
-  for (const player of props.players) {
-    playerLookup[player.id] = player.name;
-  }
-
-  const [ columns ] = React.useState([
-    { title: 'Name', field: 'name', defaultSort: 'asc', editable: 'never',
-      render: ( rowData => <a href={rowData.link}>{rowData.name}</a> )},
-    { title: 'Bosses', field: 'bosses', defaultFilter: defaultFilter, editable: 'never',
-      filterComponent: bossFilter, customFilterAndSearch: bossSearch,
-      render: ((rowData) => {
-        return rowData.bosses.reduce((all, cur, index) => [
-          ...all,
-          <br key={index}/>,
-          cur,
-        ]);
+  const filterBosses = React.useCallback(
+    (rows, id, filterValue) => {
+      return rows.filter(row => {
+        for (const choice of filterValue) {
+          const raid = props.raids.find(x => "All " + x.short_name === choice);
+          if (raid && raid.id === row.original.raid) {
+            return true;
+          }
+          // else its a boss name
+          if (row.original.bosses.includes(choice)) {
+            return true;
+          }
+        }
+        return false;
       })
     },
-    { title: 'Tier', field: 'tier', type: 'numeric' },
-    { title: 'Category', field: 'category', lookup: itemCategories },
-    { title: 'Prio 1', field: 'iprio_1', lookup: playerLookup, editable: 'never', filtering: false },
-    { title: 'Prio 2', field: 'iprio_2', lookup: playerLookup, editable: 'never', filtering: false },
-    { title: 'Class Prio 1', field: 'cprio_1', editable: 'never', filtering: false },
-    { title: 'Notes', field: 'notes', filtering: false },
-  ]);
+    [props.raids]
+  );
 
-  return (
-    <MaterialTable
-      columns={columns}
-      data={ props.items }
-      title="Items"
-      options={ { padding: 'dense', paging: false, filtering: true, rowStyle: rowStyleFun } }
-      localization={{header: {actions: ''}}}
-      editable={ {
-        isEditable: _ => rowEditable,
-        isEditHidden: _ => !rowEditable,
-        onRowUpdate: (newData, _oldData) => {
-          return new Promise((resolve, _reject) => {
-            Api.item.update(newData, props.updateRemoteData);
-            resolve();
-          });
+  const onSave = React.useCallback(
+    row => (
+      () => {
+        row.setState({editing: false});
+        Api.items.update(row.state.values, props.updateRemoteData);
+      }
+    ),
+    [props.updateRemoteData]
+  );
+
+  const buttons = React.useCallback(
+    ({row}) => {
+      const rowEditable = props.loggedInPlayer && props.loggedInPlayer.permission_level >= 1;
+      if (!rowEditable) {
+        return null;
+      } else if (row.state.editing) {
+        return (
+          <>
+            <Tooltip title="Save">
+              <IconButton size='small' onClick={onSave(row)}>
+                <Check />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Cancel">
+              <IconButton size='small' onClick={() => row.setState({editing: false})}>
+                <Clear />
+              </IconButton>
+            </Tooltip>
+          </>
+        );
+      } else {
+        return (
+          <Tooltip title="Edit">
+            <IconButton size='small' onClick={() => {
+              row.setState({editing: true, values: {...row.original}})
+            }}>
+              <Edit />
+            </IconButton>
+          </Tooltip>
+        );
+      }
+    },
+    [props.loggedInPlayer, onSave]
+  );
+
+  // TODO: Dynamically update derived column values
+  const columns = React.useMemo(
+    () => [
+      {
+        id: 'buttons',
+        Cell: buttons,
+      },
+      {
+        Header: 'Name',
+        accessor: 'name',
+        id: 'name',
+        Filter: TextFilter,
+        // eslint-disable-next-line react/prop-types
+        Cell: ({row, value}) => (<a href={row.original.link}>{value}</a>),
+      },
+      {
+        Header: 'Bosses',
+        accessor: 'bosses',
+        id: 'bosses',
+        disableSortBy: true,
+        Filter: MultiselectFilter.bind(null, bossChoices),
+        filter: filterBosses,
+        Cell: ({value}) => value.reduce((all, cur, index) => [ ...all, <br key={index}/>, cur]),
+      },
+      {
+        Header: 'Tier',
+        accessor: 'tier',
+        id: 'tier',
+        Filter: MultiselectFilter.bind(null, Object.values(itemTiers)),
+        filter: filterInArray,
+      },
+      {
+        Header: 'Category',
+        accessor: row => itemCategories[row.category],
+        id: 'category',
+        Filter: MultiselectFilter.bind(null, Object.values(itemCategories)),
+        filter: filterInArray,
+      },
+      {
+        Header: 'Prio 1',
+        accessor: row => {
+          let player = props.players.find(x => x.id === row.iprio_1);
+          return player ? player.name : '';
         },
-      } }
+        id: 'iprio_1',
+        disableSortBy: true,
+        Filter: TextFilter,
+      },
+      {
+        Header: 'Prio 2',
+        accessor: row => {
+          let player = props.players.find(x => x.id === row.iprio_2);
+          return player ? player.name : '';
+        },
+        id: 'iprio_2',
+        disableSortBy: true,
+        Filter: TextFilter,
+      },
+      {
+        Header: 'ClassPrio 1',
+        accessor: 'cprio_1',
+        id: 'cprio_1',
+        disableSortBy: true,
+        Filter: TextFilter,
+      },
+      {
+        Header: 'Notes',
+        accessor: 'notes',
+        id: 'notes',
+        disableSortBy: true,
+        Filter: TextFilter,
+      },
+    ],
+    [props.players, filterBosses, bossChoices, buttons]
+  )
+
+  const data = React.useMemo(() => props.items, [props.items]);
+
+  const tableInstance = useTable({ columns, data }, useRowState, useFilters, useSortBy);
+
+  const {
+    // state,   TODO: Pop this up to App and pass down as "initialState" to save state between tabs
+    getTableProps,
+    getTableBodyProps,
+    headerGroups,
+    rows,
+    prepareRow,
+  } = tableInstance
+
+  /* eslint-disable react/jsx-key */
+  return (
+    <TableContainer component={Paper}>
+      <Toolbar>
+        <Typography variant="h6">Items</Typography>
+      </Toolbar>
+      <Table {...getTableProps()}>
+        <TableHead>
+          {headerGroups.map(headerGroup => (
+            <TableRow {...headerGroup.getHeaderGroupProps()}>
+              {headerGroup.headers.map(column => (
+                <TableCell {...column.getHeaderProps(column.getSortByToggleProps())}>
+                  {column.render('Header')}
+                  <span>
+                    {column.isSorted ? (column.isSortedDesc ? <ArrowDownward /> : <ArrowUpward />) : ''}
+                  </span>
+                  <div>{column.canFilter ? column.render('Filter') : null}</div>
+                </TableCell>
+              ))}
+            </TableRow>
+          ))}
+        </TableHead>
+        <TableBody {...getTableBodyProps()}>
+          {rows.map((row, index) => {
+            prepareRow(row);
+            const rowProps = row.getRowProps();
+            if (index % 2) {
+              rowProps.style = { backgroundColor: "#EEE" };
+            }
+            return (
+              <TableRow { ...rowProps}>
+                {row.cells.map(cell => (
+                  <TableCell {...cell.getCellProps({style: {padding: 4}})}>
+                    {cell.render('Cell')}
+                  </TableCell>
+                ))}
+              </TableRow>
+            )
+          })}
+        </TableBody>
+      </Table>
+    </TableContainer>
+  );
+  /* eslint-enable react/jsx-key */
+
+  /*
+  return (
       detailPanel={[
         {
           icon: AssignmentOutlined,
@@ -234,6 +375,7 @@ export function ItemTable(props) {
       ]}
     />
   );
+  */
 }
 
 ItemTable.propTypes = {
@@ -262,12 +404,6 @@ export function LootHistoryTable(props) {
     [props.raidDays]
   );
 
-  const filterInArray = React.useCallback(
-    (rows, id, filterValue) => (
-      rows.filter(row => filterValue.includes(row.values[id]))
-    ),
-    []
-  );
 
   const onSave = React.useCallback(
     row => (
@@ -386,10 +522,9 @@ export function LootHistoryTable(props) {
         disableSortBy: true,
         Filter: MultiselectFilter.bind(null, itemTiers),
         filter: filterInArray,
-        randomThing: 'test_val',
       },
     ],
-    [props.raidDays, props.items, props.players, raidDaySort, filterInArray, buttons]
+    [props.raidDays, props.items, props.players, raidDaySort, buttons]
   )
 
   const data = React.useMemo(() => props.lootHistory, [props.lootHistory]);
@@ -438,15 +573,11 @@ export function LootHistoryTable(props) {
             }
             return (
               <TableRow { ...rowProps}>
-                {row.cells.map(cell => {
-                  const cellProps = cell.getCellProps();
-                  cellProps.style = { padding: 4 };
-                  return (
-                    <TableCell {...cellProps}>
-                      {cell.render('Cell')}
-                    </TableCell>
-                  )
-                })}
+                {row.cells.map(cell => (
+                  <TableCell {...cell.getCellProps({style: {padding: 4}})}>
+                    {cell.render('Cell')}
+                  </TableCell>
+                ))}
               </TableRow>
             )
           })}

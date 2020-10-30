@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { useTable, useSortBy, useFilters, useRowState } from 'react-table';
+import { useTable, useSortBy, useFilters, useRowState, useExpanded } from 'react-table';
 import MaterialTable from 'material-table';
 
 import {
@@ -29,6 +29,10 @@ function rowStyleFun(data, index) {
     return { backgroundColor: "#EEE" };
   }
 }
+
+const cellStyle = {padding: 4, paddingLeft: 8};
+
+const headerStyle = {padding: 16, paddingLeft: 4, paddingRight: 28};
 
 function filterInArray(rows, id, filterValue) {
   return rows.filter(row => filterValue.includes(row.values[id]));
@@ -195,18 +199,31 @@ export function ItemTable(props) {
         );
       } else {
         return (
-          <Tooltip title="Edit">
-            <IconButton size='small' onClick={() => {
-              row.setState({editing: true, values: {...row.original}})
-            }}>
-              <Edit />
-            </IconButton>
-          </Tooltip>
+          <>
+            <Tooltip title="Expand">
+              <IconButton size='small' onClick={() => {
+                row.toggleRowExpanded()
+              }}>
+                <AssignmentOutlined />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Edit">
+              <IconButton size='small' onClick={() => {
+                row.setState({editing: true, values: {...row.original}})
+              }}>
+                <Edit />
+              </IconButton>
+            </Tooltip>
+          </>
         );
       }
     },
     [props.loggedInPlayer, onSave]
   );
+
+  const renderExpandedRow = row => {
+    return 'Hello';
+  };
 
   // TODO: Dynamically update derived column values
   const columns = React.useMemo(
@@ -286,7 +303,7 @@ export function ItemTable(props) {
 
   const data = React.useMemo(() => props.items, [props.items]);
 
-  const tableInstance = useTable({ columns, data }, useRowState, useFilters, useSortBy);
+  const tableInstance = useTable({ columns, data }, useRowState, useFilters, useSortBy, useExpanded);
 
   const {
     // state,   TODO: Pop this up to App and pass down as "initialState" to save state between tabs
@@ -295,6 +312,7 @@ export function ItemTable(props) {
     headerGroups,
     rows,
     prepareRow,
+    visibleColumns,
   } = tableInstance
 
   /* eslint-disable react/jsx-key */
@@ -308,7 +326,7 @@ export function ItemTable(props) {
           {headerGroups.map(headerGroup => (
             <TableRow {...headerGroup.getHeaderGroupProps()}>
               {headerGroup.headers.map(column => (
-                <TableCell {...column.getHeaderProps(column.getSortByToggleProps())}>
+                <TableCell {...column.getHeaderProps({...column.getSortByToggleProps(), style: headerStyle})}>
                   {column.render('Header')}
                   <span>
                     {column.isSorted ? (column.isSortedDesc ? <ArrowDownward /> : <ArrowUpward />) : ''}
@@ -327,13 +345,22 @@ export function ItemTable(props) {
               rowProps.style = { backgroundColor: "#EEE" };
             }
             return (
-              <TableRow { ...rowProps}>
-                {row.cells.map(cell => (
-                  <TableCell {...cell.getCellProps({style: {padding: 4}})}>
-                    {cell.render('Cell')}
-                  </TableCell>
-                ))}
-              </TableRow>
+              <React.Fragment key={rowProps.key}>
+                <TableRow { ...rowProps}>
+                  {row.cells.map(cell => (
+                    <TableCell {...cell.getCellProps({style: cellStyle})}>
+                      {cell.render('Cell')}
+                    </TableCell>
+                  ))}
+                </TableRow>
+                {row.isExpanded ? (
+                  <TableRow style={rowProps.style}>
+                    <TableCell colSpan={visibleColumns.length}>
+                      {renderExpandedRow(row)}
+                    </TableCell>
+                  </TableRow>
+                ): null}
+              </React.Fragment>
             )
           })}
         </TableBody>
@@ -553,7 +580,7 @@ export function LootHistoryTable(props) {
           {headerGroups.map(headerGroup => (
             <TableRow {...headerGroup.getHeaderGroupProps()}>
               {headerGroup.headers.map(column => (
-                <TableCell {...column.getHeaderProps(column.getSortByToggleProps())}>
+                <TableCell {...column.getHeaderProps({...column.getSortByToggleProps(), style: headerStyle})}>
                   {column.render('Header')}
                   <span>
                     {column.isSorted ? (column.isSortedDesc ? <ArrowDownward /> : <ArrowUpward />) : ''}
@@ -574,7 +601,7 @@ export function LootHistoryTable(props) {
             return (
               <TableRow { ...rowProps}>
                 {row.cells.map(cell => (
-                  <TableCell {...cell.getCellProps({style: {padding: 4}})}>
+                  <TableCell {...cell.getCellProps({style: cellStyle})}>
                     {cell.render('Cell')}
                   </TableCell>
                 ))}

@@ -1,16 +1,101 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import TextField from '@material-ui/core/TextField';
-import FormControl from '@material-ui/core/FormControl';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
+import {
+  Tooltip, Dialog, DialogTitle, DialogContent, DialogActions,
+  TextField, FormControl, InputLabel, MenuItem, Button, IconButton,
+} from '@material-ui/core';
+
+import { AddBox } from '@material-ui/icons';
+
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 
 import CustomPropTypes from './CustomPropTypes.js';
 import { SubmissionDialog, PaddedSelect, PaddedTextField } from './Generics.js';
-import { postApi } from './Api.js';
+import Api, { postApi } from './Api.js';
+
+export function AddLootHistoryDialog(props) {
+  const [open, setOpen] = React.useState(false);
+  const [raidDayId, setRaidDayId] = React.useState(props.raidDays[0].id);
+  const [playerId, setPlayerId] = React.useState(props.players[0].id);
+  const [itemId, setItemId] = React.useState(props.items[0].id);
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const handleSubmit = () => {
+    Api.lootHistory.add(
+      {raid_day_id: raidDayId, player_id: playerId, item_id: itemId},
+      props.updateRemoteData,
+    ).then(
+      () => handleClose()
+    );
+  };
+
+  const handleChangeRaidDay = e => {
+    setRaidDayId(e.target.value)
+  }
+
+  const handleChangePlayer = e => {
+    setPlayerId(e.target.value)
+  }
+
+  const handleChangeItem = e => {
+    setItemId(e.target.value)
+  }
+
+  return (
+    <>
+      <Tooltip title='Add'>
+        <IconButton size='small' style={{marginLeft: 'auto'}} onClick={() => setOpen(true)}>
+          <AddBox />
+        </IconButton>
+      </Tooltip>
+      <Dialog open={open} onClose={handleClose} fullWidth maxWidth='sm'>
+        <DialogTitle>Add Loot History</DialogTitle>
+        <DialogContent>
+          <FormControl variant="filled">
+            <InputLabel id="raidday-select-label">Raid Day</InputLabel>
+            <PaddedSelect labelId="raidday-select-label" value={raidDayId} onChange={handleChangeRaidDay}>
+              {props.raidDays.map(day =>
+                <MenuItem value={day.id} key={day.id}>{day.name}</MenuItem>
+              )}
+            </PaddedSelect>
+          </FormControl>
+          <FormControl variant="filled">
+            <InputLabel id="player-select-label">Player</InputLabel>
+            <PaddedSelect labelId="player-select-label" value={playerId} onChange={handleChangePlayer}>
+              {props.players.map(player =>
+                <MenuItem value={player.id} key={player.id}>{player.name}</MenuItem>
+              )}
+            </PaddedSelect>
+          </FormControl>
+          <FormControl variant="filled">
+            <InputLabel id="item-select-label">Item</InputLabel>
+            <PaddedSelect labelId="item-select-label" value={itemId} onChange={handleChangeItem}>
+              {props.items.map(item =>
+                <MenuItem value={item.id} key={item.id}>{item.name}</MenuItem>
+              )}
+            </PaddedSelect>
+          </FormControl>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">Cancel</Button>
+          <Button onClick={handleSubmit} color="primary">Add</Button>
+        </DialogActions>
+      </Dialog>
+    </>
+  );
+}
+
+AddLootHistoryDialog.propTypes = {
+  raidDays: PropTypes.arrayOf(CustomPropTypes.raidDay).isRequired,
+  players: PropTypes.arrayOf(CustomPropTypes.player).isRequired,
+  items: PropTypes.arrayOf(CustomPropTypes.item).isRequired,
+  updateRemoteData: PropTypes.func.isRequired,
+}
 
 export function AttendanceDialog(props) {
   return <NewRaidDialog title='Attendance Upload'

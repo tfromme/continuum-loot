@@ -18,43 +18,43 @@ export function postApi(path, data) {
 }
 
 function updatePlayer(player, updateRemoteData) {
-  postApi('/api/updatePlayer', {'player': player}).then(_res => {
+  return postApi('/api/updatePlayer', {'player': player}).then(_res => {
     updateRemoteData('players');
   });
 }
 
 function updateItem(item, updateRemoteData) {
-  postApi('/api/updateItem', {'item': item}).then(_res => {
+  return postApi('/api/updateItem', {'item': item}).then(_res => {
     updateRemoteData('items');
   });
 }
 
 function updateLootHistory(lh, updateRemoteData) {
-  postApi('/api/updateLootHistory', {'row': lh}).then(_res => {
+  return postApi('/api/updateLootHistory', {'row': lh}).then(_res => {
     updateRemoteData('lootHistory');
   });
 }
 
 function addLootHistory(lh, updateRemoteData) {
-  postApi('/api/addLootHistory', {'row': lh}).then(_res => {
+  return postApi('/api/addLootHistory', {'row': lh}).then(_res => {
     updateRemoteData('lootHistory');
   });
 }
 
 function deleteLootHistory(lh, updateRemoteData) {
-  postApi('/api/deleteLootHistory', {'id': lh.id}).then(_res => {
+  return postApi('/api/deleteLootHistory', {'id': lh.id}).then(_res => {
     updateRemoteData('lootHistory');
   });
 }
 
 function updateUser(user, updateRemoteData) {
-  postApi('/api/updateUser', {'user': user}).then(_res => {
+  return postApi('/api/updateUser', {'user': user}).then(_res => {
     updateRemoteData('users', 'currentUser');
   });
 }
 
 function resetUserPassword(user) {
-  postApi('/api/resetUserPassword', {'user': user});
+  return postApi('/api/resetUserPassword', {'user': user});
 }
 
 const Api = {

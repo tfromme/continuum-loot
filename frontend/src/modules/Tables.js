@@ -21,6 +21,7 @@ import { classes, ranks, roles, itemTiers, itemCategories } from './Constants.js
 import { WishlistRow, AttendanceRow, LootHistoryRow, PriorityRow, LootHistoryItemsRow } from './DetailRows.js';
 import { EditCellSelect } from './EditComponents.js';
 import { TextFilter, MultiselectFilter, OldMultiselectFilter } from './Filters.js';
+import { AddLootHistoryDialog } from './ActionDialogs.js';
 
 
 function rowStyleFun(data, index) {
@@ -409,6 +410,8 @@ export function LootHistoryTable(props) {
     <TableContainer component={Paper}>
       <Toolbar>
         <Typography variant="h6">Loot History</Typography>
+        <AddLootHistoryDialog raidDays={props.raidDays} players={props.players} items={props.items}
+                              updateRemoteData={props.updateRemoteData} />
       </Toolbar>
       <Table {...getTableProps()}>
         <TableHead>

@@ -5,7 +5,8 @@ import { useTable, useSortBy, useFilters, useRowState, useExpanded } from 'react
 import MaterialTable from 'material-table';
 
 import {
-  HowToRegOutlined, AssignmentOutlined, ArrowUpward, ArrowDownward,
+  HowToRegOutlined, ArrowUpward, ArrowDownward,
+  Assignment, AssignmentOutlined, WatchLater, History,
   Edit, DeleteOutline, Check, Clear,
 } from '@material-ui/icons';
 
@@ -135,6 +136,8 @@ PlayerTable.defaultProps = {
 }
 
 export function ItemTable(props) {
+  const rowEditable = props.loggedInPlayer && props.loggedInPlayer.permission_level >= 1;
+
   const bossChoices = React.useMemo(
     () => {
       let choices = props.raids.map(raid => "All " + raid.short_name);
@@ -167,10 +170,23 @@ export function ItemTable(props) {
     [props.raids]
   );
 
+  const toggleExpanded = React.useCallback(
+    (row, which) => {
+      if (row.state.expanded === which) {
+        row.setState(old => ({...old, expanded: null}));
+        row.toggleRowExpanded(false);
+      } else {
+        row.setState(old => ({...old, expanded: which}));
+        row.toggleRowExpanded(true);
+      }
+    },
+    [],
+  );
+
   const onSave = React.useCallback(
     row => (
       () => {
-        row.setState({editing: false});
+        row.setState(old => ({...old, editing: false}));
         Api.items.update(row.state.values, props.updateRemoteData);
       }
     ),
@@ -178,52 +194,72 @@ export function ItemTable(props) {
   );
 
   const buttons = React.useCallback(
-    ({row}) => {
-      const rowEditable = props.loggedInPlayer && props.loggedInPlayer.permission_level >= 1;
-      if (!rowEditable) {
-        return null;
-      } else if (row.state.editing) {
-        return (
-          <>
-            <Tooltip title="Save">
-              <IconButton size='small' onClick={onSave(row)}>
-                <Check />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Cancel">
-              <IconButton size='small' onClick={() => row.setState({editing: false})}>
-                <Clear />
-              </IconButton>
-            </Tooltip>
-          </>
-        );
-      } else {
-        return (
-          <>
-            <Tooltip title="Expand">
-              <IconButton size='small' onClick={() => {
-                row.toggleRowExpanded()
-              }}>
-                <AssignmentOutlined />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Edit">
-              <IconButton size='small' onClick={() => {
-                row.setState({editing: true, values: {...row.original}})
-              }}>
-                <Edit />
-              </IconButton>
-            </Tooltip>
-          </>
-        );
-      }
-    },
-    [props.loggedInPlayer, onSave]
+    ({row}) => (
+      <>
+        <Tooltip title="Item Priorities">
+          <IconButton size='small' onClick={() => toggleExpanded(row, 'prio')}>
+            {row.state.expanded === 'prio' ? <Assignment /> : <AssignmentOutlined />}
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Recent Loot History">
+          <IconButton size='small' onClick={() => toggleExpanded(row, 'loot_history')}>
+            {row.state.expanded === 'loot_history' ? <WatchLater /> : <History />}
+          </IconButton>
+        </Tooltip>
+        {rowEditable && !row.state.editing ?
+          <Tooltip title="Edit">
+            <IconButton size='small' onClick={() => {
+              row.setState(old=> ({...old, editing: true, values: {...row.original}}))
+            }}>
+              <Edit />
+            </IconButton>
+          </Tooltip>
+        : null}
+        {rowEditable && row.state.editing ?
+          <Tooltip title="Save">
+            <IconButton size='small' onClick={onSave(row)}>
+              <Check />
+            </IconButton>
+          </Tooltip>
+        : null}
+        {rowEditable && row.state.editing ?
+          <Tooltip title="Cancel">
+            <IconButton size='small' onClick={() => row.setState(old => ({...old, editing: false}))}>
+              <Clear />
+            </IconButton>
+          </Tooltip>
+        : null}
+      </>
+    ),
+    [onSave, toggleExpanded, rowEditable],
   );
 
-  const renderExpandedRow = row => {
-    return 'Hello';
-  };
+  const renderExpandedRow = React.useCallback(
+    row => {
+      if (row.state.expanded === 'prio') {
+        return (
+          <PriorityRow
+            rowData={row.original}
+            players={props.players}
+            loggedInPlayer={props.loggedInPlayer}
+            updateRemoteData={props.updateRemoteData}
+            editable={rowEditable}
+          />
+        );
+      } else if (row.state.expanded === 'loot_history') {
+        return (
+          <LootHistoryItemsRow
+            rowData={row.original}
+            lootHistory={props.lootHistory}
+            players={props.players}
+            raidDays={props.raidDays}
+          />
+        );
+      }
+      return 'Error';
+    },
+    [props.players, props.loggedInPlayer, props.updateRemoteData, props.lootHistory, props.raidDays, rowEditable],
+  );
 
   // TODO: Dynamically update derived column values
   const columns = React.useMemo(
@@ -284,7 +320,7 @@ export function ItemTable(props) {
         Filter: TextFilter,
       },
       {
-        Header: 'ClassPrio 1',
+        Header: 'Class Prio 1',
         accessor: 'cprio_1',
         id: 'cprio_1',
         disableSortBy: true,
@@ -303,7 +339,10 @@ export function ItemTable(props) {
 
   const data = React.useMemo(() => props.items, [props.items]);
 
-  const tableInstance = useTable({ columns, data }, useRowState, useFilters, useSortBy, useExpanded);
+  const tableInstance = useTable(
+    { columns, data, autoResetExpanded: false, autoResetRowState: false },
+    useRowState, useFilters, useSortBy, useExpanded,
+  );
 
   const {
     // state,   TODO: Pop this up to App and pass down as "initialState" to save state between tabs
@@ -355,7 +394,7 @@ export function ItemTable(props) {
                 </TableRow>
                 {row.isExpanded ? (
                   <TableRow style={rowProps.style}>
-                    <TableCell colSpan={visibleColumns.length}>
+                    <TableCell colSpan={visibleColumns.length} style={{padding: 0}}>
                       {renderExpandedRow(row)}
                     </TableCell>
                   </TableRow>
@@ -368,41 +407,6 @@ export function ItemTable(props) {
     </TableContainer>
   );
   /* eslint-enable react/jsx-key */
-
-  /*
-  return (
-      detailPanel={[
-        {
-          icon: AssignmentOutlined,
-          openIcon: 'assignment',
-          tooltip: 'Item Priorities',
-          render: rowData => (
-            <PriorityRow
-              rowData={rowData}
-              players={props.players}
-              loggedInPlayer={props.loggedInPlayer}
-              updateRemoteData={props.updateRemoteData}
-              editable={rowEditable}
-            />
-          ),
-        },
-        {
-          icon: 'history',
-          openIcon: 'watch_later',
-          tooltip: 'Recent Loot History',
-          render: rowData => (
-            <LootHistoryItemsRow
-              rowData={rowData}
-              lootHistory={props.lootHistory}
-              players={props.players}
-              raidDays={props.raidDays}
-            />
-          ),
-        },
-      ]}
-    />
-  );
-  */
 }
 
 ItemTable.propTypes = {
@@ -419,7 +423,6 @@ ItemTable.defaultProps = {
   loggedInPlayer: null,
 }
 
-// TODO: Create way to Add Items
 export function LootHistoryTable(props) {
 
   const raidDaySort = React.useCallback(

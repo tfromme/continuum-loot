@@ -20,7 +20,7 @@ import CustomPropTypes from './CustomPropTypes.js';
 import Api from './Api.js';
 import { classes, ranks, roles, itemTiers, itemCategories } from './Constants.js';
 import { WishlistRow, AttendanceRow, LootHistoryRow, PriorityRow, LootHistoryItemsRow } from './DetailRows.js';
-import { EditCellSelect } from './EditComponents.js';
+import { EditCellSelect, EditCellText } from './EditComponents.js';
 import { TextFilter, MultiselectFilter } from './Filters.js';
 import { AddLootHistoryDialog } from './ActionDialogs.js';
 
@@ -289,8 +289,9 @@ export function ItemTable(props) {
         Header: 'Tier',
         accessor: 'tier',
         id: 'tier',
-        Filter: MultiselectFilter.bind(null, Object.values(itemTiers)),
+        Filter: MultiselectFilter.bind(null, itemTiers),
         filter: filterInArray,
+        Cell: EditCellSelect.bind(null, itemTiers.map(e => ({id: e, name: e}))),
       },
       {
         Header: 'Category',
@@ -298,6 +299,7 @@ export function ItemTable(props) {
         id: 'category',
         Filter: MultiselectFilter.bind(null, Object.values(itemCategories)),
         filter: filterInArray,
+        Cell: EditCellSelect.bind(null, Object.entries(itemCategories).map(([k, v]) => ({id: k, name: v}))),
       },
       {
         Header: 'Prio 1',
@@ -332,6 +334,7 @@ export function ItemTable(props) {
         id: 'notes',
         disableSortBy: true,
         Filter: TextFilter,
+        Cell: EditCellText,
       },
     ],
     [props.players, filterBosses, bossChoices, buttons]

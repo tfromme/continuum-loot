@@ -2,24 +2,53 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import TextField from '@material-ui/core/TextField';
-import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
-import ListItemText from '@material-ui/core/ListItemText';
+
+import {
+  FormControl, Input, TextField,
+  Select, MenuItem, ListItemText,
+} from '@material-ui/core';
 
 import CustomPropTypes from './CustomPropTypes.js';
 
-export function EditCellSelect(choices, {value, row, column}) {
+//TODO: Speed up feedback loop here
+export function EditCellText({value, row, column}) {
   if (!row.state.editing) {
     return value
   }
 
-  const editValue = row.state.values[column.id];
+  let editValue = row.state.values[column.id];
+  if (editValue === null || editValue === undefined) {
+    editValue = '';
+  }
 
   const onChange = e => {
+    const newVal = e.target.value;  // New variable because of event pooling
     row.setState(currentState =>
-      ({ ...currentState, values: { ...currentState.values, [column.id]: e.target.value}})
+      ({ ...currentState, values: { ...currentState.values, [column.id]: newVal}})
+    );
+  };
+
+  return (
+    <FormControl style={{ width: "100%" }}>
+      <Input value={editValue} onChange={onChange} />
+    </FormControl>
+  );
+}
+
+export function EditCellSelect(choices, {value, row, column}) {
+  if (!row.state.editing) {
+    return value || null
+  }
+
+  let editValue = row.state.values[column.id];
+  if (editValue === null || editValue === undefined) {
+    editValue = '';
+  }
+
+  const onChange = e => {
+    const newVal = e.target.value;  // New variable because of event pooling
+    row.setState(currentState =>
+      ({ ...currentState, values: { ...currentState.values, [column.id]: newVal}})
     );
   };
 

@@ -1,8 +1,7 @@
 import React from 'react';
 
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
-import Tab from '@material-ui/core/Tab';
-import AppBar from '@material-ui/core/AppBar';
+import { Tab, AppBar } from '@material-ui/core';
 import { TabPanel, TabContext, TabList } from '@material-ui/lab';
 
 import { PlayerTable, ItemTable, LootHistoryTable } from './modules/Tables.js';

@@ -1,18 +1,15 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import Paper from '@material-ui/core/Paper';
-import TextField from '@material-ui/core/TextField';
-import TableContainer from '@material-ui/core/TableContainer';
-import Table from '@material-ui/core/Table';
-import TableHead from '@material-ui/core/TableHead';
-import TableBody from '@material-ui/core/TableBody';
-import TableRow from '@material-ui/core/TableRow';
-import TableCell from '@material-ui/core/TableCell';
-import IconButton from '@material-ui/core/IconButton';
-import Edit from '@material-ui/icons/Edit';
-import Check from '@material-ui/icons/Check';
-import Clear from '@material-ui/icons/Clear';
+import {
+  Paper, TextField, IconButton,
+  TableContainer, Table, TableHead, TableBody, TableRow, TableCell,
+} from '@material-ui/core';
+
+import {
+  Edit, Check, Clear,
+} from '@material-ui/icons';
+
 import  { styled } from '@material-ui/core/styles';
 
 import CustomPropTypes from './CustomPropTypes.js';

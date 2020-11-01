@@ -2,15 +2,13 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import { styled } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import Alert from '@material-ui/lab/Alert';
-import Collapse from '@material-ui/core/Collapse';
-import TextField from '@material-ui/core/TextField';
-import Select from '@material-ui/core/Select';
+
+import {
+  Button, Collapse, TextField, Select,
+  Dialog, DialogTitle, DialogActions, DialogContent,
+} from '@material-ui/core';
+
+import { Alert } from '@material-ui/lab';
 
 export const LeftPaddedButton = styled(Button)({
   'margin-left': 'auto',

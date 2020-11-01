@@ -1,14 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import TextField from '@material-ui/core/TextField';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import FilterList from '@material-ui/icons/FilterList';
-import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
-import Checkbox from '@material-ui/core/Checkbox';
-import ListItemText from '@material-ui/core/ListItemText';
+import {
+  TextField, InputAdornment,
+  FormControl, Select, MenuItem, Checkbox, ListItemText,
+} from '@material-ui/core';
+
+import { FilterList } from '@material-ui/icons';
 
 export function TextFilter({column: { filterValue, setFilter }}) {
   return (

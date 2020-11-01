@@ -210,7 +210,7 @@ export function PlayerTable(props) {
     [buttons, fullEditable]
   )
 
-  const data = React.useMemo(() => props.players, [props.players]);
+  const data = React.useMemo(() => props.players.filter(p => p.is_active), [props.players]);
 
   const tableInstance = useTable(
     { columns, data, autoResetExpanded: false, autoResetRowState: false },

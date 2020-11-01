@@ -41,7 +41,7 @@ function toggleExpanded(row, which) {
     row.setState(old => ({...old, expanded: which}));
     row.toggleRowExpanded(true);
   }
-};
+}
 
 export function PlayerTable(props) {
   const fullEditable = React.useMemo(
@@ -242,7 +242,7 @@ PlayerTable.defaultProps = {
 
 export function ItemTable(props) {
   const rowEditable = React.useCallback(
-    row => props.loggedInPlayer && props.loggedInPlayer.permission_level >= 1,
+    _row => props.loggedInPlayer && props.loggedInPlayer.permission_level >= 1,
     [props.loggedInPlayer],
   );
 
@@ -468,7 +468,7 @@ ItemTable.defaultProps = {
 
 export function LootHistoryTable(props) {
   const rowEditable = React.useCallback(
-    row => props.loggedInPlayer && props.loggedInPlayer.permission_level >= 2,
+    _row => props.loggedInPlayer && props.loggedInPlayer.permission_level >= 2,
     [props.loggedInPlayer],
   );
 
@@ -713,7 +713,7 @@ BaseTable.propTypes = {
 }
 
 BaseTable.defaultProps = {
-  renderExpandedRow: row => null,
-  rowEditable: row => false,
+  renderExpandedRow: _row => null,
+  rowEditable: _row => false,
   toolbarExtras: null,
 }

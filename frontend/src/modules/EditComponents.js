@@ -17,6 +17,10 @@ export function BasicCell({value}) {
   return value;
 }
 
+BasicCell.PropTypes = {
+  value: PropTypes.node,
+}
+
 //TODO: Speed up feedback loop here
 export function EditCellText({value, row, column}) {
   if (!row.state.editing) {
@@ -40,6 +44,12 @@ export function EditCellText({value, row, column}) {
       <Input value={editValue} onChange={onChange} />
     </FormControl>
   );
+}
+
+EditCellText.propTypes = {
+  value: PropTypes.node,
+  row: PropTypes.object.isRequired,
+  column: PropTypes.object.isRequired,
 }
 
 export function EditCellSelect(choices, {value, row, column}) {

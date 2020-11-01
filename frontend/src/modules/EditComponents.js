@@ -10,6 +10,13 @@ import {
 
 import CustomPropTypes from './CustomPropTypes.js';
 
+export function BasicCell({value}) {
+  if (value === null || value === undefined) {
+    return '';
+  }
+  return value;
+}
+
 //TODO: Speed up feedback loop here
 export function EditCellText({value, row, column}) {
   if (!row.state.editing) {

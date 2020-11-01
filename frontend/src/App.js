@@ -1,8 +1,7 @@
 import React from 'react';
 
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
-import Tab from '@material-ui/core/Tab';
-import AppBar from '@material-ui/core/AppBar';
+import { Tab, AppBar } from '@material-ui/core';
 import { TabPanel, TabContext, TabList } from '@material-ui/lab';
 
 import { PlayerTable, ItemTable, LootHistoryTable } from './modules/Tables.js';
@@ -59,24 +58,12 @@ class App extends React.Component {
 
   getItems() {
     fetch('/api/getItems/').then(res => res.json()).then(data => {
-      for (const item of data) {
-        const oldItem = this.state.items.find(i => i.id === item.id);
-        if (oldItem) {
-          item.tableData = oldItem.tableData;
-        }
-      }
       this.setState({items: data})
     });
   }
 
   getPlayers() {
     fetch('/api/getPlayers/').then(res => res.json()).then(data => {
-      for (const player of data) {
-        const oldPlayer = this.state.players.find(p => p.id === player.id);
-        if (oldPlayer) {
-          player.tableData = oldPlayer.tableData;
-        }
-      }
       this.setState({players: data})
     });
   }

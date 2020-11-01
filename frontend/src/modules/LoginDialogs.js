@@ -1,16 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import FormControl from '@material-ui/core/FormControl';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import Alert from '@material-ui/lab/Alert';
-import Collapse from '@material-ui/core/Collapse';
+import {
+  Button, FormControl, InputLabel, MenuItem, Collapse,
+  Dialog, DialogTitle, DialogActions, DialogContent,
+} from '@material-ui/core';
+
+import { Alert } from '@material-ui/lab';
 
 import CustomPropTypes from './CustomPropTypes.js';
 import { LeftPaddedButton, StyledButton, PaddedTextField, PaddedSelect } from './Generics.js';

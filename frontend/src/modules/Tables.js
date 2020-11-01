@@ -1,105 +1,230 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import MaterialTable from 'material-table';
-import HowToRegOutlined from '@material-ui/icons/HowToRegOutlined';
-import AssignmentOutlined from '@material-ui/icons/AssignmentOutlined';
+import { useTable, useSortBy, useFilters, useRowState, useExpanded } from 'react-table';
+
+import {
+  ArrowUpward, ArrowDownward,
+  HowToReg, HowToRegOutlined, Favorite, FavoriteBorder,
+  Assignment, AssignmentOutlined, WatchLater, History,
+  Edit, DeleteOutline, Check, Clear,
+} from '@material-ui/icons';
+
+import {
+  Toolbar, Typography, Paper, CircularProgress,
+  TableContainer, Table, TableHead, TableBody, TableRow, TableCell,
+  IconButton, Tooltip,
+} from '@material-ui/core';
 
 import CustomPropTypes from './CustomPropTypes.js';
 import Api from './Api.js';
 import { classes, ranks, roles, itemTiers, itemCategories } from './Constants.js';
 import { WishlistRow, AttendanceRow, LootHistoryRow, PriorityRow, LootHistoryItemsRow } from './DetailRows.js';
-import { EditItemAutocomplete } from './EditComponents.js';
-import { RaidFilter, MultiselectFilter } from './Filters.js';
+import { BasicCell, EditCellSelect, EditCellText } from './EditComponents.js';
+import { TextFilter, MultiselectFilter } from './Filters.js';
+import { AddLootHistoryDialog } from './ActionDialogs.js';
 
 
-function rowStyleFun(data, index) {
-  if (index % 2) {
-    return { backgroundColor: "#EEE" };
+const cellStyle = {padding: 4, paddingLeft: 8};
+
+const headerStyle = {padding: 16, paddingLeft: 4, paddingRight: 28};
+
+function filterInArray(rows, id, filterValue) {
+  return rows.filter(row => filterValue.includes(row.values[id]));
+}
+
+function toggleExpanded(row, which) {
+  if (row.state.expanded === which) {
+    row.setState(old => ({...old, expanded: null}));
+    row.toggleRowExpanded(false);
+  } else {
+    row.setState(old => ({...old, expanded: which}));
+    row.toggleRowExpanded(true);
   }
 }
 
 export function PlayerTable(props) {
-  const fullEditable = props.loggedInPlayer && props.loggedInPlayer.permission_level >= 2 ? 'always' : 'never';
-  const rowEditable = rowData => {
-    if (props.loggedInPlayer) {
-      if (props.loggedInPlayer.permission_level >= 1
-       || rowData.id === props.loggedInPlayer.id
-       || rowData.alts.includes(props.loggedInPlayer.id)
-      ) {
-        return true;
-      }
-    }
-    return false;
-  }
+  const fullEditable = React.useMemo(
+    () => props.loggedInPlayer && props.loggedInPlayer.permission_level >= 2,
+    [props.loggedInPlayer],
+  )
 
-  const [ columns ] = React.useState([
-    { title: 'Name', field: 'name', filtering: false, defaultSort: 'asc', editable: fullEditable },
-    { title: 'Class', field: 'class', lookup: classes, editable: fullEditable },
-    { title: 'Rank', field: 'rank', lookup: ranks, editable: fullEditable },
-    { title: 'Role', field: 'role', lookup: roles },
-    { title: 'Notes', field: 'notes', filtering: false },
-  ]);
+  const rowEditable = React.useCallback(
+    row => {
+      if (props.loggedInPlayer) {
+        if (props.loggedInPlayer.permission_level >= 1
+         || row.original.id === props.loggedInPlayer.id
+         || row.original.alts.includes(props.loggedInPlayer.id)
+        ) {
+          return true;
+        }
+      }
+      return false;
+    },
+    [props.loggedInPlayer],
+  );
+
+  const onSave = React.useCallback(
+    row => (
+      () => {
+        row.setState(old => ({...old, editing: false}));
+        Api.player.update(row.state.values, props.updateRemoteData);
+      }
+    ),
+    [props.updateRemoteData]
+  );
+
+  const buttons = React.useCallback(
+    ({row}) => (
+      <>
+        <Tooltip title="Wishlist">
+          <IconButton size='small' onClick={() => toggleExpanded(row, 'wishlist')}>
+            {row.state.expanded === 'wishlist' ? <Favorite /> : <FavoriteBorder />}
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Attendance">
+          <IconButton size='small' onClick={() => toggleExpanded(row, 'attendance')}>
+            {row.state.expanded === 'attendance' ? <HowToReg /> : <HowToRegOutlined />}
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Recent Loot History">
+          <IconButton size='small' onClick={() => toggleExpanded(row, 'loot_history')}>
+            {row.state.expanded === 'loot_history' ? <WatchLater /> : <History />}
+          </IconButton>
+        </Tooltip>
+        {rowEditable(row) && !row.state.editing ?
+          <Tooltip title="Edit">
+            <IconButton size='small' onClick={() => {
+              row.setState(old=> ({...old, editing: true, values: {...row.original}}))
+            }}>
+              <Edit />
+            </IconButton>
+          </Tooltip>
+        : null}
+        {rowEditable(row) && row.state.editing ?
+          <Tooltip title="Save">
+            <IconButton size='small' onClick={onSave(row)}>
+              <Check />
+            </IconButton>
+          </Tooltip>
+        : null}
+        {rowEditable(row) && row.state.editing ?
+          <Tooltip title="Cancel">
+            <IconButton size='small' onClick={() => row.setState(old => ({...old, editing: false}))}>
+              <Clear />
+            </IconButton>
+          </Tooltip>
+        : null}
+      </>
+    ),
+    [onSave, rowEditable],
+  );
+
+  const renderExpandedRow = React.useCallback(
+    row => {
+      if (row.state.expanded === 'wishlist') {
+        return (
+          <WishlistRow
+            rowData={row.original}
+            items={props.items}
+            updateRemoteData={props.updateRemoteData}
+            editable={rowEditable(row)}
+          />
+        );
+      } else if (row.state.expanded === 'attendance') {
+        return (
+          <AttendanceRow
+            rowData={row.original}
+            players={props.players}
+            raidDays={props.raidDays}
+          />
+        );
+      } else if (row.state.expanded === 'loot_history') {
+        return (
+          <LootHistoryRow
+            rowData={row.original}
+            lootHistory={props.lootHistory}
+            items={props.items}
+            raidDays={props.raidDays}
+          />
+        );
+      }
+      return 'Error';
+    },
+    [props.players, props.items, props.updateRemoteData, props.lootHistory, props.raidDays, rowEditable],
+  );
+
+  // TODO: Dynamically update derived column values
+  const columns = React.useMemo(
+    () => [
+      {
+        id: 'buttons',
+        Cell: buttons,
+      },
+      {
+        Header: 'Name',
+        accessor: 'name',
+        id: 'name',
+        Filter: TextFilter,
+        Cell: fullEditable ? EditCellText : BasicCell,
+      },
+      {
+        Header: 'Class',
+        accessor: row => classes[row.class],
+        id: 'class',
+        Filter: MultiselectFilter.bind(null, Object.values(classes)),
+        filter: filterInArray,
+        Cell: (fullEditable
+               ? EditCellSelect.bind(null, Object.entries(classes).map(([k, v]) => ({id: k, name: v})))
+               : BasicCell
+        ),
+      },
+      {
+        Header: 'Rank',
+        accessor: row => ranks[row.rank],
+        id: 'rank',
+        Filter: MultiselectFilter.bind(null, Object.values(ranks)),
+        filter: filterInArray,
+        Cell: (fullEditable
+               ? EditCellSelect.bind(null, Object.entries(ranks).map(([k, v]) => ({id: k, name: v})))
+               : BasicCell
+        ),
+      },
+      {
+        Header: 'Role',
+        accessor: row => roles[row.role],
+        id: 'role',
+        Filter: MultiselectFilter.bind(null, Object.values(roles)),
+        filter: filterInArray,
+        Cell: EditCellSelect.bind(null, Object.entries(roles).map(([k, v]) => ({id: k, name: v}))),
+      },
+      {
+        Header: 'Notes',
+        accessor: 'notes',
+        id: 'notes',
+        disableSortBy: true,
+        Filter: TextFilter,
+        Cell: EditCellText,
+      },
+    ],
+    [buttons, fullEditable]
+  )
+
+  const data = React.useMemo(() => props.players.filter(p => p.is_active), [props.players]);
+
+  const tableInstance = useTable(
+    { columns, data, autoResetExpanded: false, autoResetRowState: false },
+    useRowState, useFilters, useSortBy, useExpanded,
+  );
 
   return (
-    <MaterialTable
-      columns={columns}
-      data={ props.players.filter(player => player.is_active) }
+    <BaseTable
+      tableInstance={tableInstance}
       title="Players"
-      options={ { padding: 'dense', paging: false, filtering: true, draggable: false, rowStyle: rowStyleFun } }
-      localization={{header: {actions: ''}}}
-      editable={ {
-        isEditable: rowEditable,
-        isEditHidden: rowData => !rowEditable(rowData),
-        onRowUpdate: (newData, _oldData) => {
-          return new Promise((resolve, _reject) => {
-            Api.player.update(newData, props.updateRemoteData);
-            resolve();
-          });
-        },
-      } }
-      detailPanel={[
-        {
-          icon: 'favorite_border',
-          openIcon: 'favorite',
-          tooltip: 'Wishlist',
-          render: rowData => (
-            <WishlistRow
-              rowData={rowData}
-              items={props.items}
-              updateRemoteData={props.updateRemoteData}
-              editable={rowEditable(rowData)}
-            />
-          ),
-        },
-        {
-          icon: HowToRegOutlined,
-          openIcon: 'how_to_reg',
-          tooltip: 'Attendance',
-          render: rowData => (
-            <AttendanceRow
-              rowData={rowData}
-              players={props.players}
-              raidDays={props.raidDays}
-            />
-          ),
-        },
-        {
-          icon: 'history',
-          openIcon: 'watch_later',
-          tooltip: 'Recent Loot History',
-          render: rowData => (
-            <LootHistoryRow
-              rowData={rowData}
-              lootHistory={props.lootHistory}
-              items={props.items}
-              raidDays={props.raidDays}
-            />
-          ),
-        },
-      ]}
+      renderExpandedRow={renderExpandedRow}
+      rowEditable={rowEditable}
     />
-  );
+  )
 }
 
 PlayerTable.propTypes = {
@@ -116,113 +241,215 @@ PlayerTable.defaultProps = {
 }
 
 export function ItemTable(props) {
-  const rowEditable = props.loggedInPlayer && props.loggedInPlayer.permission_level >= 1;
+  const rowEditable = React.useCallback(
+    _row => props.loggedInPlayer && props.loggedInPlayer.permission_level >= 1,
+    [props.loggedInPlayer],
+  );
 
-  var choices = props.raids.map(raid => "All " + raid.short_name);
-  for (const raid of props.raids) {
-    for (const boss of raid.bosses) {
-      choices.push(boss);
-    }
-  }
-
-  const defaultFilter = [choices[0]];
-
-  const bossFilter = xProps => <MultiselectFilter initialValue={defaultFilter} choices={choices} {...xProps} />;
-
-  const bossSearch = (selected, rowData) => {
-    if (selected.length === 0) {
-      return true;
-    }
-
-    for (const choice of selected) {
-      const raid = props.raids.find(x => "All " + x.short_name === choice);
-      // Could be raid name
-      if (raid && raid.id === rowData.raid) {
-        return true;
+  const bossChoices = React.useMemo(
+    () => {
+      let choices = props.raids.map(raid => "All " + raid.short_name);
+      for (const raid of props.raids) {
+        for (const boss of raid.bosses) {
+          choices.push(boss);
+        }
       }
-      // else its a boss name
-      if (rowData.bosses.includes(choice)) {
-        return true;
-      }
-    }
+      return choices;
+    },
+    [props.raids],
+  );
 
-    return false;
-  }
-
-  var playerLookup = {};
-  for (const player of props.players) {
-    playerLookup[player.id] = player.name;
-  }
-
-  const [ columns ] = React.useState([
-    { title: 'Name', field: 'name', defaultSort: 'asc', editable: 'never',
-      render: ( rowData => <a href={rowData.link}>{rowData.name}</a> )},
-    { title: 'Bosses', field: 'bosses', defaultFilter: defaultFilter, editable: 'never',
-      filterComponent: bossFilter, customFilterAndSearch: bossSearch,
-      render: ((rowData) => {
-        return rowData.bosses.reduce((all, cur, index) => [
-          ...all,
-          <br key={index}/>,
-          cur,
-        ]);
+  const filterBosses = React.useCallback(
+    (rows, id, filterValue) => {
+      return rows.filter(row => {
+        for (const choice of filterValue) {
+          const raid = props.raids.find(x => "All " + x.short_name === choice);
+          if (raid && raid.id === row.original.raid) {
+            return true;
+          }
+          // else its a boss name
+          if (row.original.bosses.includes(choice)) {
+            return true;
+          }
+        }
+        return false;
       })
     },
-    { title: 'Tier', field: 'tier', type: 'numeric' },
-    { title: 'Category', field: 'category', lookup: itemCategories },
-    { title: 'Prio 1', field: 'iprio_1', lookup: playerLookup, editable: 'never', filtering: false },
-    { title: 'Prio 2', field: 'iprio_2', lookup: playerLookup, editable: 'never', filtering: false },
-    { title: 'Class Prio 1', field: 'cprio_1', editable: 'never', filtering: false },
-    { title: 'Notes', field: 'notes', filtering: false },
-  ]);
+    [props.raids]
+  );
+
+  const onSave = React.useCallback(
+    row => (
+      () => {
+        row.setState(old => ({...old, editing: false}));
+        Api.item.update(row.state.values, props.updateRemoteData);
+      }
+    ),
+    [props.updateRemoteData]
+  );
+
+  const buttons = React.useCallback(
+    ({row}) => (
+      <>
+        <Tooltip title="Item Priorities">
+          <IconButton size='small' onClick={() => toggleExpanded(row, 'prio')}>
+            {row.state.expanded === 'prio' ? <Assignment /> : <AssignmentOutlined />}
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Recent Loot History">
+          <IconButton size='small' onClick={() => toggleExpanded(row, 'loot_history')}>
+            {row.state.expanded === 'loot_history' ? <WatchLater /> : <History />}
+          </IconButton>
+        </Tooltip>
+        {rowEditable(row) && !row.state.editing ?
+          <Tooltip title="Edit">
+            <IconButton size='small' onClick={() => {
+              row.setState(old=> ({...old, editing: true, values: {...row.original}}))
+            }}>
+              <Edit />
+            </IconButton>
+          </Tooltip>
+        : null}
+        {rowEditable(row) && row.state.editing ?
+          <Tooltip title="Save">
+            <IconButton size='small' onClick={onSave(row)}>
+              <Check />
+            </IconButton>
+          </Tooltip>
+        : null}
+        {rowEditable(row) && row.state.editing ?
+          <Tooltip title="Cancel">
+            <IconButton size='small' onClick={() => row.setState(old => ({...old, editing: false}))}>
+              <Clear />
+            </IconButton>
+          </Tooltip>
+        : null}
+      </>
+    ),
+    [onSave, rowEditable],
+  );
+
+  const renderExpandedRow = React.useCallback(
+    row => {
+      if (row.state.expanded === 'prio') {
+        return (
+          <PriorityRow
+            rowData={row.original}
+            players={props.players}
+            loggedInPlayer={props.loggedInPlayer}
+            updateRemoteData={props.updateRemoteData}
+            editable={rowEditable(row)}
+          />
+        );
+      } else if (row.state.expanded === 'loot_history') {
+        return (
+          <LootHistoryItemsRow
+            rowData={row.original}
+            lootHistory={props.lootHistory}
+            players={props.players}
+            raidDays={props.raidDays}
+          />
+        );
+      }
+      return 'Error';
+    },
+    [props.players, props.loggedInPlayer, props.updateRemoteData, props.lootHistory, props.raidDays, rowEditable],
+  );
+
+  // TODO: Dynamically update derived column values
+  const columns = React.useMemo(
+    () => [
+      {
+        id: 'buttons',
+        Cell: buttons,
+      },
+      {
+        Header: 'Name',
+        accessor: 'name',
+        id: 'name',
+        Filter: TextFilter,
+        // eslint-disable-next-line react/prop-types
+        Cell: ({row, value}) => (<a href={row.original.link}>{value}</a>),
+      },
+      {
+        Header: 'Bosses',
+        accessor: 'bosses',
+        id: 'bosses',
+        disableSortBy: true,
+        Filter: MultiselectFilter.bind(null, bossChoices),
+        filter: filterBosses,
+        Cell: ({value}) => value.reduce((all, cur, index) => [ ...all, <br key={index}/>, cur]),
+      },
+      {
+        Header: 'Tier',
+        accessor: 'tier',
+        id: 'tier',
+        Filter: MultiselectFilter.bind(null, itemTiers),
+        filter: filterInArray,
+        Cell: EditCellSelect.bind(null, itemTiers.map(e => ({id: e, name: e}))),
+      },
+      {
+        Header: 'Category',
+        accessor: row => itemCategories[row.category],
+        id: 'category',
+        Filter: MultiselectFilter.bind(null, Object.values(itemCategories)),
+        filter: filterInArray,
+        Cell: EditCellSelect.bind(null, Object.entries(itemCategories).map(([k, v]) => ({id: k, name: v}))),
+      },
+      {
+        Header: 'Prio 1',
+        accessor: row => {
+          let player = props.players.find(x => x.id === row.iprio_1);
+          return player ? player.name : '';
+        },
+        id: 'iprio_1',
+        disableSortBy: true,
+        Filter: TextFilter,
+      },
+      {
+        Header: 'Prio 2',
+        accessor: row => {
+          let player = props.players.find(x => x.id === row.iprio_2);
+          return player ? player.name : '';
+        },
+        id: 'iprio_2',
+        disableSortBy: true,
+        Filter: TextFilter,
+      },
+      {
+        Header: 'Class Prio 1',
+        accessor: 'cprio_1',
+        id: 'cprio_1',
+        disableSortBy: true,
+        Filter: TextFilter,
+      },
+      {
+        Header: 'Notes',
+        accessor: 'notes',
+        id: 'notes',
+        disableSortBy: true,
+        Filter: TextFilter,
+        Cell: EditCellText,
+      },
+    ],
+    [props.players, filterBosses, bossChoices, buttons]
+  )
+
+  const data = React.useMemo(() => props.items, [props.items]);
+
+  const tableInstance = useTable(
+    { columns, data, autoResetExpanded: false, autoResetRowState: false },
+    useRowState, useFilters, useSortBy, useExpanded,
+  );
 
   return (
-    <MaterialTable
-      columns={columns}
-      data={ props.items }
+    <BaseTable
+      tableInstance={tableInstance}
       title="Items"
-      options={ { padding: 'dense', paging: false, filtering: true, rowStyle: rowStyleFun } }
-      localization={{header: {actions: ''}}}
-      editable={ {
-        isEditable: _ => rowEditable,
-        isEditHidden: _ => !rowEditable,
-        onRowUpdate: (newData, _oldData) => {
-          return new Promise((resolve, _reject) => {
-            Api.item.update(newData, props.updateRemoteData);
-            resolve();
-          });
-        },
-      } }
-      detailPanel={[
-        {
-          icon: AssignmentOutlined,
-          openIcon: 'assignment',
-          tooltip: 'Item Priorities',
-          render: rowData => (
-            <PriorityRow
-              rowData={rowData}
-              players={props.players}
-              loggedInPlayer={props.loggedInPlayer}
-              updateRemoteData={props.updateRemoteData}
-              editable={rowEditable}
-            />
-          ),
-        },
-        {
-          icon: 'history',
-          openIcon: 'watch_later',
-          tooltip: 'Recent Loot History',
-          render: rowData => (
-            <LootHistoryItemsRow
-              rowData={rowData}
-              lootHistory={props.lootHistory}
-              players={props.players}
-              raidDays={props.raidDays}
-            />
-          ),
-        },
-      ]}
+      renderExpandedRow={renderExpandedRow}
+      rowEditable={rowEditable}
     />
-  );
+  )
 }
 
 ItemTable.propTypes = {
@@ -239,129 +466,158 @@ ItemTable.defaultProps = {
   loggedInPlayer: null,
 }
 
-
-
 export function LootHistoryTable(props) {
-  const rowEditable = props.loggedInPlayer && props.loggedInPlayer.permission_level >= 2;
-
-  var raidDayLookup = {};
-  for (const raidDay of props.raidDays) {
-    raidDayLookup[raidDay.id] = raidDay.name;
-  }
-
-  var nameLookup = {};
-  var classLookup = {};
-  var roleLookup = {};
-  for (const player of props.players) {
-    nameLookup[player.id] = player.name;
-    classLookup[player.id] = classes[player.class];
-    roleLookup[player.id] = roles[player.role];
-  }
-
-  var itemLookup = {};
-  var tierLookup = {};
-  for (const item of props.items) {
-    itemLookup[item.id] = item.name;
-    tierLookup[item.id] = item.tier;
-  }
-
-  const raidDaySort = (a, b) => {
-    const raidDayA = props.raidDays.find(x => x.id === a.raid_day_id);
-    const raidDayB = props.raidDays.find(x => x.id === b.raid_day_id);
-    return Date.parse(raidDayA.date) - Date.parse(raidDayB.date);
-  }
-
-  const raidDaySearch = (term, rowData) => {
-    const raidDay = props.raidDays.find(x => x.id === rowData.raid_day_id);
-    return term.length === 0 || term.includes(raidDay.raid_id);
-  }
-
-  const classFilter = props => <MultiselectFilter choices={Object.values(classes)}
-                                                  {...props} />;
-  const roleFilter = props => <MultiselectFilter choices={Object.values(roles)}
-                                                 {...props} />;
-  const tierFilter = props => <MultiselectFilter choices={itemTiers} {...props} />;
-
-  const classSearch = (term, rowData) => {
-    const player = props.players.find(x => x.id === rowData.player_id);
-    return term.length === 0 || term.includes(classes[player.class]);
-  }
-
-  const roleSearch = (term, rowData) => {
-    const player = props.players.find(x => x.id === rowData.player_id);
-    return term.length === 0 || term.includes(roles[player.role]);
-  }
-
-  const tierSearch = (term, rowData) => {
-    const item = props.items.find(x => x.id === rowData.item_id);
-    return term.length === 0 || term.includes(item.tier);
-  }
-
-  const editNameComponent = xProps => (
-    <EditItemAutocomplete
-      items={props.players}
-      initialValue={props.players.find(x => x.id === xProps.rowData.player_id)}
-      onChange={xProps.onChange}
-    />
+  const rowEditable = React.useCallback(
+    _row => props.loggedInPlayer && props.loggedInPlayer.permission_level >= 2,
+    [props.loggedInPlayer],
   );
 
-  const editItemComponent = xProps => (
-    <EditItemAutocomplete
-      items={props.items}
-      initialValue={props.items.find(x => x.id === xProps.rowData.item_id)}
-      onChange={xProps.onChange}
-    />
+
+  const raidDaySort = React.useCallback(
+    (a, b) => {
+      const raidDayA = props.raidDays.find(x => x.id === a.original.raid_day_id);
+      const raidDayB = props.raidDays.find(x => x.id === b.original.raid_day_id);
+      return Date.parse(raidDayA.date) - Date.parse(raidDayB.date);
+    },
+    [props.raidDays]
   );
 
-  const [ columns ] = React.useState([
-    { title: 'Raid', field: 'raid_day_id', lookup: raidDayLookup, defaultSort: 'desc',
-      customSort: raidDaySort, filterComponent: RaidFilter, customFilterAndSearch: raidDaySearch },
-    { title: 'Name', field: 'player_id', lookup: nameLookup, editComponent: editNameComponent },
-    { title: 'Class', field: 'player_id', lookup: classLookup, editable: 'never',
-      filterComponent: classFilter, customFilterAndSearch: classSearch },
-    { title: 'Role', field: 'player_id', lookup: roleLookup, editable: 'never',
-      filterComponent: roleFilter, customFilterAndSearch: roleSearch },
-    { title: 'Item', field: 'item_id', lookup: itemLookup, editComponent: editItemComponent },
-    { title: 'Item Tier', field: 'item_id', lookup: tierLookup, editable: 'never',
-      filterComponent: tierFilter, customFilterAndSearch: tierSearch },
-  ]);
+  const onSave = React.useCallback(
+    row => (
+      () => {
+        row.setState({editing: false});
+        Api.lootHistory.update(row.state.values, props.updateRemoteData);
+      }
+    ),
+    [props.updateRemoteData]
+  );
+
+  const onDelete = React.useCallback(
+    row => (
+      () => {
+        Api.lootHistory.delete(row.original, props.updateRemoteData);
+      }
+    ),
+    [props.updateRemoteData]
+  );
+
+  const buttons = React.useCallback(
+    ({row}) => {
+      if (!rowEditable(row)) {
+        return null;
+      } else if (row.state.editing) {
+        return (
+          <>
+            <Tooltip title="Save">
+              <IconButton size='small' onClick={onSave(row)}>
+                <Check />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Cancel">
+              <IconButton size='small' onClick={() => row.setState({editing: false})}>
+                <Clear />
+              </IconButton>
+            </Tooltip>
+          </>
+        );
+      } else {
+        return (
+          <>
+            <Tooltip title="Edit">
+              <IconButton size='small' onClick={() => {
+                row.setState({editing: true, values: {...row.original}})
+              }}>
+                <Edit />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Delete">
+              <IconButton size='small' onClick={onDelete(row)}>
+                <DeleteOutline />
+              </IconButton>
+            </Tooltip>
+          </>
+        );
+      }
+    },
+    [rowEditable, onSave, onDelete]
+  );
+
+  // TODO: Dynamically update derived column values
+  const columns = React.useMemo(
+    () => [
+      {
+        id: 'buttons',
+        Cell: buttons,
+      },
+      {
+        Header: 'Raid',
+        accessor: row => props.raidDays.find(x => x.id === row.raid_day_id).name,
+        id: 'raid_day_id',
+        sortType: raidDaySort,
+        sortDescFirst: true,
+        Filter: TextFilter,
+        // TODO: Change from Select to autocomplete
+        Cell: EditCellSelect.bind(null, props.raidDays),
+      },
+      {
+        Header: 'Name',
+        accessor: row => props.players.find(x => x.id === row.player_id).name,
+        id: 'player_id',
+        sortType: 'basic',
+        Filter: TextFilter,
+        Cell: EditCellSelect.bind(null, props.players),
+      },
+      {
+        Header: 'Class',
+        accessor: row => classes[props.players.find(x => x.id === row.player_id).class],
+        id: 'player_class',
+        disableSortBy: true,
+        Filter: MultiselectFilter.bind(null, Object.values(classes)),
+        filter: filterInArray,
+      },
+      {
+        Header: 'Role',
+        accessor: row => roles[props.players.find(x => x.id === row.player_id).role],
+        id: 'player_role',
+        disableSortBy: true,
+        Filter: MultiselectFilter.bind(null, Object.values(roles)),
+        filter: filterInArray,
+      },
+      {
+        Header: 'Item',
+        accessor: row => props.items.find(x => x.id === row.item_id).name,
+        id: 'item_id',
+        sortType: 'basic',
+        Filter: TextFilter,
+        Cell: EditCellSelect.bind(null, props.items),
+      },
+      {
+        Header: 'Item Tier',
+        accessor: row => props.items.find(x => x.id === row.item_id).tier,
+        id: 'item_tier',
+        disableSortBy: true,
+        Filter: MultiselectFilter.bind(null, itemTiers),
+        filter: filterInArray,
+      },
+    ],
+    [props.raidDays, props.items, props.players, raidDaySort, buttons]
+  )
+
+  const data = React.useMemo(() => props.lootHistory, [props.lootHistory]);
+
+  const tableInstance = useTable({ columns, data }, useRowState, useFilters, useSortBy);
 
   return (
-    <MaterialTable
-      columns={columns}
-      data={ props.lootHistory }
+    <BaseTable
+      tableInstance={tableInstance}
       title="Loot History"
-      options={ { padding: 'dense', paging: false, filtering: true, draggable: false,
-                  addRowPosition: 'first', rowStyle: rowStyleFun } }
-      localization={{header: {actions: ''}}}
-      editable={ {
-        isEditable: _ => rowEditable,
-        isEditHidden: _ => !rowEditable,
-        isDeletable: _ => rowEditable,
-        isDeleteHidden: _ => !rowEditable,
-        onRowUpdate: (newData, _oldData) => {
-          return new Promise((resolve, _reject) => {
-            Api.lootHistory.update(newData, props.updateRemoteData);
-            resolve();
-          });
-        },
-        // This ternary is because there is no `isAddable` prop
-        // it hides add button when user doesnt have permission
-        onRowAdd: rowEditable ? (newData => {
-          return new Promise((resolve, _reject) => {
-            Api.lootHistory.add(newData, props.updateRemoteData);
-            resolve();
-          });
-        }) : false,
-        onRowDelete: oldData => {
-          return new Promise((resolve, _reject) => {
-            Api.lootHistory.delete(oldData, props.updateRemoteData);
-            resolve();
-          });
-        },
-      } }
+      rowEditable={rowEditable}
+      toolbarExtras={
+        <AddLootHistoryDialog raidDays={props.raidDays} players={props.players} items={props.items}
+                              updateRemoteData={props.updateRemoteData} />
+      }
     />
-  );
+  )
 }
 
 LootHistoryTable.propTypes = {
@@ -375,4 +631,89 @@ LootHistoryTable.propTypes = {
 
 LootHistoryTable.defaultProps = {
   loggedInPlayer: null,
+}
+
+function BaseTable(props) {
+  const {
+    // state,   TODO: Pop this up to App and pass down as "initialState" to save state between tabs
+    getTableProps,
+    getTableBodyProps,
+    headerGroups,
+    rows,
+    prepareRow,
+    visibleColumns,
+  } = props.tableInstance
+
+  if (rows.length === 0) {
+    return <CircularProgress />;
+  }
+
+  /* eslint-disable react/jsx-key */
+  return (
+    <TableContainer component={Paper}>
+      <Toolbar>
+        <Typography variant="h6">{props.title}</Typography>
+        {props.toolbarExtras}
+      </Toolbar>
+      <Table {...getTableProps()}>
+        <TableHead>
+          {headerGroups.map(headerGroup => (
+            <TableRow {...headerGroup.getHeaderGroupProps()}>
+              {headerGroup.headers.map(column => (
+                <TableCell {...column.getHeaderProps({...column.getSortByToggleProps(), style: headerStyle})}>
+                  {column.render('Header')}
+                  <span>
+                    {column.isSorted ? (column.isSortedDesc ? <ArrowDownward /> : <ArrowUpward />) : ''}
+                  </span>
+                  <div>{column.canFilter ? column.render('Filter') : null}</div>
+                </TableCell>
+              ))}
+            </TableRow>
+          ))}
+        </TableHead>
+        <TableBody {...getTableBodyProps()}>
+          {rows.map((row, index) => {
+            prepareRow(row);
+            const rowProps = row.getRowProps();
+            if (index % 2) {
+              rowProps.style = { backgroundColor: "#EEE" };
+            }
+            return (
+              <React.Fragment key={rowProps.key}>
+                <TableRow { ...rowProps}>
+                  {row.cells.map(cell => (
+                    <TableCell {...cell.getCellProps({style: cellStyle})}>
+                      {cell.render('Cell')}
+                    </TableCell>
+                  ))}
+                </TableRow>
+                {row.isExpanded ? (
+                  <TableRow style={rowProps.style}>
+                    <TableCell colSpan={visibleColumns.length} style={{padding: 0}}>
+                      {props.renderExpandedRow(row)}
+                    </TableCell>
+                  </TableRow>
+                ): null}
+              </React.Fragment>
+            )
+          })}
+        </TableBody>
+      </Table>
+    </TableContainer>
+  );
+  /* eslint-enable react/jsx-key */
+}
+
+BaseTable.propTypes = {
+  tableInstance: PropTypes.object.isRequired,
+  title: PropTypes.string.isRequired,
+  renderExpandedRow: PropTypes.func,
+  rowEditable: PropTypes.func,
+  toolbarExtras: PropTypes.node,
+}
+
+BaseTable.defaultProps = {
+  renderExpandedRow: _row => null,
+  rowEditable: _row => false,
+  toolbarExtras: null,
 }

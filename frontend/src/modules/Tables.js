@@ -217,73 +217,14 @@ export function PlayerTable(props) {
     useRowState, useFilters, useSortBy, useExpanded,
   );
 
-  const {
-    // state,   TODO: Pop this up to App and pass down as "initialState" to save state between tabs
-    getTableProps,
-    getTableBodyProps,
-    headerGroups,
-    rows,
-    prepareRow,
-    visibleColumns,
-  } = tableInstance
-
-  if (props.players.length === 0) {
-    return <CircularProgress />
-  }
-
-  /* eslint-disable react/jsx-key */
   return (
-    <TableContainer component={Paper}>
-      <Toolbar>
-        <Typography variant="h6">Players</Typography>
-      </Toolbar>
-      <Table {...getTableProps()}>
-        <TableHead>
-          {headerGroups.map(headerGroup => (
-            <TableRow {...headerGroup.getHeaderGroupProps()}>
-              {headerGroup.headers.map(column => (
-                <TableCell {...column.getHeaderProps({...column.getSortByToggleProps(), style: headerStyle})}>
-                  {column.render('Header')}
-                  <span>
-                    {column.isSorted ? (column.isSortedDesc ? <ArrowDownward /> : <ArrowUpward />) : ''}
-                  </span>
-                  <div>{column.canFilter ? column.render('Filter') : null}</div>
-                </TableCell>
-              ))}
-            </TableRow>
-          ))}
-        </TableHead>
-        <TableBody {...getTableBodyProps()}>
-          {rows.map((row, index) => {
-            prepareRow(row);
-            const rowProps = row.getRowProps();
-            if (index % 2) {
-              rowProps.style = { backgroundColor: "#EEE" };
-            }
-            return (
-              <React.Fragment key={rowProps.key}>
-                <TableRow { ...rowProps}>
-                  {row.cells.map(cell => (
-                    <TableCell {...cell.getCellProps({style: cellStyle})}>
-                      {cell.render('Cell')}
-                    </TableCell>
-                  ))}
-                </TableRow>
-                {row.isExpanded ? (
-                  <TableRow style={rowProps.style}>
-                    <TableCell colSpan={visibleColumns.length} style={{padding: 0}}>
-                      {renderExpandedRow(row)}
-                    </TableCell>
-                  </TableRow>
-                ): null}
-              </React.Fragment>
-            )
-          })}
-        </TableBody>
-      </Table>
-    </TableContainer>
-  );
-  /* eslint-enable react/jsx-key */
+    <BaseTable
+      tableInstance={tableInstance}
+      title="Players"
+      renderExpandedRow={renderExpandedRow}
+      rowEditable={rowEditable}
+    />
+  )
 }
 
 PlayerTable.propTypes = {
@@ -300,7 +241,10 @@ PlayerTable.defaultProps = {
 }
 
 export function ItemTable(props) {
-  const rowEditable = props.loggedInPlayer && props.loggedInPlayer.permission_level >= 1;
+  const rowEditable = React.useCallback(
+    row => props.loggedInPlayer && props.loggedInPlayer.permission_level >= 1,
+    [props.loggedInPlayer],
+  );
 
   const bossChoices = React.useMemo(
     () => {
@@ -357,7 +301,7 @@ export function ItemTable(props) {
             {row.state.expanded === 'loot_history' ? <WatchLater /> : <History />}
           </IconButton>
         </Tooltip>
-        {rowEditable && !row.state.editing ?
+        {rowEditable(row) && !row.state.editing ?
           <Tooltip title="Edit">
             <IconButton size='small' onClick={() => {
               row.setState(old=> ({...old, editing: true, values: {...row.original}}))
@@ -366,14 +310,14 @@ export function ItemTable(props) {
             </IconButton>
           </Tooltip>
         : null}
-        {rowEditable && row.state.editing ?
+        {rowEditable(row) && row.state.editing ?
           <Tooltip title="Save">
             <IconButton size='small' onClick={onSave(row)}>
               <Check />
             </IconButton>
           </Tooltip>
         : null}
-        {rowEditable && row.state.editing ?
+        {rowEditable(row) && row.state.editing ?
           <Tooltip title="Cancel">
             <IconButton size='small' onClick={() => row.setState(old => ({...old, editing: false}))}>
               <Clear />
@@ -394,7 +338,7 @@ export function ItemTable(props) {
             players={props.players}
             loggedInPlayer={props.loggedInPlayer}
             updateRemoteData={props.updateRemoteData}
-            editable={rowEditable}
+            editable={rowEditable(row)}
           />
         );
       } else if (row.state.expanded === 'loot_history') {
@@ -498,69 +442,14 @@ export function ItemTable(props) {
     useRowState, useFilters, useSortBy, useExpanded,
   );
 
-  const {
-    // state,   TODO: Pop this up to App and pass down as "initialState" to save state between tabs
-    getTableProps,
-    getTableBodyProps,
-    headerGroups,
-    rows,
-    prepareRow,
-    visibleColumns,
-  } = tableInstance
-
-  /* eslint-disable react/jsx-key */
   return (
-    <TableContainer component={Paper}>
-      <Toolbar>
-        <Typography variant="h6">Items</Typography>
-      </Toolbar>
-      <Table {...getTableProps()}>
-        <TableHead>
-          {headerGroups.map(headerGroup => (
-            <TableRow {...headerGroup.getHeaderGroupProps()}>
-              {headerGroup.headers.map(column => (
-                <TableCell {...column.getHeaderProps({...column.getSortByToggleProps(), style: headerStyle})}>
-                  {column.render('Header')}
-                  <span>
-                    {column.isSorted ? (column.isSortedDesc ? <ArrowDownward /> : <ArrowUpward />) : ''}
-                  </span>
-                  <div>{column.canFilter ? column.render('Filter') : null}</div>
-                </TableCell>
-              ))}
-            </TableRow>
-          ))}
-        </TableHead>
-        <TableBody {...getTableBodyProps()}>
-          {rows.map((row, index) => {
-            prepareRow(row);
-            const rowProps = row.getRowProps();
-            if (index % 2) {
-              rowProps.style = { backgroundColor: "#EEE" };
-            }
-            return (
-              <React.Fragment key={rowProps.key}>
-                <TableRow { ...rowProps}>
-                  {row.cells.map(cell => (
-                    <TableCell {...cell.getCellProps({style: cellStyle})}>
-                      {cell.render('Cell')}
-                    </TableCell>
-                  ))}
-                </TableRow>
-                {row.isExpanded ? (
-                  <TableRow style={rowProps.style}>
-                    <TableCell colSpan={visibleColumns.length} style={{padding: 0}}>
-                      {renderExpandedRow(row)}
-                    </TableCell>
-                  </TableRow>
-                ): null}
-              </React.Fragment>
-            )
-          })}
-        </TableBody>
-      </Table>
-    </TableContainer>
-  );
-  /* eslint-enable react/jsx-key */
+    <BaseTable
+      tableInstance={tableInstance}
+      title="Items"
+      renderExpandedRow={renderExpandedRow}
+      rowEditable={rowEditable}
+    />
+  )
 }
 
 ItemTable.propTypes = {
@@ -578,6 +467,11 @@ ItemTable.defaultProps = {
 }
 
 export function LootHistoryTable(props) {
+  const rowEditable = React.useCallback(
+    row => props.loggedInPlayer && props.loggedInPlayer.permission_level >= 2,
+    [props.loggedInPlayer],
+  );
+
 
   const raidDaySort = React.useCallback(
     (a, b) => {
@@ -609,8 +503,7 @@ export function LootHistoryTable(props) {
 
   const buttons = React.useCallback(
     ({row}) => {
-      const rowEditable = props.loggedInPlayer && props.loggedInPlayer.permission_level >= 2;
-      if (!rowEditable) {
+      if (!rowEditable(row)) {
         return null;
       } else if (row.state.editing) {
         return (
@@ -646,7 +539,7 @@ export function LootHistoryTable(props) {
         );
       }
     },
-    [props.loggedInPlayer, onSave, onDelete]
+    [rowEditable, onSave, onDelete]
   );
 
   // TODO: Dynamically update derived column values
@@ -714,6 +607,33 @@ export function LootHistoryTable(props) {
 
   const tableInstance = useTable({ columns, data }, useRowState, useFilters, useSortBy);
 
+  return (
+    <BaseTable
+      tableInstance={tableInstance}
+      title="Loot History"
+      rowEditable={rowEditable}
+      toolbarExtras={
+        <AddLootHistoryDialog raidDays={props.raidDays} players={props.players} items={props.items}
+                              updateRemoteData={props.updateRemoteData} />
+      }
+    />
+  )
+}
+
+LootHistoryTable.propTypes = {
+  loggedInPlayer: CustomPropTypes.user,
+  players: PropTypes.arrayOf(CustomPropTypes.player).isRequired,
+  items: PropTypes.arrayOf(CustomPropTypes.item).isRequired,
+  raidDays: PropTypes.arrayOf(CustomPropTypes.raidDay).isRequired,
+  lootHistory: PropTypes.arrayOf(CustomPropTypes.lootHistory).isRequired,
+  updateRemoteData: PropTypes.func.isRequired,
+}
+
+LootHistoryTable.defaultProps = {
+  loggedInPlayer: null,
+}
+
+function BaseTable(props) {
   const {
     // state,   TODO: Pop this up to App and pass down as "initialState" to save state between tabs
     getTableProps,
@@ -721,15 +641,19 @@ export function LootHistoryTable(props) {
     headerGroups,
     rows,
     prepareRow,
-  } = tableInstance
+    visibleColumns,
+  } = props.tableInstance
+
+  if (rows.length === 0) {
+    return <CircularProgress />;
+  }
 
   /* eslint-disable react/jsx-key */
   return (
     <TableContainer component={Paper}>
       <Toolbar>
-        <Typography variant="h6">Loot History</Typography>
-        <AddLootHistoryDialog raidDays={props.raidDays} players={props.players} items={props.items}
-                              updateRemoteData={props.updateRemoteData} />
+        <Typography variant="h6">{props.title}</Typography>
+        {props.toolbarExtras}
       </Toolbar>
       <Table {...getTableProps()}>
         <TableHead>
@@ -755,13 +679,22 @@ export function LootHistoryTable(props) {
               rowProps.style = { backgroundColor: "#EEE" };
             }
             return (
-              <TableRow { ...rowProps}>
-                {row.cells.map(cell => (
-                  <TableCell {...cell.getCellProps({style: cellStyle})}>
-                    {cell.render('Cell')}
-                  </TableCell>
-                ))}
-              </TableRow>
+              <React.Fragment key={rowProps.key}>
+                <TableRow { ...rowProps}>
+                  {row.cells.map(cell => (
+                    <TableCell {...cell.getCellProps({style: cellStyle})}>
+                      {cell.render('Cell')}
+                    </TableCell>
+                  ))}
+                </TableRow>
+                {row.isExpanded ? (
+                  <TableRow style={rowProps.style}>
+                    <TableCell colSpan={visibleColumns.length} style={{padding: 0}}>
+                      {props.renderExpandedRow(row)}
+                    </TableCell>
+                  </TableRow>
+                ): null}
+              </React.Fragment>
             )
           })}
         </TableBody>
@@ -771,15 +704,16 @@ export function LootHistoryTable(props) {
   /* eslint-enable react/jsx-key */
 }
 
-LootHistoryTable.propTypes = {
-  loggedInPlayer: CustomPropTypes.user,
-  players: PropTypes.arrayOf(CustomPropTypes.player).isRequired,
-  items: PropTypes.arrayOf(CustomPropTypes.item).isRequired,
-  raidDays: PropTypes.arrayOf(CustomPropTypes.raidDay).isRequired,
-  lootHistory: PropTypes.arrayOf(CustomPropTypes.lootHistory).isRequired,
-  updateRemoteData: PropTypes.func.isRequired,
+BaseTable.propTypes = {
+  tableInstance: PropTypes.object.isRequired,
+  title: PropTypes.string.isRequired,
+  renderExpandedRow: PropTypes.func,
+  rowEditable: PropTypes.func,
+  toolbarExtras: PropTypes.node,
 }
 
-LootHistoryTable.defaultProps = {
-  loggedInPlayer: null,
+BaseTable.defaultProps = {
+  renderExpandedRow: row => null,
+  rowEditable: row => false,
+  toolbarExtras: null,
 }

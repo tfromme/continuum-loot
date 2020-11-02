@@ -23,6 +23,16 @@ BasicCell.propTypes = {
 
 //TODO: Speed up feedback loop here
 export function EditCellText({value, row, column}) {
+  const onChange = React.useCallback(
+    e => {
+      const newVal = e.target.value;  // New variable because of event pooling
+      row.setState(currentState =>
+        ({ ...currentState, values: { ...currentState.values, [column.id]: newVal}})
+      );
+    },
+    [row, column.id],
+  );
+
   if (!row.state.editing) {
     return value
   }
@@ -31,13 +41,6 @@ export function EditCellText({value, row, column}) {
   if (editValue === null || editValue === undefined) {
     editValue = '';
   }
-
-  const onChange = e => {
-    const newVal = e.target.value;  // New variable because of event pooling
-    row.setState(currentState =>
-      ({ ...currentState, values: { ...currentState.values, [column.id]: newVal}})
-    );
-  };
 
   return (
     <FormControl style={{ width: "100%" }}>
@@ -52,7 +55,49 @@ EditCellText.propTypes = {
   column: PropTypes.object.isRequired,
 }
 
+export function EditCellAutocomplete(choices, {value, row, column}) {
+  const [inputValue, setInputValue] = React.useState('')
+  const [editValue, setEditValue] = React.useState(choices.find(c => c.name === value))
+
+  const onChange = React.useCallback(
+    (e, newVal) => {
+      setEditValue(newVal);
+      row.setState(currentState =>
+        ({ ...currentState, values: { ...currentState.values, [column.id]: newVal.id}})
+      );
+    },
+    [row, column.id],
+  );
+
+  if (!row.state.editing) {
+    return value || null
+  }
+
+  return (
+    <Autocomplete
+      options={choices}
+      getOptionLabel={option => option.name}
+      value={editValue}
+      onChange={onChange}
+      inputValue={inputValue}
+      onInputChange={(e, newInputVal) => { setInputValue(newInputVal); }}
+      renderInput={params => <TextField {...params} />}
+      disableClearable
+    />
+  );
+}
+
 export function EditCellSelect(choices, {value, row, column}) {
+  const onChange = React.useCallback(
+    e => {
+      const newVal = e.target.value;  // New variable because of event pooling
+      row.setState(currentState =>
+        ({ ...currentState, values: { ...currentState.values, [column.id]: newVal}})
+      );
+    },
+    [row, column.id],
+  );
+
   if (!row.state.editing) {
     return value || null
   }
@@ -61,13 +106,6 @@ export function EditCellSelect(choices, {value, row, column}) {
   if (editValue === null || editValue === undefined) {
     editValue = '';
   }
-
-  const onChange = e => {
-    const newVal = e.target.value;  // New variable because of event pooling
-    row.setState(currentState =>
-      ({ ...currentState, values: { ...currentState.values, [column.id]: newVal}})
-    );
-  };
 
   return (
     <FormControl style={{ width: "100%" }}>

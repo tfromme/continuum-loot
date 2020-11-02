@@ -118,7 +118,6 @@ export function PlayerTable(props) {
     [rowEditable, props.players, props.items, props.raidDays, props.lootHistory, props.updateRemoteData],
   );
 
-  // TODO: Dynamically update derived column values
   const columns = React.useMemo(
     () => [
       {
@@ -277,7 +276,6 @@ export function ItemTable(props) {
     [rowEditable, props.players, props.loggedInPlayer, props.updateRemoteData, props.lootHistory, props.raidDays],
   );
 
-  // TODO: Dynamically update derived column values
   const columns = React.useMemo(
     () => [
       {

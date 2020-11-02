@@ -17,7 +17,7 @@ export function BasicCell({value}) {
   return value;
 }
 
-BasicCell.PropTypes = {
+BasicCell.propTypes = {
   value: PropTypes.node,
 }
 

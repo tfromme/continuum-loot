@@ -40,7 +40,7 @@ class RaidViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class RaidDayViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = RaidDay.objects.order_by('-date')
+    queryset = RaidDay.objects.all()
     serializer_class = RaidDaySerializer
 
 
@@ -283,6 +283,9 @@ class UploadAttendanceViewSet(generics.CreateAPIView):
             player.attendance.add(raid_day)
             player.is_active = True
             player.save()
+
+        # Mark players inactive if they have not attended any of the past 6 raids
+        Player.objects.exclude(attendance__in=RaidDay.objects.all()[:6]).distinct().update(is_active=False)
 
         return Response(status=204)
 

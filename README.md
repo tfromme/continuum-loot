@@ -70,10 +70,6 @@ Anytime you change something in the models, this will autogenerate a new migrati
 
 This will intelligently migrate the database according to the migration files.
 
-#### `python manage.py createsuperuser`
-
-This is how you need to create your first user, you will need to manually link it to your Player in the admin.
-
 ### Django Admin
 
 #### `localhost:8000/admin`

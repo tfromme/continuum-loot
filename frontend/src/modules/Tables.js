@@ -65,102 +65,62 @@ export function PlayerTable(props) {
   );
 
   const onSave = React.useCallback(
-    row => (
-      () => {
-        row.setState(old => ({...old, editing: false}));
-        Api.player.update(row.state.values, props.updateRemoteData);
-      }
-    ),
+    row => {
+      Api.player.update(row.state.values, props.updateRemoteData);
+    },
     [props.updateRemoteData]
   );
 
-  const buttons = React.useCallback(
-    ({row}) => (
-      <>
-        <Tooltip title="Wishlist">
-          <IconButton size='small' onClick={() => toggleExpanded(row, 'wishlist')}>
-            {row.state.expanded === 'wishlist' ? <Favorite /> : <FavoriteBorder />}
-          </IconButton>
-        </Tooltip>
-        <Tooltip title="Attendance">
-          <IconButton size='small' onClick={() => toggleExpanded(row, 'attendance')}>
-            {row.state.expanded === 'attendance' ? <HowToReg /> : <HowToRegOutlined />}
-          </IconButton>
-        </Tooltip>
-        <Tooltip title="Recent Loot History">
-          <IconButton size='small' onClick={() => toggleExpanded(row, 'loot_history')}>
-            {row.state.expanded === 'loot_history' ? <WatchLater /> : <History />}
-          </IconButton>
-        </Tooltip>
-        {rowEditable(row) && !row.state.editing ?
-          <Tooltip title="Edit">
-            <IconButton size='small' onClick={() => {
-              row.setState(old=> ({...old, editing: true, values: {...row.original}}))
-            }}>
-              <Edit />
-            </IconButton>
-          </Tooltip>
-        : null}
-        {rowEditable(row) && row.state.editing ?
-          <Tooltip title="Save">
-            <IconButton size='small' onClick={onSave(row)}>
-              <Check />
-            </IconButton>
-          </Tooltip>
-        : null}
-        {rowEditable(row) && row.state.editing ?
-          <Tooltip title="Cancel">
-            <IconButton size='small' onClick={() => row.setState(old => ({...old, editing: false}))}>
-              <Clear />
-            </IconButton>
-          </Tooltip>
-        : null}
-      </>
-    ),
-    [onSave, rowEditable],
-  );
-
-  const renderExpandedRow = React.useCallback(
-    row => {
-      if (row.state.expanded === 'wishlist') {
-        return (
+  const expandRowOptions = React.useMemo(
+    () => [
+      {
+        id: 'wishlist',
+        tooltip: 'Wishlist',
+        icon: FavoriteBorder,
+        openIcon: Favorite,
+        render: row => (
           <WishlistRow
             rowData={row.original}
             items={props.items}
             updateRemoteData={props.updateRemoteData}
             editable={rowEditable(row)}
           />
-        );
-      } else if (row.state.expanded === 'attendance') {
-        return (
+        ),
+      },
+      {
+        id: 'attendance',
+        tooltip: 'Attendance',
+        icon: HowToRegOutlined,
+        openIcon: HowToReg,
+        render: row => (
           <AttendanceRow
             rowData={row.original}
             players={props.players}
             raidDays={props.raidDays}
           />
-        );
-      } else if (row.state.expanded === 'loot_history') {
-        return (
+        ),
+      },
+      {
+        id: 'loot_history',
+        tooltip: 'Recent Loot History',
+        icon: History,
+        openIcon: WatchLater,
+        render: row => (
           <LootHistoryRow
             rowData={row.original}
             lootHistory={props.lootHistory}
             items={props.items}
             raidDays={props.raidDays}
           />
-        );
-      }
-      return 'Error';
-    },
-    [props.players, props.items, props.updateRemoteData, props.lootHistory, props.raidDays, rowEditable],
+        ),
+      },
+    ],
+    [rowEditable, props.players, props.items, props.raidDays, props.lootHistory, props.updateRemoteData],
   );
 
   // TODO: Dynamically update derived column values
   const columns = React.useMemo(
     () => [
-      {
-        id: 'buttons',
-        Cell: buttons,
-      },
       {
         Header: 'Name',
         accessor: 'name',
@@ -207,21 +167,18 @@ export function PlayerTable(props) {
         Cell: EditCellText,
       },
     ],
-    [buttons, fullEditable]
+    [fullEditable]
   )
 
   const data = React.useMemo(() => props.players.filter(p => p.is_active), [props.players]);
 
-  const tableInstance = useTable(
-    { columns, data, autoResetExpanded: false, autoResetRowState: false },
-    useRowState, useFilters, useSortBy, useExpanded,
-  );
-
   return (
     <BaseTable
-      tableInstance={tableInstance}
+      columns={columns}
+      data={data}
+      expandRowOptions={expandRowOptions}
+      onSave={onSave}
       title="Players"
-      renderExpandedRow={renderExpandedRow}
       rowEditable={rowEditable}
     />
   )
@@ -279,60 +236,20 @@ export function ItemTable(props) {
   );
 
   const onSave = React.useCallback(
-    row => (
-      () => {
-        row.setState(old => ({...old, editing: false}));
-        Api.item.update(row.state.values, props.updateRemoteData);
-      }
-    ),
+    row => {
+      Api.item.update(row.state.values, props.updateRemoteData);
+    },
     [props.updateRemoteData]
   );
 
-  const buttons = React.useCallback(
-    ({row}) => (
-      <>
-        <Tooltip title="Item Priorities">
-          <IconButton size='small' onClick={() => toggleExpanded(row, 'prio')}>
-            {row.state.expanded === 'prio' ? <Assignment /> : <AssignmentOutlined />}
-          </IconButton>
-        </Tooltip>
-        <Tooltip title="Recent Loot History">
-          <IconButton size='small' onClick={() => toggleExpanded(row, 'loot_history')}>
-            {row.state.expanded === 'loot_history' ? <WatchLater /> : <History />}
-          </IconButton>
-        </Tooltip>
-        {rowEditable(row) && !row.state.editing ?
-          <Tooltip title="Edit">
-            <IconButton size='small' onClick={() => {
-              row.setState(old=> ({...old, editing: true, values: {...row.original}}))
-            }}>
-              <Edit />
-            </IconButton>
-          </Tooltip>
-        : null}
-        {rowEditable(row) && row.state.editing ?
-          <Tooltip title="Save">
-            <IconButton size='small' onClick={onSave(row)}>
-              <Check />
-            </IconButton>
-          </Tooltip>
-        : null}
-        {rowEditable(row) && row.state.editing ?
-          <Tooltip title="Cancel">
-            <IconButton size='small' onClick={() => row.setState(old => ({...old, editing: false}))}>
-              <Clear />
-            </IconButton>
-          </Tooltip>
-        : null}
-      </>
-    ),
-    [onSave, rowEditable],
-  );
-
-  const renderExpandedRow = React.useCallback(
-    row => {
-      if (row.state.expanded === 'prio') {
-        return (
+  const expandRowOptions = React.useMemo(
+    () => [
+      {
+        id: 'prio',
+        tooltip: 'Wishlist',
+        icon: AssignmentOutlined,
+        openIcon: Assignment,
+        render: row => (
           <PriorityRow
             rowData={row.original}
             players={props.players}
@@ -340,29 +257,29 @@ export function ItemTable(props) {
             updateRemoteData={props.updateRemoteData}
             editable={rowEditable(row)}
           />
-        );
-      } else if (row.state.expanded === 'loot_history') {
-        return (
+        ),
+      },
+      {
+        id: 'loot_history',
+        tooltip: 'Recent Loot History',
+        icon: History,
+        openIcon: WatchLater,
+        render: row => (
           <LootHistoryItemsRow
             rowData={row.original}
             lootHistory={props.lootHistory}
             players={props.players}
             raidDays={props.raidDays}
           />
-        );
-      }
-      return 'Error';
-    },
-    [props.players, props.loggedInPlayer, props.updateRemoteData, props.lootHistory, props.raidDays, rowEditable],
+        ),
+      },
+    ],
+    [rowEditable, props.players, props.loggedInPlayer, props.updateRemoteData, props.lootHistory, props.raidDays],
   );
 
   // TODO: Dynamically update derived column values
   const columns = React.useMemo(
     () => [
-      {
-        id: 'buttons',
-        Cell: buttons,
-      },
       {
         Header: 'Name',
         accessor: 'name',
@@ -432,21 +349,18 @@ export function ItemTable(props) {
         Cell: EditCellText,
       },
     ],
-    [props.players, filterBosses, bossChoices, buttons]
+    [props.players, filterBosses, bossChoices]
   )
 
   const data = React.useMemo(() => props.items, [props.items]);
 
-  const tableInstance = useTable(
-    { columns, data, autoResetExpanded: false, autoResetRowState: false },
-    useRowState, useFilters, useSortBy, useExpanded,
-  );
-
   return (
     <BaseTable
-      tableInstance={tableInstance}
+      columns={columns}
+      data={data}
+      expandRowOptions={expandRowOptions}
+      onSave={onSave}
       title="Items"
-      renderExpandedRow={renderExpandedRow}
       rowEditable={rowEditable}
     />
   )
@@ -472,7 +386,6 @@ export function LootHistoryTable(props) {
     [props.loggedInPlayer],
   );
 
-
   const raidDaySort = React.useCallback(
     (a, b) => {
       const raidDayA = props.raidDays.find(x => x.id === a.original.raid_day_id);
@@ -483,72 +396,22 @@ export function LootHistoryTable(props) {
   );
 
   const onSave = React.useCallback(
-    row => (
-      () => {
-        row.setState({editing: false});
-        Api.lootHistory.update(row.state.values, props.updateRemoteData);
-      }
-    ),
+    row => {
+      Api.lootHistory.update(row.state.values, props.updateRemoteData);
+    },
     [props.updateRemoteData]
   );
 
   const onDelete = React.useCallback(
-    row => (
-      () => {
-        Api.lootHistory.delete(row.original, props.updateRemoteData);
-      }
-    ),
-    [props.updateRemoteData]
-  );
-
-  const buttons = React.useCallback(
-    ({row}) => {
-      if (!rowEditable(row)) {
-        return null;
-      } else if (row.state.editing) {
-        return (
-          <>
-            <Tooltip title="Save">
-              <IconButton size='small' onClick={onSave(row)}>
-                <Check />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Cancel">
-              <IconButton size='small' onClick={() => row.setState({editing: false})}>
-                <Clear />
-              </IconButton>
-            </Tooltip>
-          </>
-        );
-      } else {
-        return (
-          <>
-            <Tooltip title="Edit">
-              <IconButton size='small' onClick={() => {
-                row.setState({editing: true, values: {...row.original}})
-              }}>
-                <Edit />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Delete">
-              <IconButton size='small' onClick={onDelete(row)}>
-                <DeleteOutline />
-              </IconButton>
-            </Tooltip>
-          </>
-        );
-      }
+    row => {
+      Api.lootHistory.delete(row.original, props.updateRemoteData);
     },
-    [rowEditable, onSave, onDelete]
+    [props.updateRemoteData]
   );
 
   // TODO: Dynamically update derived column values
   const columns = React.useMemo(
     () => [
-      {
-        id: 'buttons',
-        Cell: buttons,
-      },
       {
         Header: 'Raid',
         accessor: row => props.raidDays.find(x => x.id === row.raid_day_id).name,
@@ -600,18 +463,20 @@ export function LootHistoryTable(props) {
         filter: filterInArray,
       },
     ],
-    [props.raidDays, props.items, props.players, raidDaySort, buttons]
+    [props.raidDays, props.items, props.players, raidDaySort]
   )
 
   const data = React.useMemo(() => props.lootHistory, [props.lootHistory]);
 
-  const tableInstance = useTable({ columns, data }, useRowState, useFilters, useSortBy);
-
   return (
     <BaseTable
-      tableInstance={tableInstance}
+      columns={columns}
+      data={data}
       title="Loot History"
       rowEditable={rowEditable}
+      rowDeletable={rowEditable}
+      onSave={onSave}
+      onDelete={onDelete}
       toolbarExtras={
         <AddLootHistoryDialog raidDays={props.raidDays} players={props.players} items={props.items}
                               updateRemoteData={props.updateRemoteData} />
@@ -634,6 +499,114 @@ LootHistoryTable.defaultProps = {
 }
 
 function BaseTable(props) {
+  const propsOnSave = props.onSave;
+  const propsOnDelete = props.onDelete;
+  const { rowEditable, rowDeletable, expandRowOptions } = props;
+
+  const onSave = React.useCallback(
+    row => (
+      () => {
+        row.setState(old => ({...old, editing: false}));
+        propsOnSave(row);
+      }
+    ),
+    [propsOnSave]
+  );
+
+  const onDelete = React.useCallback(
+    row => (
+      () => {
+        propsOnDelete(row);
+      }
+    ),
+    [propsOnDelete]
+  );
+
+  const buttons = React.useCallback(
+    ({row}) => {
+      const expandButtons = expandRowOptions.map(option => {
+        let Icon = option.icon;
+        let OpenIcon = option.openIcon;
+        return (
+          <Tooltip key={option.id} title={option.tooltip}>
+            <IconButton size='small' onClick={() => toggleExpanded(row, option.id)}>
+              {row.state.expanded === option.id ? <OpenIcon /> : <Icon />}
+            </IconButton>
+          </Tooltip>
+        );
+      });
+
+      const deleteButton = rowDeletable(row) ? (
+        <Tooltip key="delete" title="Delete">
+          <IconButton size='small' onClick={onDelete(row)}>
+            <DeleteOutline />
+          </IconButton>
+        </Tooltip>
+      ) : null;
+
+      if (rowEditable(row)) {
+        if (row.state.editing) {
+          const editingButtons = [
+            (
+              <Tooltip key="save" title="Save">
+                <IconButton size='small' onClick={onSave(row)}>
+                  <Check />
+                </IconButton>
+              </Tooltip>
+            ),
+            (
+              <Tooltip key="cancel" title="Cancel">
+                <IconButton size='small' onClick={() => row.setState(old => ({...old, editing: false}))}>
+                  <Clear />
+                </IconButton>
+              </Tooltip>
+            ),
+          ];
+          return [...expandButtons, ...editingButtons];
+        } else {
+          const editButton = (
+            <Tooltip key="edit" title="Edit">
+              <IconButton size='small' onClick={() => {
+                row.setState(old=> ({...old, editing: true, values: {...row.original}}))
+              }}>
+                <Edit />
+              </IconButton>
+            </Tooltip>
+          );
+          return [...expandButtons, editButton, deleteButton];
+        }
+      }
+      return [...expandButtons, deleteButton];
+    },
+    [rowEditable, rowDeletable, onSave, onDelete, expandRowOptions],
+  );
+
+  const renderExpandedRow = React.useCallback(
+    row => {
+      const currentOption = expandRowOptions.find(o => o.id === row.state.expanded);
+      if (!currentOption) {
+        return 'Error'
+      }
+      return currentOption.render(row)
+    },
+    [expandRowOptions],
+  );
+
+  const columns = React.useMemo(
+    () => [{id: 'buttons', Cell: buttons}, ...props.columns],
+    [props.columns, buttons],
+  );
+
+  let args = [useRowState, useFilters, useSortBy];
+  if (expandRowOptions) {
+    args = [...args, useExpanded]
+  }
+
+  const tableInstance = useTable(
+    { columns, data: props.data, autoResetExpanded: false, autoResetRowState: false },
+    ...args,
+  );
+
   const {
     // state,   TODO: Pop this up to App and pass down as "initialState" to save state between tabs
     getTableProps,
@@ -642,7 +615,7 @@ function BaseTable(props) {
     rows,
     prepareRow,
     visibleColumns,
-  } = props.tableInstance
+  } = tableInstance
 
   if (rows.length === 0) {
     return <CircularProgress />;
@@ -690,7 +663,7 @@ function BaseTable(props) {
                 {row.isExpanded ? (
                   <TableRow style={rowProps.style}>
                     <TableCell colSpan={visibleColumns.length} style={{padding: 0}}>
-                      {props.renderExpandedRow(row)}
+                      {renderExpandedRow(row)}
                     </TableCell>
                   </TableRow>
                 ): null}
@@ -705,15 +678,22 @@ function BaseTable(props) {
 }
 
 BaseTable.propTypes = {
-  tableInstance: PropTypes.object.isRequired,
+  columns: PropTypes.array.isRequired,
+  data: PropTypes.array.isRequired,
   title: PropTypes.string.isRequired,
-  renderExpandedRow: PropTypes.func,
-  rowEditable: PropTypes.func,
   toolbarExtras: PropTypes.node,
+  expandRowOptions: PropTypes.array,
+  rowEditable: PropTypes.func,
+  rowDeletable: PropTypes.func,
+  onSave: PropTypes.func,
+  onDelete: PropTypes.func,
 }
 
 BaseTable.defaultProps = {
-  renderExpandedRow: _row => null,
   rowEditable: _row => false,
+  rowDeletable: _row => false,
+  onSave: _row => null,
+  onDelete: _row => null,
   toolbarExtras: null,
+  expandRowOptions: [],
 }

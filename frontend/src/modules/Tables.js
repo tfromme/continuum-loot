@@ -495,6 +495,22 @@ LootHistoryTable.defaultProps = {
   loggedInPlayer: null,
 }
 
+function MemoizedRow({row, rowProps}) {
+  return React.useMemo(
+    () => (
+      <TableRow {...rowProps}>
+        {row.cells.map(cell => (
+          <TableCell {...cell.getCellProps({style: cellStyle})}>
+            {cell.render('Cell')}
+          </TableCell>
+        ))}
+      </TableRow>
+    ),
+    [...Object.values(row.values), row.state],
+  );
+}
+
+
 function BaseTable(props) {
   const propsOnSave = props.onSave;
   const propsOnDelete = props.onDelete;
@@ -650,13 +666,7 @@ function BaseTable(props) {
             }
             return (
               <React.Fragment key={rowProps.key}>
-                <TableRow { ...rowProps}>
-                  {row.cells.map(cell => (
-                    <TableCell {...cell.getCellProps({style: cellStyle})}>
-                      {cell.render('Cell')}
-                    </TableCell>
-                  ))}
-                </TableRow>
+                <MemoizedRow row={row} rowProps={rowProps} />
                 {row.isExpanded ? (
                   <TableRow style={rowProps.style}>
                     <TableCell colSpan={visibleColumns.length} style={{padding: 0}}>

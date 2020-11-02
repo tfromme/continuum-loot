@@ -20,7 +20,7 @@ import CustomPropTypes from './CustomPropTypes.js';
 import Api from './Api.js';
 import { classes, ranks, roles, itemTiers, itemCategories } from './Constants.js';
 import { WishlistRow, AttendanceRow, LootHistoryRow, PriorityRow, LootHistoryItemsRow } from './DetailRows.js';
-import { BasicCell, EditCellSelect, EditCellText } from './EditComponents.js';
+import { BasicCell, EditCellSelect, EditCellText, EditCellAutocomplete } from './EditComponents.js';
 import { TextFilter, MultiselectFilter } from './Filters.js';
 import { AddLootHistoryDialog } from './ActionDialogs.js';
 
@@ -417,7 +417,6 @@ export function LootHistoryTable(props) {
         sortType: raidDaySort,
         sortDescFirst: true,
         Filter: TextFilter,
-        // TODO: Change from Select to autocomplete
         Cell: EditCellSelect.bind(null, props.raidDays),
       },
       {
@@ -426,7 +425,7 @@ export function LootHistoryTable(props) {
         id: 'player_id',
         sortType: 'basic',
         Filter: TextFilter,
-        Cell: EditCellSelect.bind(null, props.players),
+        Cell: EditCellAutocomplete.bind(null, props.players),
       },
       {
         Header: 'Class',
@@ -450,7 +449,7 @@ export function LootHistoryTable(props) {
         id: 'item_id',
         sortType: 'basic',
         Filter: TextFilter,
-        Cell: EditCellSelect.bind(null, props.items),
+        Cell: EditCellAutocomplete.bind(null, props.items),
       },
       {
         Header: 'Item Tier',

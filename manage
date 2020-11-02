@@ -95,6 +95,9 @@ case "$cmd" in
   init-frontend|init-backend|start-frontend|start-backend|build|deploy|lint )
     $@
     ;;
+  build-deploy )
+    build && deploy
+    ;;
   * )
     usage
     ;;

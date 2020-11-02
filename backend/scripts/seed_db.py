@@ -2,6 +2,9 @@ import csv
 from datetime import datetime
 from contextlib import suppress
 
+from django.core import management
+from django.contrib.auth.models import User
+
 from loot.models import Player, Wishlist, Item, ClassPrio, IndividualPrio, Raid, Boss, RaidDay, LootHistory
 
 
@@ -108,7 +111,7 @@ def populate_loot_history(filename):
             ).save()
 
 
-def populate_prios(filename):
+def populate_prios(filename, user):
     with open(filename) as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
@@ -120,6 +123,7 @@ def populate_prios(filename):
                         item=item,
                         player=Player.objects.get(name=row[column]),
                         prio=n,
+                        set_by=user,
                     ).save()
             for n in (1, 2, 3, 4):
                 column = f'class_prio_{n}'
@@ -128,6 +132,7 @@ def populate_prios(filename):
                         item=item,
                         class_name=row[column],
                         prio=n,
+                        set_by=user,
                     ).save()
 
 
@@ -153,5 +158,18 @@ def run():
     print('Populating Loot History')
     populate_loot_history('seed_data/loot_history.csv')
 
+    print('Create Your Superuser (you can ignore email)')
+    management.call_command('createsuperuser')
+
+    user = User.objects.first()
+    needs_player = True
+    while needs_player:
+        player_name = input('Player to attach user to: ')
+        with suppress(Player.DoesNotExist):
+            player = Player.objects.get(name__iexact=player_name)
+            player.user = user
+            player.save()
+            needs_player = False
+
     print('Populating Prios')
-    populate_prios('seed_data/items.csv')
+    populate_prios('seed_data/items.csv', user)

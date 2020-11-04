@@ -600,7 +600,14 @@ function BaseTable(props) {
   }
 
   const tableInstance = useTable(
-    { columns, data: props.data, autoResetExpanded: false, autoResetRowState: false },
+    {
+      columns,
+      data: props.data,
+      autoResetExpanded: false,
+      autoResetRowState: false,
+      autoResetFilters: false,
+      autoResetSortBy: false,
+    },
     ...args,
   );
 

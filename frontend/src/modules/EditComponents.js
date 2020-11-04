@@ -21,30 +21,26 @@ BasicCell.propTypes = {
   value: PropTypes.node,
 }
 
-//TODO: Speed up feedback loop here
 export function EditCellText({value, row, column}) {
-  const onChange = React.useCallback(
-    e => {
-      const newVal = e.target.value;  // New variable because of event pooling
-      row.setState(currentState =>
-        ({ ...currentState, values: { ...currentState.values, [column.id]: newVal}})
-      );
-    },
-    [row, column.id],
-  );
+  const [editValue, setEditValue] = React.useState(value);
+
+  const onChange = e => {
+    setEditValue(e.target.value);
+  }
+
+  const onBlur = () => {
+    row.setState(currentState =>
+      ({ ...currentState, values: { ...currentState.values, [column.id]: editValue}})
+    );
+  };
 
   if (!row.state.editing) {
     return value
   }
 
-  let editValue = row.state.values[column.id];
-  if (editValue === null || editValue === undefined) {
-    editValue = '';
-  }
-
   return (
     <FormControl style={{ width: "100%" }}>
-      <Input value={editValue} onChange={onChange} />
+      <Input value={editValue || ''} onChange={onChange} onBlur={onBlur} />
     </FormControl>
   );
 }

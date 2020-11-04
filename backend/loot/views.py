@@ -324,16 +324,18 @@ class UploadLootHistoryViewSet(generics.CreateAPIView):
 
                 item = Item.objects.get(id=item_id)
 
-                LootHistory.objects.create(
-                    raid_day=raid_day,
-                    item=item,
-                    player=player,
-                )
+                if item.raid == raid_day.raid:
 
-                with suppress(Wishlist.DoesNotExist):
-                    Wishlist.objects.get(player=player, item=item).delete()
+                    LootHistory.objects.create(
+                        raid_day=raid_day,
+                        item=item,
+                        player=player,
+                    )
 
-                with suppress(IndividualPrio.DoesNotExist):
-                    IndividualPrio.objects.get(player=player, item=item).delete()
+                    with suppress(Wishlist.DoesNotExist):
+                        Wishlist.objects.get(player=player, item=item).delete()
+
+                    with suppress(IndividualPrio.DoesNotExist):
+                        IndividualPrio.objects.get(player=player, item=item).delete()
 
         return Response(status=204)

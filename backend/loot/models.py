@@ -139,7 +139,7 @@ class RaidDay(models.Model):
     class Meta:
         verbose_name = 'Raid Day'
         verbose_name_plural = 'Raid Days'
-        ordering = ['-date']
+        ordering = ['-date', '-id']
 
     name = models.CharField(max_length=30)
     date = models.DateField()

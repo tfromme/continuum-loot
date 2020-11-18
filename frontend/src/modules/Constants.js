@@ -29,5 +29,6 @@ export const itemCategories = {
   'HL': 'Healer',
   'PH': 'Physical',
   'NR': 'Nature Res',
+  'FR': 'Frost Res',
 }
 export const itemTiers = [0, 1, 2, 3, 4, 5];

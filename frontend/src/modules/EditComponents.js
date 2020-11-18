@@ -95,7 +95,7 @@ export function EditCellSelect(choices, {value, row, column}) {
   );
 
   if (!row.state.editing) {
-    return value || null
+    return (value || value === 0) ? value : null
   }
 
   let editValue = row.state.values[column.id];

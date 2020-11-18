@@ -62,6 +62,7 @@ class Item(models.Model):
         HEALER = 'HL'
         PHYSICAL = 'PH'
         NATURE_RES = 'NR'
+        FROST_RES = 'FR'
 
     name = models.CharField(max_length=60, unique=True)
     type = models.CharField(max_length=20)

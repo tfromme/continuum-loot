@@ -33,10 +33,24 @@ class ItemViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Item.objects.order_by('name')
     serializer_class = ItemSerializer
 
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_superuser:
+            return Item.objects.order_by('name')
+        else:
+            return Item.objects.exclude(raid_id=3).order_by('name')
+
 
 class RaidViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Raid.objects.order_by('-id')
     serializer_class = RaidSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_superuser:
+            return Raid.objects.order_by('-id')
+        else:
+            return Raid.objects.exclude(id=3).order_by('-id')
 
 
 class RaidDayViewSet(viewsets.ReadOnlyModelViewSet):

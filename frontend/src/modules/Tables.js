@@ -245,7 +245,7 @@ export function ItemTable(props) {
     () => [
       {
         id: 'prio',
-        tooltip: 'Wishlist',
+        tooltip: 'Prios',
         icon: AssignmentOutlined,
         openIcon: Assignment,
         render: row => (

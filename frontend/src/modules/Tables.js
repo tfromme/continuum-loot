@@ -311,6 +311,7 @@ export function ItemTable(props) {
         filter: filterInArray,
         Cell: EditCellSelect.bind(null, Object.entries(itemCategories).map(([k, v]) => ({id: k, name: v}))),
       },
+      /*
       {
         Header: 'Prio 1',
         accessor: row => {
@@ -331,10 +332,28 @@ export function ItemTable(props) {
         disableSortBy: true,
         Filter: TextFilter,
       },
+      */
       {
         Header: 'Class Prio 1',
         accessor: 'cprio_1',
         id: 'cprio_1',
+        disableSortBy: true,
+        Filter: TextFilter,
+      },
+      {
+        Header: 'Class Prio 2',
+        accessor: 'cprio_2',
+        id: 'cprio_2',
+        disableSortBy: true,
+        Filter: TextFilter,
+      },
+      {
+        Header: 'Prio 1',
+        accessor: row => {
+          let player = props.players.find(x => x.id === row.iprio_1);
+          return player ? player.name : '';
+        },
+        id: 'iprio_1',
         disableSortBy: true,
         Filter: TextFilter,
       },
@@ -637,12 +656,16 @@ function BaseTable(props) {
           {headerGroups.map(headerGroup => (
             <TableRow {...headerGroup.getHeaderGroupProps()}>
               {headerGroup.headers.map(column => (
-                <TableCell {...column.getHeaderProps({...column.getSortByToggleProps(), style: headerStyle})}>
-                  {column.render('Header')}
-                  <span>
-                    {column.isSorted ? (column.isSortedDesc ? <ArrowDownward /> : <ArrowUpward />) : ''}
-                  </span>
-                  <div>{column.canFilter ? column.render('Filter') : null}</div>
+                <TableCell {...column.getHeaderProps({style: headerStyle})}>
+                  <div {...column.getSortByToggleProps()}>
+                    {column.render('Header')}
+                    <span>
+                      {column.isSorted ? (column.isSortedDesc ? <ArrowDownward /> : <ArrowUpward />) : ''}
+                    </span>
+                  </div>
+                  <div>
+                    {column.canFilter ? column.render('Filter') : null}
+                  </div>
                 </TableCell>
               ))}
             </TableRow>

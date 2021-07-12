@@ -1,23 +1,39 @@
 id,name,raid_id,order
-10,BWL Trash,1,101
-12435,Razorgore,1,102
-13020,Vaelastrasz,1,103
-12017,Broodlord Lashlayer,1,104
-11983,Firemaw,1,105
-14601,Ebonroc,1,106
-11981,Flamegor,1,107
-14020,Chromaggus,1,108
-11583,Nefarian,1,109
-20,AQ Trash,2,201
-15263,The Prophet Skeram,2,202
-15511,Lord Kri,2,203
-15543,Princess Yauj,2,204
-15544,Vem,2,205
-15516,Battleguard Sartura,2,206
-15510,Fankriss,2,207
-15299,Viscidus,2,208
-15509,Princess Huhuran,2,209
-15276,Emperor Vek'lor,2,210
-15275,Emperor Vek'nilash,2,211
-15517,Ouro,2,212
-15727,C'Thun,2,213
+18831,High King Maulgar,1,101
+19044,Gruul the Dragonkiller,1,102
+17257,Magtheridon,1,103
+20,SSC Trash,2,201
+21216,Hydross the Unstable,2,202
+21217,The Lurker Below,2,203
+21215,Leotheras the Blind,2,204
+21214,Fathom-Lord Karathress,2,205
+21213,Morogrim Tidewalker,2,206
+21212,Lady Vashj,2,207
+30,TK Trash,3,301
+19514,Al'ar,3,302
+19516,Void Reaver,3,303
+18805,High Astromancer Solarian,3,304
+19622,Kael'thas Sunstrider,3,305
+40,Hyjal Trash,4,401
+17767,Rage Winterchill,4,402
+17808,Anetheron,4,403
+17888,Kaz'rogal,4,404
+17842,Azgalor,4,405
+17968,Archimonde,4,406
+50,BT Trash,5,501
+22887,High Warlord Naj'entus,5,502
+22898,Supremus,5,503
+22841,Shade of Akama,5,504
+22948,Gurtogg Bloodboil,5,505
+22856,Reliquary of the Lost,5,506
+22871,Teron Gorefiend,5,507
+22947,Mother Shahraz,5,508
+23426,The Illidari Council,5,509
+22917,Illidan Stormrage,5,510
+60,SWP Trash,6,601
+24850,Kalecgos,6,602
+24882,Brutallus,6,603
+25038,Felmyst,6,604
+25166,Eredar Twins,6,605
+25741,M'uru,6,606
+25315,Kil'Jaeden,6,607

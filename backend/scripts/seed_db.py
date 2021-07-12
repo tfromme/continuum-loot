@@ -94,7 +94,7 @@ def populate_wishlist(filename):
         for row in reader:
             player = Player.objects.get(name=row['name'])
             for index, column in enumerate(wishlist_columns):
-                item_name = row[column]
+                item_name = row.get(column)
                 if item_name:
                     item = Item.objects.get(name=item_name)
                     Wishlist.objects.create(player=player, item=item, priority=(index + 1)).save()
@@ -118,7 +118,7 @@ def populate_prios(filename, user):
             item = Item.objects.get(name=row['name'])
             for n in (1, 2, 3, 4, 5):
                 column = f'individual_prio_{n}'
-                if row[column]:
+                if row.get(column):
                     IndividualPrio.objects.create(
                         item=item,
                         player=Player.objects.get(name=row[column]),
@@ -127,7 +127,7 @@ def populate_prios(filename, user):
                     ).save()
             for n in (1, 2, 3, 4):
                 column = f'class_prio_{n}'
-                if row[column]:
+                if row.get(column):
                     ClassPrio.objects.create(
                         item=item,
                         class_name=row[column],
@@ -155,8 +155,8 @@ def run():
     print('Populating Wishlists')
     populate_wishlist('seed_data/players.csv')
 
-    print('Populating Loot History')
-    populate_loot_history('seed_data/loot_history.csv')
+    # print('Populating Loot History')
+    # populate_loot_history('seed_data/loot_history.csv')
 
     print('Create Your Superuser (you can ignore email)')
     management.call_command('createsuperuser')

@@ -18,6 +18,9 @@ from .permissions import IsUserOrAdmin
 logger = logging.getLogger('loot')
 
 
+MAX_RAID_ID = 1
+
+
 class CsrfExemptSessionAuthentication(SessionAuthentication):
 
     def enforce_csrf(self, request):
@@ -30,23 +33,23 @@ class PlayerViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class ItemViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Item.objects.order_by('name')
+    queryset = Item.objects.filter(raid_id__lte=MAX_RAID_ID).order_by('name')
     serializer_class = ItemSerializer
 
 
 class RaidViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Raid.objects.order_by('-id')
+    queryset = Raid.objects.filter(id__lte=MAX_RAID_ID).order_by('-id')
     serializer_class = RaidSerializer
 
 
 class RaidDayViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = RaidDay.objects.all()
+    queryset = RaidDay.objects.filter(raid_id__lte=MAX_RAID_ID)
     serializer_class = RaidDaySerializer
 
 
 class LootHistoryViewSet(viewsets.ReadOnlyModelViewSet):
     # Sort by date descending, then by id descending
-    queryset = LootHistory.objects.order_by('-raid_day__date', '-id')
+    queryset = LootHistory.objects.filter(raid_day__raid_id__lte=MAX_RAID_ID).order_by('-raid_day__date', '-id')
     serializer_class = LootHistorySerializer
 
 
@@ -284,8 +287,8 @@ class UploadAttendanceViewSet(generics.CreateAPIView):
             player.is_active = True
             player.save()
 
-        # Mark players inactive if they have not attended any of the past 6 raids
-        Player.objects.exclude(attendance__in=RaidDay.objects.all()[:6]).distinct().update(is_active=False)
+        # Mark players inactive if they have not attended any of the past 8 raids
+        Player.objects.exclude(attendance__in=RaidDay.objects.all()[:8]).distinct().update(is_active=False)
 
         return Response(status=204)
 

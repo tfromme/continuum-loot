@@ -8,13 +8,13 @@ import { PlayerTable, ItemTable, LootHistoryTable } from './modules/Tables.js';
 import { LoginDialog, SignupDialog, LogoutDialog } from './modules/LoginDialogs.js';
 import { AttendanceDialog, LootHistoryDialog } from './modules/ActionDialogs.js';
 
-import wowlogo from './wowlogo.png'
+import wowlogo from './TBCLogo.png'
 import './App.scss';
 
 const theme = createMuiTheme({
   palette: {
     primary: {
-      main: '#1565c0',
+      main: '#5a8241',
     },
     secondary: {
       main: '#f8b700',

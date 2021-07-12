@@ -11,6 +11,7 @@ class Player(models.Model):
         PALADIN = 'PL'
         PRIEST = 'PR'
         ROGUE = 'RG'
+        SHAMAN = 'SH'
         WARLOCK = 'WL'
         WARRIOR = 'WR'
 
@@ -25,6 +26,7 @@ class Player(models.Model):
         TRIAL = 20
         MEMBER = 30
         VETERAN = 40
+        RAIDER = 47
         CORE_RAIDER = 50
         CLASS_LEAD = 60
         OFFICER = 70
@@ -61,8 +63,7 @@ class Item(models.Model):
         CASTER = 'CS'
         HEALER = 'HL'
         PHYSICAL = 'PH'
-        NATURE_RES = 'NR'
-        FROST_RES = 'FR'
+        TANK = 'TN'
 
     name = models.CharField(max_length=60, unique=True)
     type = models.CharField(max_length=20)
@@ -76,7 +77,7 @@ class Item(models.Model):
 
     @property
     def link(self):
-        return f"https://classic.wowhead.com/item={self.id}"
+        return f"https://tbc.wowhead.com/item={self.id}"
 
     def __str__(self):
         return self.name

@@ -63,12 +63,13 @@ class ItemSerializer(serializers.ModelSerializer):
     iprio_1 = serializers.SerializerMethodField()
     iprio_2 = serializers.SerializerMethodField()
     cprio_1 = serializers.SerializerMethodField()
+    cprio_2 = serializers.SerializerMethodField()
 
     class Meta:
         model = Item
         fields = ['id', 'name', 'type', 'tier', 'category', 'notes', 'raid',
                   'bosses', 'class_prio', 'individual_prio', 'link',
-                  'iprio_1', 'iprio_2', 'cprio_1',
+                  'iprio_1', 'iprio_2', 'cprio_1', 'cprio_2',
                   ]
 
     def _get_iprio(self, obj, prio):
@@ -93,6 +94,9 @@ class ItemSerializer(serializers.ModelSerializer):
 
     def get_cprio_1(self, obj):
         return self._get_cprio(obj, 1)
+
+    def get_cprio_2(self, obj):
+        return self._get_cprio(obj, 2)
 
 
 class RaidSerializer(serializers.ModelSerializer):

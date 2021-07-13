@@ -284,7 +284,7 @@ export function ItemTable(props) {
         id: 'name',
         Filter: TextFilter,
         // eslint-disable-next-line react/prop-types
-        Cell: ({row, value}) => (<a href={row.original.link}>{value}</a>),
+        Cell: ({row, value}) => (<a href={row.original.link}>{'[' + value + ']'}</a>),
       },
       {
         Header: 'Bosses',
